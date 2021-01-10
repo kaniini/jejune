@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp.web
+import uuid
 
 
 from .config import load_config
@@ -15,3 +16,15 @@ class Application(aiohttp.web.Application):
         self.rdf_store = RDFStore(self)
         self.userdb_store = UserDBStore(self)
         self.userns = UserDBNamespace(self, 'User', User)
+
+    @property
+    def hostname(self):
+        return self.config['instance']['hostname']
+
+    def rdf_object_uri(self):
+        while True:
+            object_uuid = str(uuid.uuid4())
+
+            uri = str().join(['https://', self.hostname, '/.well-known/jejune/object/', object_uuid])
+            if not self.rdf_store.local_uri_exists(uri):
+                return uri
