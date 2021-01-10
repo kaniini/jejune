@@ -27,6 +27,9 @@ class Application(aiohttp.web.Application):
         while True:
             object_uuid = str(uuid.uuid4())
 
-            uri = str().join(['https://', self.hostname, '/.well-known/jejune/object/', object_uuid])
+            uri = self.rdf_object_uri_for(object_uuid)
             if not self.rdf_store.local_uri_exists(uri):
                 return uri
+
+    def rdf_object_uri_for(self, object_uuid):
+        return str().join(['https://', self.hostname, '/.well-known/jejune/object/', object_uuid])
