@@ -78,6 +78,8 @@ class UserDBNamespace:
 
     def fetch(self, topic: str, item: str) -> str:
         data = self.store.fetch_topic(self.namespace, topic, item)
+        if not data:
+            return None
         return self.klass.deserialize(data)
 
     def put(self, topic: str, item: str, object):
