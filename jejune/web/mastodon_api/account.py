@@ -31,7 +31,7 @@ async def new_accounts(request):
 
     token = app.userapi.login(obj)
 
-    return json_response(token.serialize())
+    return json_response(token.serialize(dict))
 
 
 app.add_routes(routes)

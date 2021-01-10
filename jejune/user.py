@@ -1,4 +1,5 @@
 import crypt
+import time
 import uuid
 
 
@@ -62,8 +63,8 @@ class Token(Serializable):
     @classmethod
     def new(cls, user: User) -> Serializable:
         return cls(user=user.username,
-                   token=str(uuid.uuid4()),
                    token_type='Bearer',
+                   access_token=str(uuid.uuid4()),
                    refresh_token=str(uuid.uuid4()),
                    scopes="read write follow",
                    expires_in=9999999999,

@@ -14,5 +14,5 @@ class Serializable:
         properties = simplejson.loads(data)
         return cls(**properties)
 
-    def serialize(self):
-        return simplejson.dumps(self.__dict__)
+    def serialize(self, method=simplejson.dumps):
+        return method(self.__dict__)

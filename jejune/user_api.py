@@ -45,11 +45,11 @@ class UserAPI:
     def find_app(self, client_id: str) -> App:
         return self.app_store.fetch(client_id, 'base')
 
-    def login(self, user: User, app: App) -> Token:
-        token = user.login(app)
-        self.token_store.put(token.token, 'base', token)
+    def login(self, user: User) -> Token:
+        token = user.login()
+        self.token_store.put(token.access_token, 'base', token)
 
         return token
 
-    def find_login_from_token(self, token: str) -> Token:
-        return self.token_store.fetch(token)
+    def find_login_from_token(self, access_token: str) -> Token:
+        return self.token_store.fetch(access_token)
