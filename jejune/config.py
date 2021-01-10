@@ -7,6 +7,7 @@ def get_paths(yaml_file: dict) -> dict:
     return {
         'rdf': paths.get('rdf', 'store/rdf'),
         'userdb': paths.get('userdb', 'store/userdb'),
+        'static': paths.get('static', 'static'),
     }
 
 

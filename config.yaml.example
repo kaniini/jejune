@@ -10,6 +10,9 @@ paths:
   # for local actors.
   userdb: store/userdb
 
+  # The static web assets path.  Point this at your web client, like Pleroma FE.
+  static: static
+
 # Listener configuration.
 listener:
   # The IP address to bind to.
