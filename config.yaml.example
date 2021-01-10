@@ -1,0 +1,32 @@
+# Jejune example configuration.
+
+# Path configuration.
+# By default, paths are relative from the Jejune installation directory.
+paths:
+  # The RDF store is where RDF objects are stored and loaded from disk.
+  rdf: store/rdf
+
+  # The user database stores usernames, passwords and other local preferences
+  # for local actors.
+  userdb: store/userdb
+
+# Listener configuration.
+listener:
+  # The IP address to bind to.
+  bind: 127.0.0.1
+
+  # The port to listen for HTTP requests on.
+  port: 8080
+
+# Instance configuration.
+instance:
+  # The name of the instance.
+  name: A Misconfigured Jejune Instance
+
+  # The hostname of the instance, used for generating URIs, etc.
+  hostname: misconfigured.example
+
+# Federation configuration.
+federation:
+  # Whether federation is enabled at all.
+  enabled: true
