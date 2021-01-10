@@ -11,9 +11,12 @@ from .app import App
 from .user_api import UserAPI
 
 
+from .middleware.oauth import oauth_middleware
+
+
 class Application(aiohttp.web.Application):
     def __init__(self, config: str):
-        super(Application, self).__init__(middlewares=[])
+        super(Application, self).__init__(middlewares=[oauth_middleware])
         self.config = load_config(config)
         self.rdf_store = RDFStore(self)
         self.userdb_store = UserDBStore(self)

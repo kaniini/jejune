@@ -51,5 +51,9 @@ class UserAPI:
 
         return token
 
-    def find_login_from_token(self, access_token: str) -> Token:
-        return self.token_store.fetch(access_token)
+    def find_login_from_token(self, access_token: str) -> User:
+        token = self.token_store.fetch(access_token, 'base')
+        if not token:
+            return None
+
+        return self.find_user(token.user)
