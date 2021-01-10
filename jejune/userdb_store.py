@@ -86,3 +86,6 @@ class UserDBNamespace:
 
     def put(self, topic: str, item: str, object):
         self.store.put_topic(self.namespace, topic, item, object.serialize())
+
+    def exists(self, topic: str, item: str):
+        return self.store.topic_exists(self.namespace, topic, item)
