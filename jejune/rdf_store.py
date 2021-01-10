@@ -40,6 +40,18 @@ class RDFStore:
         parse_result = urllib.parse.urlparse(uri)
         return parse_result.netloc == self.app.config['instance'].get('hostname')
 
+    def local_uri_exists(self, uri: str) -> bool:
+        if not self.uri_is_local(uri):
+            return False
+
+        path = self.path_for_uri(uri)
+
+        try:
+            st = os.stat(path)
+            return st.st_mtime > 0
+        except:
+            return False
+
     def fetch_cached(self, uri: str) -> str:
         path = self.path_for_uri(uri)
 
