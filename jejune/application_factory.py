@@ -7,6 +7,7 @@ from .config import load_config
 from .rdf_store import RDFStore
 from .userdb_store import UserDBStore, UserDBNamespace
 from .user import User
+from .user_api import UserAPI
 
 
 class Application(aiohttp.web.Application):
@@ -16,6 +17,7 @@ class Application(aiohttp.web.Application):
         self.rdf_store = RDFStore(self)
         self.userdb_store = UserDBStore(self)
         self.userns = UserDBNamespace(self, 'User', User)
+        self.userapi = UserAPI(self)
 
     @property
     def hostname(self):

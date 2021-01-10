@@ -1,8 +1,18 @@
 from ..activity_streams import AS2Object
+from ..user import User
 
 
 class Actor(AS2Object):
-    pass
+    @classmethod
+    def new_from_user(cls, user: User) -> AS2Object:
+        obj = {'name': user.description,
+               'type': user.actor_type,
+               'preferredUsername': user.username,
+               'id': user.actor_uri,
+               'summary': user.bio,
+               'manuallyApprovesFollowers': user.locked,
+               'publicKey': user.get_public_key()}
+        return cls(**obj)
 
 
 class Person(Actor):
