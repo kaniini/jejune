@@ -20,8 +20,7 @@ class Application(aiohttp.web.Application):
         self.userns = UserDBNamespace(self, 'User', User)
         self.appns = UserDBNamespace(self, 'App', App)
         self.tokenns = UserDBNamespace(self, 'Token', Token)
-        self.inboxns = UserDBNamespace(self, 'Inbox', Mailbox)
-        self.outboxns = UserDBNamespace(self, 'Outbox', Mailbox)
+        self.mailboxns = UserDBNamespace(self, 'Mailbox', Mailbox)
         self.userapi = UserAPI(self)
 
     @property
@@ -48,7 +47,7 @@ class Application(aiohttp.web.Application):
             object_uuid = str(uuid.uuid4())
 
             uri = self.object_uri_for(object_uuid, 'inbox')
-            if not self.inboxns.exists(object_uuid, 'base'):
+            if not self.mailboxns.exists(object_uuid, 'inbox'):
                 return uri
 
     def outbox_uri(self):
@@ -56,5 +55,5 @@ class Application(aiohttp.web.Application):
             object_uuid = str(uuid.uuid4())
 
             uri = self.object_uri_for(object_uuid, 'outbox')
-            if not self.outboxns.exists(object_uuid, 'base'):
+            if not self.mailboxns.exists(object_uuid, 'outbox'):
                 return uri

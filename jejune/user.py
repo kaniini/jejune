@@ -48,6 +48,9 @@ class User(Serializable):
         return {
         }
 
+    def login(self):
+        return Token.new(self)
+
 
 class Mailbox(Serializable):
     @classmethod
@@ -58,4 +61,10 @@ class Mailbox(Serializable):
 class Token(Serializable):
     @classmethod
     def new(cls, user: User) -> Serializable:
-        return cls(user=user.username, token=str(uuid.uuid4()))
+        return cls(user=user.username,
+                   token=str(uuid.uuid4()),
+                   token_type='Bearer',
+                   refresh_token=str(uuid.uuid4()),
+                   scopes="read write follow",
+                   expires_in=9999999999,
+                   created_at=time.time())
