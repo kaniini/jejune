@@ -6,7 +6,7 @@ import uuid
 from .config import load_config
 from .rdf_store import RDFStore
 from .userdb_store import UserDBStore, UserDBNamespace
-from .user import User
+from .user import User, Token
 from .app import App
 from .user_api import UserAPI
 
@@ -19,6 +19,7 @@ class Application(aiohttp.web.Application):
         self.userdb_store = UserDBStore(self)
         self.userns = UserDBNamespace(self, 'User', User)
         self.appns = UserDBNamespace(self, 'App', App)
+        self.tokenns = UserDBNamespace(self, 'Token', Token)
         self.userapi = UserAPI(self)
 
     @property

@@ -1,4 +1,4 @@
-from .user import User
+from .user import User, Token
 from .app import App
 from .activity_pub.actor import Actor
 
@@ -8,6 +8,7 @@ class UserAPI:
         self.app = app
         self.store = app.userns
         self.app_store = app.appns
+        self.token_store = app.tokenns
         self.rdf_store = app.rdf_store
 
     def create_user(self, description: str, actor_type: str, username: str, email: str, password: str, bio: str, locked: bool) -> User:
@@ -36,3 +37,10 @@ class UserAPI:
 
     def find_app(self, client_id: str) -> App:
         return self.app_store.fetch(client_id, 'base')
+
+    def login(self, user: User, app: App):
+        token = user.login(app)
+        self.token_store.put(token.token, 'base', token)
+
+    def find_login_from_token(self, token: str) -> Token:
+        return self.token_store.fetch(token)

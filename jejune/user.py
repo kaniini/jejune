@@ -1,4 +1,5 @@
 import crypt
+import uuid
 
 
 from Crypto.PublicKey import RSA
@@ -39,3 +40,13 @@ class User(Serializable):
             'owner': self.actor_uri,
             'publicKeyPem': pubkey.exportKey('PEM').decode('utf-8')
         }
+
+    def serialize_to_mastodon(self):
+        return {
+        }
+
+
+class Token(Serializable):
+    @classmethod
+    def new(cls, user: User) -> Serializable:
+        return cls(user=user.username, token=str(uuid.uuid4()))
