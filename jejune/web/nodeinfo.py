@@ -5,6 +5,13 @@ from aiohttp.web import RouteTableDef, json_response
 routes = RouteTableDef()
 
 
+def upload_limits():
+    return {'avatar': app.config['instance']['limits']['avatar-size'],
+            'background': app.config['instance']['limits']['background-size'],
+            'banner': app.config['instance']['limits']['banner-size'],
+            'general': app.config['instance']['limits']['general-upload-size']}
+
+
 @routes.get('/.well-known/nodeinfo')
 def nodeinfo_links(request):
     links = [
@@ -24,6 +31,7 @@ def nodeinfo_response(request):
         'metadata': {
              'nodeDescription': app.config['instance'].get('description'),
              'nodeName': app.config['instance'].get('name'),
+             'uploadLimits': upload_limits(),
         },
         'openRegistrations': app.config['instance'].get('registrations', False),
         'protocols': [

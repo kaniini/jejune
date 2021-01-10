@@ -20,6 +20,16 @@ def get_listener(yaml_file: dict) -> dict:
     }
 
 
+def get_limits(limits: dict) -> dict:
+    return {
+        'post-chars': limits.get('post-chars', 5000),
+        'avatar-size': limits.get('avatar-size', 2000000),
+        'background-size': limits.get('background-size', 4000000),
+        'banner-size': limits.get('banner-size', 4000000),
+        'general-upload-size': limits.get('general-upload-size', 16000000),
+    }
+
+
 def get_instance(yaml_file: dict) -> dict:
     instance = yaml_file.get('instance', dict())
 
@@ -27,6 +37,8 @@ def get_instance(yaml_file: dict) -> dict:
         'name': instance.get('name', 'A Misconfigured Jejune Instance'),
         'hostname': instance.get('hostname', 'misconfigured.example'),
         'frontend-configurations': instance.get('frontend-configurations', dict()),
+        'limits': get_limits(instance.get('limits', dict())),
+        'registrations': instance.get('registrations', False),
     }
 
 

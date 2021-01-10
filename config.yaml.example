@@ -38,6 +38,26 @@ instance:
       loginMethod: password
       subjectLineBehavior: email
 
+  # Limits for posts and uploads.
+  limits:
+    # The maximum length of a post.
+    post-chars: 5000
+
+    # Maximum avatar size (in bytes).
+    avatar-size: 2000000
+
+    # Maximum background size (in bytes).
+    background-size: 4000000
+
+    # Maximum banner size (in bytes).
+    banner-size: 4000000
+
+    # General upload limit (in bytes).
+    general-upload-size: 16000000
+
+  # Whether registrations are enabled.
+  registrations: true
+
 # Federation configuration.
 federation:
   # Whether federation is enabled at all.
