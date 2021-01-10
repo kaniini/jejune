@@ -43,6 +43,8 @@ class RDFStore:
     def fetch_cached(self, uri: str) -> str:
         path = self.path_for_uri(uri)
 
+        logging.debug('Trying RDF store path: %s', path)
+
         try:
             st = os.stat(path)
 
