@@ -1,4 +1,5 @@
 from .user import User
+from .app import App
 from .activity_pub.actor import Actor
 
 
@@ -6,6 +7,7 @@ class UserAPI:
     def __init__(self, app):
         self.app = app
         self.store = app.userns
+        self.app_store = app.appns
         self.rdf_store = app.rdf_store
 
     def create_user(self, description: str, actor_type: str, username: str, email: str, password: str, bio: str, locked: bool) -> User:
@@ -25,3 +27,10 @@ class UserAPI:
 
     def find_user(self, username: str) -> User:
         return self.store.fetch(username, 'base')
+
+    def create_app(self, client_name: str, redirect_uris: str, website: str) -> App:
+        app = App.new(client_name, redirect_uris, website)
+        self.app_store.put(app.client_id, 'base', app)
+
+    def find_app(self, client_id: str) -> App:
+        return self.app_store.fetch(client_id, 'base')
