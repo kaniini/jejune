@@ -76,10 +76,12 @@ class UserDBNamespace:
     def __repr__(self):
         return "<UserDBNamespace: {0} [{1}]>".format(self.namespace, self.klass.__name__)
 
-    def fetch(self, topic: str, item: str) -> str:
+    def fetch(self, topic: str, item: str, deserializer=None) -> str:
         data = self.store.fetch_topic(self.namespace, topic, item)
         if not data:
             return None
+        if deserializer:
+            return deserializer(data)
         return self.klass.deserialize(data)
 
     def put(self, topic: str, item: str, object):
