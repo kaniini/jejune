@@ -16,3 +16,6 @@ if 'JEJUNE_CONFIG' not in os.environ:
 
 
 app = application_factory.Application(os.environ['JEJUNE_CONFIG'])
+
+
+from . import web
