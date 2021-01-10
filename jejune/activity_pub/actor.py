@@ -11,7 +11,10 @@ class Actor(AS2Object):
                'id': user.actor_uri,
                'summary': user.bio,
                'manuallyApprovesFollowers': user.locked,
-               'publicKey': user.get_public_key()}
+               'publicKey': user.get_public_key(),
+               'inbox': user.inbox_uri,
+               'outbox': user.outbox_uri,
+               'sharedInbox': user.shared_inbox_uri}
         return cls(**obj)
 
 

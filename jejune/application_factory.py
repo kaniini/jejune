@@ -6,7 +6,7 @@ import uuid
 from .config import load_config
 from .rdf_store import RDFStore
 from .userdb_store import UserDBStore, UserDBNamespace
-from .user import User, Token
+from .user import User, Token, Mailbox
 from .app import App
 from .user_api import UserAPI
 
@@ -20,6 +20,8 @@ class Application(aiohttp.web.Application):
         self.userns = UserDBNamespace(self, 'User', User)
         self.appns = UserDBNamespace(self, 'App', App)
         self.tokenns = UserDBNamespace(self, 'Token', Token)
+        self.inboxns = UserDBNamespace(self, 'Inbox', Mailbox)
+        self.outboxns = UserDBNamespace(self, 'Outbox', Mailbox)
         self.userapi = UserAPI(self)
 
     @property
@@ -30,9 +32,29 @@ class Application(aiohttp.web.Application):
         while True:
             object_uuid = str(uuid.uuid4())
 
-            uri = self.rdf_object_uri_for(object_uuid)
+            uri = self.object_uri_for(object_uuid, 'object')
             if not self.rdf_store.local_uri_exists(uri):
                 return uri
 
-    def rdf_object_uri_for(self, object_uuid):
-        return str().join(['https://', self.hostname, '/.well-known/jejune/object/', object_uuid])
+    def object_uri_for(self, object_uuid, object_type):
+        return str().join(['https://', self.hostname, '/.well-known/jejune/', object_type, '/', object_uuid])
+
+    @property
+    def shared_inbox_uri(self):
+        return str().join(['https://', self.hostname, '/.well-known/jejune/sharedinbox'])
+
+    def inbox_uri(self):
+        while True:
+            object_uuid = str(uuid.uuid4())
+
+            uri = self.object_uri_for(object_uuid, 'inbox')
+            if not self.inboxns.exists(object_uuid, 'base'):
+                return uri
+
+    def outbox_uri(self):
+        while True:
+            object_uuid = str(uuid.uuid4())
+
+            uri = self.object_uri_for(object_uuid, 'outbox')
+            if not self.outboxns.exists(object_uuid, 'base'):
+                return uri

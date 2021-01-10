@@ -22,6 +22,9 @@ class User(Serializable):
         kwargs['actor_uri'] = actor_uri
         kwargs['password'] = crypted_pass
         kwargs['privateKey'] = generate_private_key()
+        kwargs['shared_inbox_uri'] = app.shared_inbox_uri
+        kwargs['inbox_uri'] = app.inbox_uri()
+        kwargs['outbox_uri'] = app.outbox_uri()
 
         return cls(**kwargs)
 
@@ -44,6 +47,12 @@ class User(Serializable):
     def serialize_to_mastodon(self):
         return {
         }
+
+
+class Mailbox(Serializable):
+    @classmethod
+    def new(cls, user: User) -> Serializable:
+        return cls(user=user.username)
 
 
 class Token(Serializable):
