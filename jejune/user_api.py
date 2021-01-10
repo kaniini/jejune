@@ -32,5 +32,7 @@ class UserAPI:
         app = App.new(client_name, redirect_uris, website)
         self.app_store.put(app.client_id, 'base', app)
 
+        return app
+
     def find_app(self, client_id: str) -> App:
         return self.app_store.fetch(client_id, 'base')
