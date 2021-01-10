@@ -29,6 +29,15 @@ instance:
   # The hostname of the instance, used for generating URIs, etc.
   hostname: misconfigured.example
 
+  # The data returned by the Pleroma frontend_configurations API.
+  frontend-configurations:
+    pleroma_fe:
+      alwaysShowSubjectInput: true,
+      background: "/static/aurora_borealis.jpg"
+      collapseMessageWithSubject: true
+      loginMethod: password
+      subjectLineBehavior: email
+
 # Federation configuration.
 federation:
   # Whether federation is enabled at all.

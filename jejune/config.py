@@ -26,6 +26,7 @@ def get_instance(yaml_file: dict) -> dict:
     return {
         'name': instance.get('name', 'A Misconfigured Jejune Instance'),
         'hostname': instance.get('hostname', 'misconfigured.example'),
+        'frontend-configurations': instance.get('frontend-configurations', dict()),
     }
 
 
