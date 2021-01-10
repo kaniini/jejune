@@ -1,0 +1,111 @@
+from async_timeout import timeout
+
+import aiohttp
+import hashlib
+import logging
+import os
+import simplejson
+import time
+import urllib.parse
+
+
+class RDFStore:
+    def __init__(self, app):
+        self.app = app
+        self.path = self.app.config['paths']['rdf']
+
+    def __repr__(self):
+        return "<RDF Store: {0}>".format(self.path)
+
+    def hash_for_uri(self, uri: str) -> str:
+        parse_result = urllib.parse.urlparse(uri)
+
+        key = str().join([parse_result.netloc, ':', parse_result.path])
+        return hashlib.sha256(key.encode('utf-8')).hexdigest()
+
+    def directory_for_hash(self, hashed: str) -> str:
+        return '/'.join([self.path, hashed[0:2], hashed[2:4]])
+
+    def path_for_hash(self, hashed: str) -> str:
+        return '/'.join([self.directory_for_hash(hashed), hashed])
+
+    def path_for_uri(self, uri: str) -> str:
+        return self.path_for_hash(self.hash_for_uri(uri))
+
+    def make_parents_for_hash(self, hashed: str):
+        path_mode = 0o755
+        os.makedirs(self.directory_for_hash(hashed), path_mode, True)
+
+    def uri_is_local(self, uri: str) -> bool:
+        parse_result = urllib.parse.urlparse(uri)
+        return parse_result.netloc == self.app.config['instance'].get('hostname')
+
+    def fetch_cached(self, uri: str) -> str:
+        path = self.path_for_uri(uri)
+
+        try:
+            st = os.stat(path)
+
+            with open(path, 'r') as f:
+                return (f.read(), st.st_mtime)
+        except:
+            return (None, 0)
+
+    def put_entry(self, uri: str, entry: str):
+        hashed = self.hash_for_uri(uri)
+        self.make_parents_for_hash(hashed)
+
+        path = self.path_for_hash(hashed)
+        with open(path, 'w') as f:
+            f.write(entry)
+
+    async def fetch_remote(self, uri: str) -> str:
+        logging.debug('Fetching uncached remote object: %s', uri)
+
+        headers = {
+            'Accept': 'application/activity+json'
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with timeout(5.0):
+                async with session.get(uri, headers=headers) as response:
+                    if response.status != 200:
+                        return None
+                    return (await response.text())
+
+        return None
+
+    async def fetch_remote_to_cache(self, uri: str) -> str:
+        entry = await self.fetch_remote(uri)
+
+        if not entry:
+            return None
+
+        self.put_entry(uri, entry)
+        return entry
+
+    async def fetch(self, uri: str) -> str:
+        logging.debug('Fetching object: %s', uri)
+
+        (entry, mtime) = self.fetch_cached(uri)
+
+        logging.debug('Got %r from fetch_cached', entry)
+
+        if self.uri_is_local(uri):
+            logging.debug('Returning local object: %s', uri)
+            return entry
+
+        # XXX: make reupdate configurable
+        if time.time() - mtime > 172800 or not entry:
+            return (await self.fetch_remote_to_cache(uri))
+
+        return entry
+
+    async def fetch_json(self, uri: str) -> dict:
+        entry = await self.fetch(uri)
+
+        try:
+            return simplejson.loads(entry)
+        except:
+            logging.info('Failed to load JSON from URI: %s', uri)
+            return None
