@@ -55,8 +55,10 @@ class RDFStore:
         except:
             return False
 
-    def fetch_cached(self, uri: str) -> str:
-        path = self.path_for_uri(uri)
+    def fetch_hash(self, hashed: str) -> str:
+        logging.debug('Fetching hash: %s', hashed)
+
+        path = self.path_for_hash(hashed)
 
         logging.debug('Trying RDF store path: %s', path)
 
@@ -67,6 +69,9 @@ class RDFStore:
                 return (f.read(), st.st_mtime)
         except:
             return (None, 0)
+
+    def fetch_cached(self, uri: str) -> str:
+        return self.fetch_hash(self.hash_for_uri(uri))
 
     def put_entry(self, uri: str, entry: str):
         hashed = self.hash_for_uri(uri)
@@ -125,4 +130,13 @@ class RDFStore:
             return simplejson.loads(entry)
         except:
             logging.info('Failed to load JSON from URI: %s', uri)
+            return None
+
+    def fetch_hash_json(self, hashed: str) -> dict:
+        entry = self.fetch_hash(hashed)
+
+        try:
+            return simplejson.loads(entry)
+        except:
+            logging.info('Failed to load JSON from hash: %s', hashed)
             return None
