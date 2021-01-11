@@ -15,4 +15,5 @@ class Serializable:
         return cls(**properties)
 
     def serialize(self, method=simplejson.dumps):
-        return method(self.__dict__)
+        values = {k: v for k, v in self.__dict__.items() if not k.startswith('__')}
+        return method(values)
