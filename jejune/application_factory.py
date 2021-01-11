@@ -9,6 +9,7 @@ from .userdb_store import UserDBStore, UserDBNamespace
 from .user import User, Token, Mailbox
 from .app import App
 from .user_api import UserAPI
+from .common_api import CommonAPI
 
 
 from .middleware.oauth import oauth_middleware
@@ -25,6 +26,7 @@ class Application(aiohttp.web.Application):
         self.tokenns = UserDBNamespace(self, 'Token', Token)
         self.mailboxns = UserDBNamespace(self, 'Mailbox', Mailbox)
         self.userapi = UserAPI(self)
+        self.commonapi = CommonAPI(self)
 
     @property
     def hostname(self):
