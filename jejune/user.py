@@ -47,6 +47,21 @@ class User(Serializable):
 
     def serialize_to_mastodon(self):
         return {
+            'id': self.username,
+            'username': self.username,
+            'acct': self.username,
+            'locked': self.locked,
+            'note': self.bio,
+            'url': self.actor_uri,
+            'avatar': getattr(self, 'avatar', None),
+            'avatar_static': getattr(self, 'avatar_static', None),
+            'header': getattr(self, 'header', None),
+            'header_static': getattr(self, 'header_static', None),
+            'emojis': [],
+            'fields': [],
+            'display_name': self.description,
+            'bot': self.actor_type in ['Application', 'Service'],
+            'following_count': 0,
         }
 
     def login(self):

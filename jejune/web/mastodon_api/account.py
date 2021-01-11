@@ -34,4 +34,12 @@ async def new_accounts(request):
     return json_response(token.serialize(dict))
 
 
+@routes.get('/api/v1/accounts/verify_credentials')
+async def verify_credentials(request):
+    if not request['oauth_user']:
+        return json_response({'error': 'no oauth session found'}, status=400)
+
+    return json_response(request['oauth_user'].serialize_to_mastodon())
+
+
 app.add_routes(routes)
