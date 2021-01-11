@@ -9,10 +9,16 @@ import time
 import urllib.parse
 
 
+from cachetools import TTLCache
+
+
 class RDFStore:
     def __init__(self, app):
         self.app = app
         self.path = self.app.config['paths']['rdf']
+
+        # XXX: make RDF filesystem cache parameters configurable
+        self.cache = TTLCache(32768, 3600)
 
     def __repr__(self):
         return "<RDF Store: {0}>".format(self.path)
@@ -55,7 +61,10 @@ class RDFStore:
         except:
             return False
 
-    def fetch_hash(self, hashed: str) -> str:
+    def fetch_hash(self, hashed: str) -> (str, float):
+        if hashed in self.cache:
+            return self.cache[hashed]
+
         logging.debug('Fetching hash: %s', hashed)
 
         path = self.path_for_hash(hashed)
@@ -66,7 +75,8 @@ class RDFStore:
             st = os.stat(path)
 
             with open(path, 'r') as f:
-                return (f.read(), st.st_mtime)
+                self.cache[hashed] = (f.read(), st.st_mtime)
+                return self.cache[hashed]
         except:
             return (None, 0)
 
@@ -75,6 +85,8 @@ class RDFStore:
 
     def put_entry(self, uri: str, entry: str):
         hashed = self.hash_for_uri(uri)
+        self.cache[hashed] = (entry, time.time())
+
         self.make_parents_for_hash(hashed)
 
         path = self.path_for_hash(hashed)
