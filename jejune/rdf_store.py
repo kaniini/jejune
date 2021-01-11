@@ -44,7 +44,10 @@ class RDFStore:
         if not self.uri_is_local(uri):
             return False
 
-        path = self.path_for_uri(uri)
+        return self.hash_exists(self.hash_for_uri(uri))
+
+    def hash_exists(self, hashed: str) -> bool:
+        path = self.path_for_hash(hashed)
 
         try:
             st = os.stat(path)
