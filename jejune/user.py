@@ -26,6 +26,9 @@ class User(Serializable):
         kwargs['shared_inbox_uri'] = app.shared_inbox_uri
         kwargs['inbox_uri'] = app.inbox_uri()
         kwargs['outbox_uri'] = app.outbox_uri()
+        kwargs['followers_uri'] = app.object_uri('collection')
+        kwargs['following_uri'] = app.object_uri('collection')
+        kwargs['petname'] = app.username_to_petname(kwargs['username'])
 
         return cls(**kwargs)
 

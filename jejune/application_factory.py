@@ -32,7 +32,7 @@ class Application(aiohttp.web.Application):
     def hostname(self):
         return self.config['instance']['hostname']
 
-    def object_uri(self, object_type):
+    def object_uri(self, object_type: str) -> str:
         while True:
             object_uuid = str(uuid.uuid4())
 
@@ -40,28 +40,21 @@ class Application(aiohttp.web.Application):
             if not self.rdf_store.local_uri_exists(uri):
                 return uri
 
-    def object_uri_for(self, object_uuid, object_type):
+    def object_uri_for(self, object_uuid: str, object_type: str) -> str:
         return str().join(['https://', self.hostname, '/.well-known/jejune/', object_type, '/', object_uuid])
 
-    def rdf_object_uri(self):
+    def rdf_object_uri(self) -> str:
         return self.object_uri('object')
 
     @property
     def shared_inbox_uri(self):
         return str().join(['https://', self.hostname, '/.well-known/jejune/sharedinbox'])
 
-    def inbox_uri(self):
-        while True:
-            object_uuid = str(uuid.uuid4())
+    def inbox_uri(self) -> str:
+        return self.object_uri('inbox')
 
-            uri = self.object_uri_for(object_uuid, 'inbox')
-            if not self.mailboxns.exists(object_uuid, 'inbox'):
-                return uri
+    def outbox_uri(self) -> str:
+        return self.object_uri('outbox')
 
-    def outbox_uri(self):
-        while True:
-            object_uuid = str(uuid.uuid4())
-
-            uri = self.object_uri_for(object_uuid, 'outbox')
-            if not self.mailboxns.exists(object_uuid, 'outbox'):
-                return uri
+    def username_to_petname(self, username: str) -> str:
+        return '@'.join([username, self.hostname])
