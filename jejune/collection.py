@@ -28,6 +28,6 @@ class TypedCollection(Collection):
         return method(data)
 
     @classmethod
-    def deserialize(cls, json_data) -> Collection:
+    def deserialize(cls, json_data: str) -> Collection:
         data = simplejson.loads(json_data)
         return cls(items=[cls.__child_type__(**obj) for obj in data[cls.__item_key__]])
