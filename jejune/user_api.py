@@ -23,7 +23,6 @@ class UserAPI:
         self.store.put(u.username, 'base', u)
 
         actor = Actor.new_from_user(u)
-        self.rdf_store.put_entry(u.actor_uri, actor.serialize())
 
         inbox = Mailbox.new(u)
         self.mailbox_store.put(u.inbox_uri.split('/')[-1], 'inbox', inbox)

@@ -33,6 +33,8 @@ class AS2Object(Serializable):
 
         super(AS2Object, self).__init__(**header, **kwargs)
 
+        self.commit()
+
     @property
     def jsonld_context(self):
         return getattr(self, '@context')
@@ -51,3 +53,11 @@ class AS2Object(Serializable):
         if data['type'] != cls.__jsonld_type__:
             return None
         return cls(**data)
+
+    @classmethod
+    async def fetch_from_uri(cls, uri):
+        data = await get_jejune_app().rdf_store.fetch_json(uri)
+        return cls.deserialize_from_json(data)
+
+    def commit(self):
+        get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
