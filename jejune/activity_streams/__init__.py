@@ -11,8 +11,11 @@ AS2_CONTEXT = [
 
 
 class AS2Object(Serializable):
+    __jsonld_type__ = 'Object'
+
     def __init__(self, **kwargs):
         kwargs['@context'] = AS2_CONTEXT
+        kwargs['type'] = self.__jsonld_type__
         super(AS2Object, self).__init__(**kwargs)
 
     @property
@@ -30,6 +33,6 @@ class AS2Object(Serializable):
 
     @classmethod
     def deserialize_from_json(cls, data: dict) -> Serializable:
-        if data['type'] != cls.__name__:
+        if data['type'] != cls.__jsonld_type__:
             return None
         return cls(**data)
