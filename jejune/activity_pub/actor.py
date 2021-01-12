@@ -14,7 +14,9 @@ class Actor(AS2Object):
                'publicKey': user.get_public_key(),
                'inbox': user.inbox_uri,
                'outbox': user.outbox_uri,
-               'sharedInbox': user.shared_inbox_uri}
+               'endpoints': {
+                   'sharedInbox': user.shared_inbox_uri,
+               }}
         return cls(**obj)
 
 
