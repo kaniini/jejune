@@ -16,7 +16,8 @@ class Actor(AS2Object):
                'outbox': user.outbox_uri,
                'endpoints': {
                    'sharedInbox': user.shared_inbox_uri,
-               }}
+               },
+               'petName': user.username}
         return cls(**obj)
 
 

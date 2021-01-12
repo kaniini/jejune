@@ -7,6 +7,9 @@ from ..serializable import Serializable
 AS2_CONTEXT = [
     'https://www.w3.org/ns/activitystreams',
     'https://w3id.org/security/v1',
+    {'jejune': 'https://jejune.dereferenced.org/ns#',
+     'graphIdentity': 'jejune:graphIdentity',
+     'petName': 'jejune:petName'},
 ]
 
 
