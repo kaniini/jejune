@@ -11,12 +11,18 @@ AS2_CONTEXT = [
 
 
 class AS2Object(Serializable):
+    __jsonld_context__ = AS2_CONTEXT
     __jsonld_type__ = 'Object'
 
     def __init__(self, **kwargs):
-        kwargs['@context'] = AS2_CONTEXT
+        header = {'@context': self.__jsonld_context__}
         kwargs['type'] = self.__jsonld_type__
-        super(AS2Object, self).__init__(**kwargs)
+
+        if '@context' in kwargs:
+            super(AS2Object, self).__init__(**kwargs)
+            return
+
+        super(AS2Object, self).__init__(**header, **kwargs)
 
     @property
     def jsonld_context(self):
