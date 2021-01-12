@@ -7,7 +7,7 @@ routes = RouteTableDef()
 
 @routes.get('/.well-known/jejune/object/{uuid}')
 async def object(request):
-     uri = app.rdf_object_uri_for(request.match_info['uuid'])
+     uri = app.object_uri_for(request.match_info['uuid'], 'object')
      if not app.rdf_store.local_uri_exists(uri):
          return json_response({'error': 'object not found'}, status=404)
 
