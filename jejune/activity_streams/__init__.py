@@ -61,3 +61,14 @@ class AS2Object(Serializable):
 
     def commit(self):
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
+
+    @classmethod
+    def create_if_not_exists(cls, uri: str, **kwargs) -> Serializable:
+        app = get_jejune_app()
+        hashed = app.rdf_store.hash_for_uri(uri)
+
+        if app.rdf_store.hash_exists(hashed):
+            data = app.rdf_store.fetch_hash_json(hashed)
+            return cls.deserialize_from_json(data)
+
+        return cls(**kwargs, id=uri)
