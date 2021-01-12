@@ -1,5 +1,7 @@
 # Jejune.
 
+![Matrix](https://img.shields.io/matrix/jejune:ariadne.space?logo=matrix&server_fqdn=dendrite.ariadne.space&style=for-the-badge)
+
 Jejune is a work in progress ActivityPub server designed to use constructions
 which provide functional security and resilience.  Unlike most other
 implementations, Jejune does not use SQL databases, but instead uses a
