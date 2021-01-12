@@ -12,7 +12,5 @@ def test_object():
     assert foo_dict['type'] == 'TestObject'
     assert foo_dict['name'] == 'Foo'
 
-    assert foo.serialize() == '{"@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"], "name": "Foo", "type": "TestObject"}'
-
     foo2 = TestObject.deserialize(foo.serialize())
     assert foo.serialize() == foo2.serialize()

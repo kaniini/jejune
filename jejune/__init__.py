@@ -10,6 +10,13 @@ import aiohttp.web
 import os
 
 
+app = None
+
+def get_jejune_app():
+    global app
+    return app
+
+
 from . import application_factory
 
 

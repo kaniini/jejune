@@ -32,16 +32,19 @@ class Application(aiohttp.web.Application):
     def hostname(self):
         return self.config['instance']['hostname']
 
-    def rdf_object_uri(self):
+    def object_uri(self, object_type):
         while True:
             object_uuid = str(uuid.uuid4())
 
-            uri = self.object_uri_for(object_uuid, 'object')
+            uri = self.object_uri_for(object_uuid, object_type)
             if not self.rdf_store.local_uri_exists(uri):
                 return uri
 
     def object_uri_for(self, object_uuid, object_type):
         return str().join(['https://', self.hostname, '/.well-known/jejune/', object_type, '/', object_uuid])
+
+    def rdf_object_uri(self):
+        return self.object_uri('object')
 
     @property
     def shared_inbox_uri(self):

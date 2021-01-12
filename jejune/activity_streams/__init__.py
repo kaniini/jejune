@@ -1,6 +1,7 @@
 import simplejson
 
 
+from .. import get_jejune_app
 from ..serializable import Serializable
 
 
@@ -8,7 +9,7 @@ AS2_CONTEXT = [
     'https://www.w3.org/ns/activitystreams',
     'https://w3id.org/security/v1',
     {'jejune': 'https://jejune.dereferenced.org/ns#',
-     'graphIdentity': 'jejune:graphIdentity',
+     'storeIdentity': 'jejune:storeIdentity',
      'petName': 'jejune:petName'},
 ]
 
@@ -20,6 +21,11 @@ class AS2Object(Serializable):
     def __init__(self, **kwargs):
         header = {'@context': self.__jsonld_context__}
         kwargs['type'] = self.__jsonld_type__
+
+        if 'id' not in kwargs:
+            kwargs['id'] = get_jejune_app().rdf_object_uri()
+
+        kwargs['storeIdentity'] = get_jejune_app().rdf_store.hash_for_uri(kwargs['id'])
 
         if '@context' in kwargs:
             super(AS2Object, self).__init__(**kwargs)
