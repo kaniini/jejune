@@ -5,6 +5,9 @@ from .serializable import Serializable
 
 
 class Collection(Serializable):
+    def __repr__(self):
+        return '<{0}: {1} items>'.format(type(self).__name__, len(self.items))
+
     @classmethod
     def new(cls):
         return cls(items=[])
