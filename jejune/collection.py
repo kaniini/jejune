@@ -6,6 +6,7 @@ from .serializable import Serializable
 
 class Collection(Serializable):
     __item_key__ = 'items'
+    __items__ = []
 
     def __repr__(self):
         return '<{0}: {1} items>'.format(type(self).__name__, len(self.__items__))
