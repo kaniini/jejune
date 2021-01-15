@@ -20,6 +20,9 @@ class AS2TypeRegistry:
     def register(self, typename: str, klass: type):
         self.__types__[typename] = klass
 
+    def register_type(self, klass: type):
+        self.register(klass.__jsonld_type__, klass)
+
     def type_from_json(self, data: dict, default=None) -> type:
         return self.__types__.get(data.get('type', 'Object'), default)
 

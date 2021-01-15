@@ -1,4 +1,4 @@
-from ..activity_streams import AS2Object
+from ..activity_streams import AS2Object, registry
 from ..activity_streams.collection import AS2Collection
 from ..user import User
 
@@ -33,20 +33,27 @@ class Actor(AS2Object):
 
 
 class Person(Actor):
-    pass
+    __jsonld_type__ = 'Person'
 
 
 class Organization(Actor):
-    pass
+    __jsonld_type__ = 'Organization'
 
 
 class Application(Actor):
-    pass
+    __jsonld_type__ = 'Application'
 
 
 class Service(Actor):
-    pass
+    __jsonld_type__ = 'Service'
 
 
 class Group(Actor):
-    pass
+    __jsonld_type__ = 'Group'
+
+
+registry.register_type(Person)
+registry.register_type(Organization)
+registry.register_type(Application)
+registry.register_type(Service)
+registry.register_type(Group)
