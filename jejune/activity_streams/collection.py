@@ -16,6 +16,14 @@ def handle_pointer(cls, obj):
 class AS2Collection(AS2Object, TypedCollection):
     __jsonld_type__ = 'Collection'
 
+    def serialize(self, method=simplejson.dumps, flatten_pointers=False):
+        if not flatten_pointers:
+            return super().serialize(method)
+
+        obj = {k: v for k, v in self.__dict__.items()}
+        obj[self.__item_key__] = [obj.id for obj in self.__items__]
+        return method(obj)
+
     @classmethod
     def deserialize_from_json(cls, data: dict) -> AS2Object:
         if data['type'] != cls.__jsonld_type__:
