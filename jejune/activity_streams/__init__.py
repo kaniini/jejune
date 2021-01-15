@@ -72,3 +72,14 @@ class AS2Object(Serializable):
             return cls.deserialize_from_json(data)
 
         return cls(**kwargs, id=uri)
+
+    async def dereference(self, klass=None) -> Serializable:
+        return self
+
+
+class AS2Pointer:
+    def __init__(self, uri: str):
+        self.uri = uri
+
+    async def dereference(self, klass=AS2Object) -> Serializable:
+        return (await klass.fetch_from_uri(self.uri))
