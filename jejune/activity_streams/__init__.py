@@ -102,3 +102,7 @@ class AS2Pointer:
 
     async def dereference(self) -> Serializable:
         return (await AS2Object.fetch_from_uri(self.uri))
+
+    @classmethod
+    def pointerize(cls, obj: AS2Object):
+        return cls(obj.id)
