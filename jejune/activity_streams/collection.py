@@ -1,5 +1,16 @@
-from . import AS2Object
+import asyncio
+
+
+from . import AS2Object, AS2Pointer
 from ..collection import TypedCollection
+
+
+def handle_pointer(cls, obj):
+    if type(obj) == dict:
+        return cls.__child_type__.deserialize_from_json(obj)
+    else if type(obj) == str:
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(AS2Pointer(obj).dereference())
 
 
 class AS2Collection(AS2Object, TypedCollection):
@@ -11,7 +22,7 @@ class AS2Collection(AS2Object, TypedCollection):
             return None
 
         items = data.pop(cls.__item_key__)
-        return cls(**data, __items__=[cls.__child_type__.deserialize_from_json(obj) for obj in items])
+        return cls(**data, __items__=[handle_pointer(cls, obj) for obj in items])
 
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> AS2Object:
