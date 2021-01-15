@@ -14,6 +14,18 @@ AS2_CONTEXT = [
 ]
 
 
+class AS2TypeRegistry:
+    __types__ = {}
+
+    def register(self, typename: str, klass: type):
+        self.__types__[typename] = klass
+
+    def type_from_json(self, data: dict, default=None) -> type:
+        return self.__types__.get(data.get('type', 'Object'), default)
+
+registry = AS2TypeRegistry()
+
+
 class AS2Object(Serializable):
     __jsonld_context__ = AS2_CONTEXT
     __jsonld_type__ = 'Object'
@@ -56,8 +68,12 @@ class AS2Object(Serializable):
 
     @classmethod
     async def fetch_from_uri(cls, uri):
+        global registry
+
         data = await get_jejune_app().rdf_store.fetch_json(uri)
-        return cls.deserialize_from_json(data)
+        basetype = registry.type_from_json(data, cls)
+
+        return basetype.deserialize_from_json(data)
 
     def commit(self):
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
@@ -73,7 +89,7 @@ class AS2Object(Serializable):
 
         return cls(**kwargs, id=uri)
 
-    async def dereference(self, klass=None) -> Serializable:
+    async def dereference(self) -> Serializable:
         return self
 
 
@@ -81,5 +97,5 @@ class AS2Pointer:
     def __init__(self, uri: str):
         self.uri = uri
 
-    async def dereference(self, klass=AS2Object) -> Serializable:
-        return (await klass.fetch_from_uri(self.uri))
+    async def dereference(self) -> Serializable:
+        return (await AS2Object.fetch_from_uri(self.uri))
