@@ -36,7 +36,7 @@ class PublisherRequest:
     def handle_actor(self, actor: Actor):
         if actor.local():
             self.publisher.add_activity(self.activity, actor.inbox, LOCAL_DELIVERY)
-            return
+            return self.completed()
 
         self.publisher.add_activity(self.activity, actor.inbox, AP_INBOX)
         return self.completed()
