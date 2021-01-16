@@ -95,6 +95,8 @@ class AS2Object(Serializable):
     async def dereference(self) -> Serializable:
         return self
 
+registry.register_type(AS2Object)
+
 
 class AS2Pointer:
     def __init__(self, uri: str):
@@ -109,3 +111,25 @@ class AS2Pointer:
 
     def serialize(self):
         return obj.id
+
+
+class AS2Activity(AS2Object):
+    __jsonld_type__ = 'Activity'
+
+    def __init__(self, **kwargs):
+        if 'object' in kwargs and type(kwargs['object']) != str:
+            child_obj = kwargs.pop('object')
+            if type(child_obj) == dict:
+                kwargs['object'] = child_obj.get('id', get_jejune_app().rdf_object_uri())
+            else:
+                kwargs['object'] = getattr(childobj, 'id', get_jejune_app().rdf_object_uri())
+
+        super().__init__(**kwargs)
+
+    async def child(self) -> AS2Object:
+        if not self.object:
+            return None
+
+        return (await AS2Pointer(self.object).dereference())
+
+registry.register_type(AS2Activity)
