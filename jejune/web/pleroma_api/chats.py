@@ -5,7 +5,7 @@ from aiohttp.web import RouteTableDef, json_response
 routes = RouteTableDef()
 
 
-@routes.get('/api/pleroma/chats')
+@routes.get('/api/v1/pleroma/chats')
 def chats(request):
     return json_response([])
 
