@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import simplejson
 
 
@@ -15,13 +16,15 @@ def handle_pointer(cls, obj):
 
 class AS2Collection(AS2Object, TypedCollection):
     __jsonld_type__ = 'Collection'
+    __child_type__ = AS2Object
 
-    def serialize(self, method=simplejson.dumps, flatten_pointers=False):
+    def serialize(self, method=simplejson.dumps, flatten_pointers=True):
         if not flatten_pointers:
             return super().serialize(method)
 
-        obj = {k: v for k, v in self.__dict__.items()}
+        obj = {k: v for k, v in self.__dict__.items() if not k.startswith('__')}
         obj[self.__item_key__] = [obj.id for obj in self.__items__]
+
         return method(obj)
 
     @classmethod

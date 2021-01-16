@@ -1,6 +1,7 @@
 import asyncio
 
 
+from .activity_streams.collection import AS2Collection
 from .activity_streams.object import Note
 from .activity_pub.actor import Actor
 from .activity_pub.verbs import Create
@@ -17,6 +18,10 @@ class CommonAPIError(Exception):
 class CommonAPI:
     def __init__(self, app):
         self.app = app
+        asyncio.ensure_future(self.ensure_shared_inbox())
+
+    async def ensure_shared_inbox(self):
+        coll = AS2Collection.create_if_not_exists(self.app.shared_inbox_uri)
 
     def post(self, actor: Actor, **kwargs) -> Create:
         status = kwargs.get('status')

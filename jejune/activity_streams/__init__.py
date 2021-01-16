@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import simplejson
 import time
 
@@ -71,18 +72,22 @@ class AS2Object(Serializable):
 
     @classmethod
     def deserialize_from_json(cls, data: dict) -> Serializable:
+        global registry
+
         if data['type'] != cls.__jsonld_type__:
-            return None
+            basetype = registry.type_from_json(data, cls)
+
+            if not basetype:
+                return None
+
+            return basetype.deserialize_from_json(data)
+
         return cls(**data)
 
     @classmethod
     async def fetch_from_uri(cls, uri):
-        global registry
-
         data = await get_jejune_app().rdf_store.fetch_json(uri)
-        basetype = registry.type_from_json(data, cls)
-
-        return basetype.deserialize_from_json(data)
+        return cls.deserialize_from_json(data)
 
     @classmethod
     def fetch_cached_from_uri(cls, uri):
@@ -93,14 +98,10 @@ class AS2Object(Serializable):
 
     @classmethod
     def fetch_from_hash(cls, hashed):
-        global registry
-
         app = get_jejune_app()
 
         data = app.rdf_store.fetch_hash_json(hashed)
-        basetype = registry.type_from_json(data, cls)
-
-        return basetype.deserialize_from_json(data)
+        return cls.deserialize_from_json(data)
 
     def commit(self):
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
@@ -108,6 +109,8 @@ class AS2Object(Serializable):
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> Serializable:
         app = get_jejune_app()
+        logging.info('app = %r', app)
+
         hashed = app.rdf_store.hash_for_uri(uri)
 
         if app.rdf_store.hash_exists(hashed):
@@ -121,6 +124,9 @@ class AS2Object(Serializable):
 
     def local(self):
         return get_jejune_app().rdf_store.local_uri_exists(self.id)
+
+    def remote(self):
+        return not self.local()
 
     def serialize_to_mastodon(self):
         return {'error': 'serialization to mastodon format is not supported for this type',

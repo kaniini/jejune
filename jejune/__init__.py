@@ -11,10 +11,11 @@ import os
 
 
 app = None
+JEJUNE_APP = None
 
 def get_jejune_app():
-    global app
-    return app
+    global JEJUNE_APP
+    return JEJUNE_APP
 
 
 from . import application_factory
@@ -25,7 +26,7 @@ if 'JEJUNE_CONFIG' not in os.environ:
     exit()
 
 
-app = application_factory.Application(os.environ['JEJUNE_CONFIG'])
+app = JEJUNE_APP = application_factory.Application(os.environ['JEJUNE_CONFIG'])
 
 
 from . import web
