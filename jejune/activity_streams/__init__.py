@@ -106,3 +106,6 @@ class AS2Pointer:
     @classmethod
     def pointerize(cls, obj: AS2Object):
         return cls(obj.id)
+
+    def serialize(self):
+        return obj.id
