@@ -162,4 +162,12 @@ class AS2Activity(AS2Object):
         if self.local():
             await self.publish()
 
+    def serialize_to_mastodon(self):
+        child = self.child()
+
+        if child:
+            return child.serialize_to_mastodon()
+
+        return super().serialize_to_mastodon()
+
 registry.register_type(AS2Activity)
