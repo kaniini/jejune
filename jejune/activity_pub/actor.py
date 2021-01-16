@@ -25,6 +25,9 @@ class Actor(AS2Object):
         actor.fixate()
         return actor
 
+    def best_inbox(self):
+        return getattr(self, 'endpoints', {}).get('sharedInbox', self.inbox)
+
     def fixate(self):
         AS2Collection.create_if_not_exists(self.inbox)
         AS2Collection.create_if_not_exists(self.outbox)
