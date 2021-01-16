@@ -1,5 +1,5 @@
 from . import AS2Object, AS2Pointer, registry
-from .activity_pub.actor import Actor
+from ..activity_pub.actor import Actor
 
 
 class Note(AS2Object):
