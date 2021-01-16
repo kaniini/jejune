@@ -111,6 +111,9 @@ class AS2Object(Serializable):
     async def dereference(self) -> Serializable:
         return self
 
+    def local(self):
+        return get_jejune_app().rdf_store.local_uri_exists(self.id)
+
 registry.register_type(AS2Object)
 
 
@@ -152,6 +155,7 @@ class AS2Activity(AS2Object):
         pass
 
     async def apply_side_effects(self):
-        pass
+        if self.local():
+            await self.publish()
 
 registry.register_type(AS2Activity)

@@ -30,6 +30,8 @@ class CommonAPI:
                        cc=self.cc_for_scope(scope, actor, []),
                        audience=self.audience_for_scope(scope, actor, []))
 
+        asyncio.ensure_future(c.apply_side_effects())
+
         return c
 
     def to_for_scope(self, scope: str, actor: Actor, mentioned: list) -> list:
