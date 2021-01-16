@@ -1,4 +1,5 @@
 from ... import app, __version__
+from ..activity_streams.object import Note
 from aiohttp.web import RouteTableDef, Response, json_response
 
 
@@ -23,6 +24,20 @@ async def status_new(request):
                                          visibility=post.get('visibility', 'public'))
 
     return json_response(create_activity.serialize_to_mastodon())
+
+
+@routes.get('/api/v1/statuses/{id}')
+async def status_get(request):
+    _, hashed = request.match_info['id'].split('.', 2)
+
+    n = Note.fetch_from_hash(hashed)
+    if not n:
+        return json_response({'error': 'object not found'}, status=404)
+
+    if not n.visible_for(request.get('oauth_user', None)):
+        return json_response({'error': 'unauthorized'}, status=403)
+
+    return json_response(n.serialize_to_mastodon())
 
 
 app.add_routes(routes)
