@@ -10,8 +10,7 @@ def handle_pointer(cls, obj):
     if type(obj) == dict:
         return cls.__child_type__.deserialize_from_json(obj)
     elif type(obj) == str:
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(AS2Pointer(obj).dereference())
+        return AS2Pointer(obj).dereference()
 
 
 class AS2Collection(AS2Object, TypedCollection):

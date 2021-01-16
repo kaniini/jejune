@@ -83,6 +83,17 @@ class AS2Object(Serializable):
 
         return basetype.deserialize_from_json(data)
 
+    @classmethod
+    def fetch_cached_from_uri(cls, uri):
+        global registry
+
+        app = get_jejune_app()
+        hashed = app.rdf_store.hash_for_uri(uri)
+        data = app.rdf_store.fetch_hash_json(hashed)
+        basetype = registry.type_from_json(data, cls)
+
+        return basetype.deserialize_from_json(data)
+
     def commit(self):
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
 
@@ -107,8 +118,8 @@ class AS2Pointer:
     def __init__(self, uri: str):
         self.uri = uri
 
-    async def dereference(self) -> Serializable:
-        return (await AS2Object.fetch_from_uri(self.uri))
+    def dereference(self) -> Serializable:
+        return AS2Object.fetch_cached_from_uri(self.uri)
 
     @classmethod
     def pointerize(cls, obj: AS2Object):
@@ -131,11 +142,11 @@ class AS2Activity(AS2Object):
 
         super().__init__(**kwargs)
 
-    async def child(self) -> AS2Object:
+    def child(self) -> AS2Object:
         if not self.object:
             return None
 
-        return (await AS2Pointer(self.object).dereference())
+        return AS2Pointer(self.object).dereference()
 
     async def publish(self):
         pass
