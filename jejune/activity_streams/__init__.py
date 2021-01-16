@@ -114,6 +114,10 @@ class AS2Object(Serializable):
     def local(self):
         return get_jejune_app().rdf_store.local_uri_exists(self.id)
 
+    def serialize_to_mastodon(self):
+        return {'error': 'serialization to mastodon format is not supported for this type',
+                'type': self.__jsonld_type__}
+
 registry.register_type(AS2Object)
 
 
