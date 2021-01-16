@@ -22,7 +22,8 @@ class Note(AS2Object):
             'in_reply_to_id': getattr(reply, 'storeIdentity', None),
             'in_reply_to_account_id': getattr(reply_actor, 'storeIdentity', None),
             'sensitive': getattr(self, 'summary', None) is not None,
-            'spoiler_text': getattr(self, 'summary', None),
+            'spoiler_text': getattr(self, 'summary', None) or '',
+            'content': self.content,
             'visibility': 'public',    # XXX: scopes
             'language': 'en',          # XXX: languages
             'uri': self.id,
@@ -44,7 +45,7 @@ class Note(AS2Object):
             'mentions': [],            # XXX: mentions
             'tags': [],                # XXX: tags
             'emojis': [],              # XXX: emojis
-            'card': {},
+            'card': None,
             'poll': None,
         }
 
