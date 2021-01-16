@@ -185,7 +185,9 @@ class AS2Activity(AS2Object):
         return AS2Pointer(self.object).dereference()
 
     async def publish(self):
-        pass
+        app = get_jejune_app()
+
+        [app.publisher.add_activity(self, recipient) for recipient in self.get_audience()]
 
     def address_list(self, attrlist: str) -> list:
         addresses = getattr(self, attrlist, [])
@@ -195,13 +197,16 @@ class AS2Activity(AS2Object):
 
         return addresses
 
+    def get_audience(self):
+        return self.address_list('to') + self.address_list('cc')
+
     def fix_child_audience(self):
         child = self.child()
 
         if not child or child.audience:
             return
 
-        child.audience = self.address_list('to') + self.address_list('cc')
+        child.audience = self.get_audience()
         child.commit()
 
     async def apply_side_effects(self):
