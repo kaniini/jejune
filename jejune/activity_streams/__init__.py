@@ -121,6 +121,13 @@ class AS2Object(Serializable):
     def mastodon_id(self):
         return self.storeIdentity
 
+    def published_ts(self):
+        if not self.published:
+            return 0.0
+
+        st = time.strptime(self.published, '%Y-%m-%dT%H:%M:%SZ')
+        return time.mktime(st)
+
 registry.register_type(AS2Object)
 
 

@@ -5,6 +5,9 @@ from ..activity_pub.actor import Actor
 class Note(AS2Object):
     __jsonld_type__ = 'Note'
 
+    def mastodon_id(self):
+        return '{0:d}.{1}'.format(int(self.published_ts()), self.storeIdentity)
+
     def serialize_to_mastodon(self):
         actor = AS2Pointer(self.attributedTo).dereference()
 
@@ -17,7 +20,7 @@ class Note(AS2Object):
                 reply_actor = AS2Pointer(reply.attributedTo).dereference()
 
         return {
-            'id': self.storeIdentity,
+            'id': self.mastodon_id(),
             'created_at': self.published,
             'in_reply_to_id': getattr(reply, 'storeIdentity', None),
             'in_reply_to_account_id': getattr(reply_actor, 'storeIdentity', None),
