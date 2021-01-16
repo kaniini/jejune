@@ -31,6 +31,25 @@ class Actor(AS2Object):
         AS2Collection.create_if_not_exists(self.following)
         AS2Collection.create_if_not_exists(self.followers)
 
+    def serialize_to_mastodon(self):
+        return {
+            'id': self.storeIdentity,
+            'username': self.preferredUsername,
+            'acct': self.petName,
+            'locked': self.manuallyApprovesFollowers,
+            'note': self.summary,
+            'url': self.id,
+            'avatar': getattr(self, 'avatar', None),
+            'avatar_static': getattr(self, 'avatar_static', None),
+            'header': getattr(self, 'header', None),
+            'header_static': getattr(self, 'header_static', None),
+            'emojis': [],
+            'fields': [],
+            'display_name': self.name,
+            'bot': self.type in ['Application', 'Service'],
+            'following_count': 0,
+        }
+
 
 class Person(Actor):
     __jsonld_type__ = 'Person'
