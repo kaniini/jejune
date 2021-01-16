@@ -70,6 +70,10 @@ class User(Serializable):
     def login(self):
         return Token.new(self)
 
+    def actor(self):
+        from .activity_pub import Actor
+        return Actor.fetch_cached_from_uri(self.actor_uri)
+
 
 class Mailbox(Serializable):
     @classmethod
