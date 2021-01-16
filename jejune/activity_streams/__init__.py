@@ -131,8 +131,6 @@ class AS2Activity(AS2Object):
 
         super().__init__(**kwargs)
 
-        asyncio.ensure_future(self.publish())
-
     async def child(self) -> AS2Object:
         if not self.object:
             return None
@@ -140,6 +138,9 @@ class AS2Activity(AS2Object):
         return (await AS2Pointer(self.object).dereference())
 
     async def publish(self):
+        pass
+
+    async def apply_side_effects(self):
         pass
 
 registry.register_type(AS2Activity)
