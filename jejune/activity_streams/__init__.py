@@ -85,10 +85,17 @@ class AS2Object(Serializable):
 
     @classmethod
     def fetch_cached_from_uri(cls, uri):
+        app = get_jejune_app()
+        hashed = app.rdf_store.hash_for_uri(uri)
+
+        return cls.fetch_from_hash(hashed)
+
+    @classmethod
+    def fetch_from_hash(cls, hashed):
         global registry
 
         app = get_jejune_app()
-        hashed = app.rdf_store.hash_for_uri(uri)
+
         data = app.rdf_store.fetch_hash_json(hashed)
         basetype = registry.type_from_json(data, cls)
 
