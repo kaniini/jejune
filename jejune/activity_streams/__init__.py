@@ -7,6 +7,7 @@ from .. import get_jejune_app
 from ..serializable import Serializable
 
 
+AS2_PUBLIC = 'https://www.w3.org/ns/activitystreams#Public'
 AS2_CONTEXT = [
     'https://www.w3.org/ns/activitystreams',
     'https://w3id.org/security/v1',
@@ -134,6 +135,17 @@ class AS2Object(Serializable):
 
         st = time.strptime(self.published, '%Y-%m-%dT%H:%M:%SZ')
         return time.mktime(st)
+
+    def visible_for(self, actor=None) -> bool:
+        audience = getattr(self, 'audience', [self.attributedTo or self.actor])
+
+        if AS2_PUBLIC in audience:
+            return True
+
+        if actor:
+            return actor.id in audience
+
+        return False
 
 registry.register_type(AS2Object)
 
