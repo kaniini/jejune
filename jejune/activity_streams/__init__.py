@@ -118,6 +118,9 @@ class AS2Object(Serializable):
         return {'error': 'serialization to mastodon format is not supported for this type',
                 'type': self.__jsonld_type__}
 
+    def mastodon_id(self):
+        return self.storeIdentity
+
 registry.register_type(AS2Object)
 
 
