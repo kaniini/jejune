@@ -50,7 +50,7 @@ class CommonAPI:
     def to_for_scope(self, scope: str, actor: Actor, mentioned: list) -> list:
         scopes = {
             'public': ['https://www.w3.org/ns/activitystreams#Public'],
-            'unlisted': [actor.followers],
+            'unlisted': [actor.id, actor.followers],
             'direct': mentioned,
         }
 
@@ -58,7 +58,7 @@ class CommonAPI:
 
     def cc_for_scope(self, scope: str, actor: Actor, mentioned: list) -> list:
         scopes = {
-            'public': [actor.followers],
+            'public': [actor.id, actor.followers],
             'unlisted': ['https://www.w3.org/ns/activitystreams#Public'],
             'direct': mentioned,
         }
