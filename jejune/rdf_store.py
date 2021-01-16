@@ -145,7 +145,7 @@ class RDFStore:
             return None
 
     def fetch_hash_json(self, hashed: str) -> dict:
-        entry = self.fetch_hash(hashed)
+        (entry, _) = self.fetch_hash(hashed)
 
         try:
             return simplejson.loads(entry)
