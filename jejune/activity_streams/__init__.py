@@ -1,4 +1,6 @@
+import asyncio
 import simplejson
+import time
 
 
 from .. import get_jejune_app
@@ -39,6 +41,9 @@ class AS2Object(Serializable):
 
         if 'id' not in kwargs:
             kwargs['id'] = get_jejune_app().rdf_object_uri()
+
+        if 'published' not in kwargs:
+            kwargs['published'] = time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         kwargs['storeIdentity'] = get_jejune_app().rdf_store.hash_for_uri(kwargs['id'])
 
@@ -126,10 +131,15 @@ class AS2Activity(AS2Object):
 
         super().__init__(**kwargs)
 
+        asyncio.ensure_future(self.publish())
+
     async def child(self) -> AS2Object:
         if not self.object:
             return None
 
         return (await AS2Pointer(self.object).dereference())
+
+    async def publish(self):
+        pass
 
 registry.register_type(AS2Activity)
