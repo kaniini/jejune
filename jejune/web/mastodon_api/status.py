@@ -1,5 +1,5 @@
 from ... import app, __version__
-from ..activity_streams.object import Note
+from ...activity_streams.object import Note
 from aiohttp.web import RouteTableDef, Response, json_response
 
 
