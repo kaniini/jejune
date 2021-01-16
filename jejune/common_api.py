@@ -29,13 +29,14 @@ class CommonAPI:
                  summary=kwargs.get('spoiler_text', None),
                  attributedTo=actor.id,
                  source={'content': status, 'mediaType': kwargs.get('content_type', 'text/plain')},
-                 inReplyTo=None)
+                 inReplyTo=None,
+                 audience=self.audience_for_scope(scope, actor, []))
 
         c = Create(actor=actor.id,
                    object=n.id,
                    to=self.to_for_scope(scope, actor, []),
                    cc=self.cc_for_scope(scope, actor, []),
-                   audience=self.audience_for_scope(scope, actor, []))
+                   audience=n.audience)
 
         asyncio.ensure_future(c.apply_side_effects())
 

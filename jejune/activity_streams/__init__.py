@@ -187,7 +187,26 @@ class AS2Activity(AS2Object):
     async def publish(self):
         pass
 
+    def address_list(self, attrlist: str) -> list:
+        addresses = getattr(self, attrlist, [])
+
+        if type(addresses) != list:
+            addresses = [addresses]
+
+        return addresses
+
+    def fix_child_audience(self):
+        child = self.child()
+
+        if not child or child.audience:
+            return
+
+        child.audience = self.address_list('to') + self.address_list('cc')
+        child.commit()
+
     async def apply_side_effects(self):
+        self.fix_child_audience()
+
         if self.local():
             await self.publish()
 
