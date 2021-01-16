@@ -1,3 +1,6 @@
+import asyncio
+
+
 from .activity_streams.object import Note
 from .activity_pub.actor import Actor
 from .activity_pub.verbs import Create
@@ -20,15 +23,19 @@ class CommonAPI:
         if not status:
             return None
 
-        n = Note.new(content=status,
-                     summary=kwargs.get('spoiler_text', None),
-                     attributedTo=actor.id)
+        scope = kwargs.get('visibility', 'public')
 
-        c = Create.new(actor=actor.id,
-                       object=n.id,
-                       to=self.to_for_scope(scope, actor, []),
-                       cc=self.cc_for_scope(scope, actor, []),
-                       audience=self.audience_for_scope(scope, actor, []))
+        n = Note(content=status,
+                 summary=kwargs.get('spoiler_text', None),
+                 attributedTo=actor.id,
+                 source={'content': status, 'mediaType': kwargs.get('content_type', 'text/plain')},
+                 inReplyTo=None)
+
+        c = Create(actor=actor.id,
+                   object=n.id,
+                   to=self.to_for_scope(scope, actor, []),
+                   cc=self.cc_for_scope(scope, actor, []),
+                   audience=self.audience_for_scope(scope, actor, []))
 
         asyncio.ensure_future(c.apply_side_effects())
 

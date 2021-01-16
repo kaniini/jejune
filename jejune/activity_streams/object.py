@@ -6,7 +6,7 @@ class Note(AS2Object):
     __jsonld_type__ = 'Note'
 
     def serialize_to_mastodon(self):
-        actor = AS2Pointer(self.actor).dereference()
+        actor = AS2Pointer(self.attributedTo).dereference()
 
         reply = None
         reply_actor = None
@@ -14,7 +14,7 @@ class Note(AS2Object):
         if self.inReplyTo:
             reply = AS2Pointer(self.inReplyTo).dereference()
             if reply:
-                reply_actor = AS2Pointer(reply.actor).dereference()
+                reply_actor = AS2Pointer(reply.attributedTo).dereference()
 
         return {
             'id': self.storeIdentity,
