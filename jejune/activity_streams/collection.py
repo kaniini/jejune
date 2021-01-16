@@ -2,7 +2,7 @@ import asyncio
 import simplejson
 
 
-from . import AS2Object, AS2Pointer
+from . import AS2Object, AS2Pointer, registry
 from ..collection import TypedCollection
 
 
@@ -35,3 +35,5 @@ class AS2Collection(AS2Object, TypedCollection):
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> AS2Object:
         return super().create_if_not_exists(uri, __items__=[])
+
+registry.register_type(AS2Collection)
