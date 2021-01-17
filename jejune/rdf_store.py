@@ -97,7 +97,8 @@ class RDFStore:
         logging.debug('Fetching uncached remote object: %s', uri)
 
         headers = {
-            'Accept': 'application/activity+json'
+            'Accept': 'application/activity+json',
+            'User-Agent': self.app.user_agent,
         }
 
         async with aiohttp.ClientSession() as session:

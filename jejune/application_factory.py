@@ -71,3 +71,8 @@ class Application(aiohttp.web.Application):
 
     def upload_uri(self, ext) -> str:
         return '.'.join([self.object_uri('upload'), ext])
+
+    @property
+    def user_agent(self) -> str:
+        from . import __version__
+        return f'Jejune {__version__} (https://{self.hostname})'
