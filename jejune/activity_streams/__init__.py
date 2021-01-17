@@ -50,6 +50,8 @@ class AS2Object(Serializable):
 
         kwargs['storeIdentity'] = get_jejune_app().rdf_store.hash_for_uri(kwargs['id'])
 
+        asyncio.ensure_future(self.synchronize())
+
         if '@context' in kwargs:
             super(AS2Object, self).__init__(**kwargs)
             return
@@ -155,6 +157,9 @@ class AS2Object(Serializable):
         return False
 
     async def announce_update(self):
+        pass
+
+    async def synchronize(self):
         pass
 
 registry.register_type(AS2Object)

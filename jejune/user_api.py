@@ -44,8 +44,7 @@ class UserAPI:
 
         actor = await self.webfinger.discover_actor(username)
         if actor:
-            u = User(actor_uri=actor.id, username=actor.make_petname(), remote=True)
-            self.store.put(u.username, 'base', u)
+            u = await actor.synchronize()
             return u
 
         return None

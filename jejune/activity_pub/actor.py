@@ -1,3 +1,4 @@
+import logging
 import urllib.parse
 
 
@@ -78,6 +79,19 @@ class Actor(AS2Object):
         self.commit()
 
         return self.petName
+
+    async def synchronize(self):
+        from .. import get_jejune_app
+
+        if self.local():
+            return
+
+        logging.debug('Synchronizing user store entry for actor %s', self.id)
+
+        u = User(actor_uri=self.id, username=self.make_petname(), remote=True)
+        get_jejune_app().userns.put(u.username, 'base', u)
+
+        return u
 
 
 class Person(Actor):
