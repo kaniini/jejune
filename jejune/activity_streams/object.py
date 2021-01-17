@@ -1,3 +1,6 @@
+import logging
+
+
 from . import AS2Object, AS2Pointer, registry
 from ..activity_pub.actor import Actor
 
@@ -44,13 +47,19 @@ class Note(AS2Object):
                  'website': None,
             },
             'account': actor.serialize_to_mastodon(),
-            'media_attachments': [],   # XXX: attachments
+            'media_attachments': self.serialize_attachments_to_mastodon(),
             'mentions': [],            # XXX: mentions
             'tags': [],                # XXX: tags
             'emojis': [],              # XXX: emojis
             'card': None,
             'poll': None,
         }
+
+    def serialize_attachment_to_mastodon(self, att) -> dict:
+        return AS2Pointer(att).dereference().serialize_to_mastodon()
+
+    def serialize_attachments_to_mastodon(self):
+        return [self.serialize_attachment_to_mastodon(att) for att in self.attachment]
 
 registry.register_type(Note)
 

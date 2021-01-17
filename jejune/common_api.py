@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 
 from .activity_streams.collection import AS2Collection
@@ -29,13 +30,22 @@ class CommonAPI:
             return None
 
         scope = kwargs.get('visibility', 'public')
+        media_ids = kwargs.get('media_ids', [])
+
+        attachments = []
+        for media_id in media_ids:
+            hashed = media_id.split('.')[1]
+            att = Document.fetch_from_hash(hashed)
+            if att:
+                attachments += [att]
 
         n = Note(content=status,
                  summary=kwargs.get('spoiler_text', None),
                  attributedTo=actor.id,
                  source={'content': status, 'mediaType': kwargs.get('content_type', 'text/plain')},
                  inReplyTo=None,
-                 audience=self.audience_for_scope(scope, actor, []))
+                 audience=self.audience_for_scope(scope, actor, []),
+                 attachment=[att.serialize(dict) for att in attachments])
 
         c = Create(actor=actor.id,
                    object=n.id,
@@ -87,5 +97,6 @@ class CommonAPI:
                      mediaType=content_type,
                      url=uri,
                      name=filename)
+        logging.info('ID %s', a.id)
 
         return a

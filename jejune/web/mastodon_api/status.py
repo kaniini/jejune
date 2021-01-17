@@ -1,3 +1,6 @@
+import logging
+
+
 from ... import app, __version__
 from ...activity_streams.object import Note
 from aiohttp.web import RouteTableDef, Response, json_response
@@ -21,7 +24,8 @@ async def status_new(request):
                                          spoiler_text=post.get('spoiler_text', None),
                                          status=post.get('status', None),
                                          content_type=post.get('content_type', 'text/plain'),
-                                         visibility=post.get('visibility', 'public'))
+                                         visibility=post.get('visibility', 'public'),
+                                         media_ids=post.getall('media_ids[]', []))
 
     return json_response(create_activity.serialize_to_mastodon())
 
