@@ -77,11 +77,19 @@ fediverse at large.
 
 ## Will you work with other projects on interoperability?
 
-LOL.
+To the extent that interoperability does not compromise the
+rigid security model implemented in Jejune.
 
 ## Will you work with the W3C on standardizing work in Jejune?
 
-LOL.
+As work matures in Jejune, we may examine the possibility of
+standardizing some work through either SocialCG or the alternative
+Fediverse Enhancement Proposal process.  The Jejune project is
+presently skeptical on both approaches to standardization, but
+is open to being convinced otherwise.
+
+The Jejune project will not compromise security functionality
+in the name of standards compliance.
 
 ## Jejune doesn't include a web client?
 
