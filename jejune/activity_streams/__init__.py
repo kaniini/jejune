@@ -177,7 +177,7 @@ class AS2Pointer:
         return cls(obj.id)
 
     def serialize(self):
-        return obj.id
+        return self.uri
 
 
 class AS2Activity(AS2Object):

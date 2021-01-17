@@ -30,8 +30,10 @@ class HTTPSignatureVerifier:
         return default
 
     async def load_key(self, actor_uri: str) -> RSA:
-        from .activity_pub.actor import Actor
+        from .activity_streams import AS2Pointer
+        actor_uri = AS2Pointer(actor_uri).serialize()
 
+        from .activity_pub.actor import Actor
         actor = await Actor.fetch_from_uri(actor_uri)
         if not actor:
             return None
@@ -45,7 +47,7 @@ class HTTPSignatureVerifier:
         return '\n'.join(map(lambda x: ': '.join([x.lower(), headers[x]]), used_headers))
 
     async def validate(self, actor_uri: str, request) -> bool:
-        pubkey = await load_key(actor_uri)
+        pubkey = await self.load_key(actor_uri)
         if not pubkey:
             return False
 
