@@ -1,4 +1,4 @@
-from ..activity_streams import AS2Object, registry
+from ..activity_streams import AS2Object, registry, AS2_PUBLIC
 from ..activity_streams.collection import AS2Collection
 from ..user import User
 
@@ -54,6 +54,12 @@ class Actor(AS2Object):
             'bot': self.type in ['Application', 'Service'],
             'following_count': 0,
         }
+
+    async def announce_update(self):
+        from .verbs import Update
+
+        u = Update(object=self.serialize(), to=[AS2_PUBLIC, self.followers])
+        await u.publish()
 
 
 class Person(Actor):

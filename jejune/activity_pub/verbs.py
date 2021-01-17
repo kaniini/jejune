@@ -24,3 +24,5 @@ class Update(AS2Activity):
             setattr(object, k, v)
 
         object.commit()
+
+registry.register_type(Update)
