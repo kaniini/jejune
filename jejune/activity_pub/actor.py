@@ -1,3 +1,6 @@
+import urllib.parse
+
+
 from ..activity_streams import AS2Object, registry, AS2_PUBLIC
 from ..activity_streams.collection import AS2Collection
 from ..user import User
@@ -40,12 +43,12 @@ class Actor(AS2Object):
         return {
             'id': self.storeIdentity,
             'username': self.preferredUsername,
-            'acct': self.petName,
+            'acct': self.make_petname(),
             'locked': self.manuallyApprovesFollowers,
             'note': self.summary,
             'url': self.id,
-            'avatar': avatar.get('href', None),
-            'avatar_static': avatar.get('href', None),
+            'avatar': avatar.get('url', None),
+            'avatar_static': avatar.get('url', None),
             'header': getattr(self, 'header', None),
             'header_static': getattr(self, 'header_static', None),
             'emojis': [],
@@ -64,6 +67,16 @@ class Actor(AS2Object):
     def user(self) -> User:
         from .. import get_jejune_app
         return get_jejune_app().userapi.find_user(self.petName)
+
+    def make_petname(self) -> str:
+        if getattr(self, 'petName', None):
+            return self.petName
+
+        uri = urllib.parse.urlsplit(self.id)
+        self.petName = f'{self.preferredUsername}@{uri.netloc}'
+        self.commit()
+
+        return self.petName
 
 
 class Person(Actor):

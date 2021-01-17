@@ -11,11 +11,14 @@ class WebfingerClient:
         self.app = app
 
     async def finger(self, domain: str, resource: str) -> dict:
-        async with timeout(5):
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f'https://{domain}/.well-known/webfinger',
-                                       params={'resource': resource}) as resp:
-                    return (await resp.json())
+        try:
+            async with timeout(5):
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(f'https://{domain}/.well-known/webfinger',
+                                           params={'resource': resource}) as resp:
+                        return (await resp.json())
+        except Exception as e:
+            logging.debug('Exception while looking up %s at %s: %r', resource, domain, e)
 
         return {}
 
@@ -23,6 +26,8 @@ class WebfingerClient:
         domain = username.split('@', 2)[1]
 
         webfinger_data = await self.finger(domain, f'acct:{username}')
+        if not webfinger_data:
+            return None
 
         for link in webfinger_data['links']:
             if link.get('rel', None) != 'self':
@@ -31,3 +36,5 @@ class WebfingerClient:
             if link.get('type', None) == 'application/activity+json':
                 logging.debug('Discovered %r as actor %r.', username, link.get('href'))
                 return (await Actor.fetch_from_uri(link.get('href')))
+
+        return None

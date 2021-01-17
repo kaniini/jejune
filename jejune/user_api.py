@@ -92,7 +92,7 @@ class UserAPI:
         actor.icon = {
             'type': 'Image',
             'mediaType': content_type,
-            'href': uri,
+            'url': uri,
         }
         actor.commit()
         asyncio.ensure_future(actor.announce_update())
