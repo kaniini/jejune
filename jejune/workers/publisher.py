@@ -4,6 +4,7 @@ import logging
 import urllib.parse
 
 
+from ..http_signatures import HTTPSignatureSigner
 from ..activity_streams import AS2Object, AS2Activity, AS2Pointer, AS2_PUBLIC
 from ..activity_streams.collection import AS2Collection
 from ..activity_pub.actor import Actor
@@ -143,6 +144,7 @@ class PublisherWorker:
         self.app = app
         self.queue = []
         self.event = asyncio.Event()
+        self.signer = HTTPSignatureSigner()
 
         asyncio.ensure_future(self.work_loop())
         asyncio.ensure_future(self.wakeup_loop())
