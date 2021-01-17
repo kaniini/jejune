@@ -11,7 +11,7 @@ class Note(AS2Object):
     def mastodon_id(self):
         return '{0:d}.{1}'.format(int(self.published_ts()), self.storeIdentity)
 
-    def serialize_to_mastodon(self):
+    def serialize_to_mastodon(self, announce=False):
         actor = AS2Pointer(self.attributedTo).dereference()
 
         reply = None

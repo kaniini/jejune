@@ -13,6 +13,18 @@ class Create(AS2Activity):
 registry.register_type(Create)
 
 
+class Announce(AS2Activity):
+    __jsonld_type__ = 'Announce'
+
+    def mastodon_id(self):
+        return self.child().mastodon_id()
+
+    def serialize_to_mastodon(self):
+        return self.child().serialize_to_mastodon(announce=True)
+
+registry.register_type(Announce)
+
+
 class Update(AS2Activity):
     __jsonld_type__ = 'Update'
     __ephemeral__ = True
