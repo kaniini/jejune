@@ -1,3 +1,6 @@
+from . import get_jejune_app
+
+
 from ..activity_streams import AS2Object, registry, AS2_PUBLIC
 from ..activity_streams.collection import AS2Collection
 from ..user import User
@@ -60,6 +63,9 @@ class Actor(AS2Object):
 
         u = Update(object=self.serialize(), to=[AS2_PUBLIC, self.followers])
         await u.publish()
+
+    def user(self) -> User:
+        return get_jejune_app().userapi.find_user(self.petName)
 
 
 class Person(Actor):
