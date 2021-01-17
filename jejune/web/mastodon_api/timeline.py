@@ -48,7 +48,7 @@ async def home_timeline(request):
         return json_response({'error': 'bogus account - no AP actor found'}, status=500)
 
     limit = int(request.query.get('limit', 20))
-    deref_limit = limit * 10
+    deref_limit = app.max_timeline_length
 
     inbox_collection = AS2Collection.fetch_local(actor.inbox, use_pointers=True)
     deref_items = [ptr.dereference() for ptr in inbox_collection.__items__[0:deref_limit]]
@@ -59,7 +59,7 @@ async def home_timeline(request):
 @routes.get('/api/v1/timelines/public')
 async def public_timeline(request):
     limit = int(request.query.get('limit', 20))
-    deref_limit = limit * 10
+    deref_limit = app.max_timeline_length
 
     shared_inbox_collection = AS2Collection.fetch_local(app.shared_inbox_uri, use_pointers=True)
     deref_items = [ptr.dereference() for ptr in shared_inbox_collection.__items__[0:deref_limit]]

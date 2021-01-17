@@ -55,6 +55,9 @@ instance:
     # General upload limit (in bytes).
     general-upload-size: 16000000
 
+    # The maximum number of items to crawl while building a timeline.
+    timeline-length: 4096
+
   # Whether registrations are enabled.
   registrations: true
 

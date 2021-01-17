@@ -27,6 +27,7 @@ def get_limits(limits: dict) -> dict:
         'background-size': limits.get('background-size', 4000000),
         'banner-size': limits.get('banner-size', 4000000),
         'general-upload-size': limits.get('general-upload-size', 16000000),
+        'timeline-length': limits.get('timeline-length', 4096),
     }
 
 

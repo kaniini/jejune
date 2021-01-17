@@ -52,6 +52,10 @@ class Application(aiohttp.web.Application):
     def shared_inbox_uri(self):
         return str().join(['https://', self.hostname, '/.well-known/jejune/sharedinbox'])
 
+    @property
+    def max_timeline_length(self):
+        return self.config['instance']['limits']['timeline-length']
+
     def inbox_uri(self) -> str:
         return self.object_uri('inbox')
 
