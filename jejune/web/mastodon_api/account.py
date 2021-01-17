@@ -1,3 +1,6 @@
+import logging
+
+
 from ... import app
 from aiohttp.web import RouteTableDef, json_response
 
@@ -41,5 +44,25 @@ async def verify_credentials(request):
 
     return json_response(request['oauth_user'].serialize_to_mastodon())
 
+
+@routes.post('/api/v1/accounts/update_credentials')
+@routes.patch('/api/v1/accounts/update_credentials')
+async def update_credentials(request):
+    if not request['oauth_user']:
+        return json_response({'error': 'no oauth session found'}, status=400)
+
+    reader = await request.multipart()
+    while True:
+        part = await reader.next()
+        if not part:
+            break
+
+        if 'avatar' in part.headers['Content-Disposition']:
+            data = await part.read(decode=False)
+            app.userapi.update_avatar(request['oauth_user'], data, part.headers['Content-Type'])
+
+        logging.info('part = %r, headers = %r', part, part.headers)
+
+    return json_response(request['oauth_user'].serialize_to_mastodon())
 
 app.add_routes(routes)

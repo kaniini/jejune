@@ -153,6 +153,9 @@ class AS2Object(Serializable):
 
         return False
 
+    async def announce_update(self):
+        pass
+
 registry.register_type(AS2Object)
 
 

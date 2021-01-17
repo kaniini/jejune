@@ -35,6 +35,8 @@ class Actor(AS2Object):
         AS2Collection.create_if_not_exists(self.followers)
 
     def serialize_to_mastodon(self):
+        avatar = getattr(self, 'icon', {})
+
         return {
             'id': self.storeIdentity,
             'username': self.preferredUsername,
@@ -42,8 +44,8 @@ class Actor(AS2Object):
             'locked': self.manuallyApprovesFollowers,
             'note': self.summary,
             'url': self.id,
-            'avatar': getattr(self, 'avatar', None),
-            'avatar_static': getattr(self, 'avatar_static', None),
+            'avatar': avatar.get('href', None),
+            'avatar_static': avatar.get('href', None),
             'header': getattr(self, 'header', None),
             'header_static': getattr(self, 'header_static', None),
             'emojis': [],

@@ -1,3 +1,6 @@
+import asyncio
+
+
 from .user import User, Token, Mailbox
 from .app import App
 from .activity_pub.actor import Actor
@@ -56,3 +59,25 @@ class UserAPI:
             return None
 
         return self.find_user(token.user)
+
+    def update_avatar(self, user: User, data: bytearray, content_type: str):
+        exts = {
+            'image/jpeg': 'jpg',
+            'image/png': 'png',
+        }
+
+        actor = user.actor()
+        uri = self.app.upload_uri(exts.get(content_type, 'bin'))
+        filename = uri.split('/')[-1]
+        fspath = self.app.config['paths']['upload'] + '/' + filename
+
+        with open(fspath, 'wb') as f:
+            f.write(data)
+
+        actor.icon = {
+            'type': 'Image',
+            'mediaType': content_type,
+            'href': uri,
+        }
+        actor.commit()
+        asyncio.ensure_future(actor.announce_update())

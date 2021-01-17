@@ -64,3 +64,6 @@ class Application(aiohttp.web.Application):
 
     def username_to_petname(self, username: str) -> str:
         return '@'.join([username, self.hostname])
+
+    def upload_uri(self, ext) -> str:
+        return '.'.join([self.object_uri('upload'), ext])
