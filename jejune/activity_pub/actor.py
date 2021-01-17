@@ -1,6 +1,3 @@
-from . import get_jejune_app
-
-
 from ..activity_streams import AS2Object, registry, AS2_PUBLIC
 from ..activity_streams.collection import AS2Collection
 from ..user import User
@@ -65,6 +62,7 @@ class Actor(AS2Object):
         await u.publish()
 
     def user(self) -> User:
+        from .. import get_jejune_app
         return get_jejune_app().userapi.find_user(self.petName)
 
 
