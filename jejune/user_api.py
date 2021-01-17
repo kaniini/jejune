@@ -4,6 +4,7 @@ import asyncio
 from .user import User, Token, Mailbox
 from .app import App
 from .activity_pub.actor import Actor
+from .webfinger_client import WebfingerClient
 
 
 class UserAPI:
@@ -14,6 +15,7 @@ class UserAPI:
         self.token_store = app.tokenns
         self.mailbox_store = app.mailboxns
         self.rdf_store = app.rdf_store
+        self.webfinger = WebfingerClient(self.app)
 
     def create_user(self, description: str, actor_type: str, username: str, email: str, password: str, bio: str, locked: bool) -> User:
         u = User.new(self.app, password,
@@ -34,6 +36,19 @@ class UserAPI:
         self.mailbox_store.put(u.outbox_uri.split('/')[-1], 'outbox', outbox)
 
         return u
+
+    async def discover_user(self, username: str) -> User:
+        u = self.store.fetch(username, 'base')
+        if u:
+            return u
+
+        actor = await self.webfinger.discover_actor(username)
+        if actor:
+            u = User(actor_uri=actor.id, username=actor.make_petname(), remote=True)
+            self.store.put(u.username, 'base', u)
+            return u
+
+        return None
 
     def find_user(self, username: str) -> User:
         return self.store.fetch(username, 'base')
