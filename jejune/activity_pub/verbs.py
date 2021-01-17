@@ -17,10 +17,17 @@ class Announce(AS2Activity):
     __jsonld_type__ = 'Announce'
 
     def mastodon_id(self):
-        return self.child().mastodon_id()
+        return '{0:d}.{1}'.format(int(self.published_ts()), self.storeIdentity)
 
     def serialize_to_mastodon(self):
-        return self.child().serialize_to_mastodon(announce=True)
+        actor = AS2Pointer(self.actor).dereference()
+
+        reblog = self.child().serialize_to_mastodon()
+        reblog['account'] = actor.serialize_to_mastodon()
+        reblog['id'] = self.mastodon_id()
+        reblog['reblog'] = self.child().serialize_to_mastodon()
+
+        return reblog
 
 registry.register_type(Announce)
 
