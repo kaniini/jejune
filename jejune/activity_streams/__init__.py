@@ -112,7 +112,6 @@ class AS2Object(Serializable):
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> Serializable:
         app = get_jejune_app()
-        logging.info('app = %r', app)
 
         hashed = app.rdf_store.hash_for_uri(uri)
 
