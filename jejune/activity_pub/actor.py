@@ -39,6 +39,7 @@ class Actor(AS2Object):
 
     def serialize_to_mastodon(self):
         avatar = getattr(self, 'icon', {})
+        banner = getattr(self, 'image', {})
 
         return {
             'id': self.storeIdentity,
@@ -49,8 +50,8 @@ class Actor(AS2Object):
             'url': self.id,
             'avatar': avatar.get('url', None),
             'avatar_static': avatar.get('url', None),
-            'header': getattr(self, 'header', None),
-            'header_static': getattr(self, 'header_static', None),
+            'header': banner.get('url', None),
+            'header_static': banner.get('url', None),
             'emojis': [],
             'fields': [],
             'display_name': self.name,
