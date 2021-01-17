@@ -3,6 +3,7 @@ import logging
 
 from ... import app, __version__
 from ...activity_streams.collection import AS2Collection
+from ...activity_pub.actor import Actor
 
 from aiohttp.web import RouteTableDef, Response, json_response
 
@@ -65,6 +66,27 @@ async def public_timeline(request):
     deref_items = [ptr.dereference() for ptr in shared_inbox_collection.__items__[0:deref_limit]]
 
     return render_timeline(request, items)
+
+
+@routes.get('/api/v1/accounts/{id}/statuses')
+async def user_timeline(request):
+    req_user = request.get('oauth_user', None)
+    if not req_user:
+        return json_response({'error': 'no oauth session found'}, status=403)
+
+    actor = Actor.fetch_from_hash(request.match_info['id'])
+    if not actor:
+        return json_response({'error': 'bogus account - no AP actor found'}, status=500)
+
+    limit = int(request.query.get('limit', 20))
+    deref_limit = app.max_timeline_length
+
+    inbox_collection = await AS2Collection.fetch_from_uri(actor.outbox, use_pointers=True)
+    if not inbox_collection:
+        return json_response([])
+
+    deref_items = [ptr.dereference() for ptr in inbox_collection.__items__[0:deref_limit]]
+    return render_timeline(request, deref_items)
 
 
 app.add_routes(routes)

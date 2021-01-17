@@ -61,4 +61,15 @@ class AS2Collection(AS2Object, TypedCollection):
 
         return cls.deserialize_from_json(data, use_pointers=use_pointers)
 
+    @classmethod
+    async def fetch_from_uri(cls, uri: str, use_pointers=True) -> AS2Object:
+        from . import get_jejune_app
+
+        app = get_jejune_app()
+        data = await get_jejune_app().rdf_store.fetch_json(uri)
+        if not data:
+            return None
+
+        return cls.deserialize_from_json(data, use_pointers=use_pointers)
+
 registry.register_type(AS2Collection)

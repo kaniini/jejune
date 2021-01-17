@@ -170,7 +170,11 @@ class AS2Pointer:
         if isinstance(uri, str):
             self.uri = uri
         elif isinstance(uri, dict):
-            self.uri = uri['id']
+            obj = AS2Object.deserialize_from_json(uri)
+            if obj:
+                self.uri = obj.id
+            else:
+                self.uri = uri['id']
         elif isinstance(uri, AS2Object):
             self.uri = uri.id
 
