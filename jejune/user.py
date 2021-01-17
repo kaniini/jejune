@@ -37,9 +37,7 @@ class User(Serializable):
         return self.password == crypted_pass
 
     def get_public_key(self):
-        assert self.privateKey
-
-        privkey = RSA.importKey(self.privateKey)
+        privkey = self.privkey()
         pubkey = privkey.publickey()
 
         return {
@@ -47,6 +45,11 @@ class User(Serializable):
             'owner': self.actor_uri,
             'publicKeyPem': pubkey.exportKey('PEM').decode('utf-8')
         }
+
+    def privkey(self) -> RSA:
+        assert self.privateKey
+
+        return RSA.importKey(self.privateKey)
 
     def serialize_to_mastodon(self):
         return self.actor().serialize_to_mastodon()

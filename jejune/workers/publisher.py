@@ -1,8 +1,10 @@
+import aiohttp
 import asyncio
 import logging
+import urllib.parse
 
 
-from ..activity_streams import AS2Object, AS2Activity, AS2_PUBLIC
+from ..activity_streams import AS2Object, AS2Activity, AS2Pointer, AS2_PUBLIC
 from ..activity_streams.collection import AS2Collection
 from ..activity_pub.actor import Actor
 
@@ -66,8 +68,41 @@ class PublisherRequest:
         return self.fatality()
 
     async def handle_ap_inbox(self):
-        logging.error('Delivering to remote AP inboxes is not implemented yet.')
-        return self.fatality()
+        payload = self.activity.serialize()
+        uri = urllib.parse.urlsplit(self.recipient)
+
+        headers = {
+            '(request-target)': 'post %s' % uri.path,
+            'Content-Length': str(len(data)),
+            'Content-Type': 'application/activity+json',
+            'User-Agent': self.publisher.app.user_agent,
+            'Host': uri.netloc,
+            'Digest': digest,
+            'Date': time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime()),
+        }
+
+        actor = AS2Pointer(self.activity.actor).dereference()
+        user = actor.user()
+        privkey = user.privkey()
+
+        headers['signature'] = self.publisher.signer.sign_headers(headers, privkey, actor.publicKey['id'])
+        headers.pop('(request-target)')
+        headers.pop('Host')
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(self.recipient, data=payload, headers=headers) as resp:
+                    if resp.status == 202:
+                        return self.complete()
+                    elif resp.status >= 500:
+                        return self.error()
+
+                    resp_payload = await resp.text()
+                    logging.debug('%r >> %r', self.recipient, resp_payload)
+                    return self.complete()
+        except Exception as e:
+            logging.info('Exception %r when pushing to %s.', e, self.recipient)
+            return self.error()
 
     async def publish(self):
         logging.info('Publishing %s to %s (type %d).', self.activity.id, self.recipient, self.kind)
