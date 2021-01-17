@@ -2,7 +2,7 @@ import asyncio
 
 
 from .activity_streams.collection import AS2Collection
-from .activity_streams.object import Note
+from .activity_streams.object import Note, Document
 from .activity_pub.actor import Actor
 from .activity_pub.verbs import Create
 
@@ -67,3 +67,25 @@ class CommonAPI:
 
     def audience_for_scope(self, scope: str, actor: Actor, mentioned: list) -> list:
         return self.to_for_scope(scope, actor, mentioned) + self.cc_for_scope(scope, actor, mentioned)
+
+    def upload_media(self, actor: Actor, data: bytearray, filename: str, content_type: str) -> Document:
+        exts = {
+            'image/jpeg': 'jpg',
+            'image/png': 'png',
+            'audio/mpeg': 'mp3',
+            'video/mpeg': 'mp4',
+        }
+
+        uri = self.app.upload_uri(exts.get(content_type, 'bin'))
+        filename = uri.split('/')[-1]
+        fspath = self.app.config['paths']['upload'] + '/' + filename
+
+        with open(fspath, 'wb') as f:
+            f.write(data)
+
+        a = Document(attributedTo=actor.id,
+                     mediaType=content_type,
+                     url=uri,
+                     name=filename)
+
+        return a

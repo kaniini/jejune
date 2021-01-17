@@ -4,3 +4,4 @@ from . import app
 from . import status
 from . import timeline
 from . import notification
+from . import media
