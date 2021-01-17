@@ -108,7 +108,7 @@ class UserAPI:
     # as a log.
     def unfollow(self, follower: Actor, followee: Actor):
         u = Undo(actor=follower.id, object={
-            'type': Follow',
+            'type': 'Follow',
             'actor': follower.id,
             'object': followee.id,
             'id': self.app.rdf_object_id()
