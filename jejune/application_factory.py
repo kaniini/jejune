@@ -14,11 +14,15 @@ from .workers.publisher import PublisherWorker
 
 
 from .middleware.oauth import oauth_middleware
+from .middleware.http_signatures import http_signatures_middleware
 
 
 class Application(aiohttp.web.Application):
     def __init__(self, config: str):
-        super(Application, self).__init__(middlewares=[oauth_middleware])
+        super(Application, self).__init__(middlewares=[
+            oauth_middleware,
+            http_signatures_middleware,
+        ])
         self.config = load_config(config)
         self.rdf_store = RDFStore(self)
         self.userdb_store = UserDBStore(self)
