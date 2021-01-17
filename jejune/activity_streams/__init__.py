@@ -202,6 +202,11 @@ class AS2Activity(AS2Object):
     async def publish(self):
         app = get_jejune_app()
 
+        # splice into outbox
+        actor = await AS2Object.fetch_from_uri(self.actor or self.attributedTo)
+        if actor:
+            app.publisher.add_activity(self, actor.outbox, 3)
+
         [app.publisher.add_activity(self, recipient) for recipient in self.get_audience()]
 
     def address_list(self, attrlist: str) -> list:
