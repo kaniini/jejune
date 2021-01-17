@@ -3,7 +3,7 @@ import urllib.parse
 
 
 from ..activity_streams import AS2Object, registry, AS2_PUBLIC
-from ..activity_streams.collection import AS2Collection
+from ..activity_streams.collection import AS2Collection, collection_intersects
 from ..user import User
 
 
@@ -33,10 +33,21 @@ class Actor(AS2Object):
         return getattr(self, 'endpoints', {}).get('sharedInbox', self.inbox)
 
     def fixate(self):
-        AS2Collection.create_if_not_exists(self.inbox)
-        AS2Collection.create_if_not_exists(self.outbox)
-        AS2Collection.create_if_not_exists(self.following)
-        AS2Collection.create_if_not_exists(self.followers)
+        inbox = getattr(self, 'inbox', None)
+        if inbox:
+            AS2Collection.create_if_not_exists(inbox)
+
+        outbox = getattr(self, 'outbox', None)
+        if outbox:
+            AS2Collection.create_if_not_exists(outbox)
+
+        following = getattr(self, 'following', None)
+        if following:
+            AS2Collection.create_if_not_exists(following)
+
+        followers = getattr(self, 'followers', None)
+        if followers:
+            AS2Collection.create_if_not_exists(followers)
 
     def serialize_to_mastodon(self):
         avatar = getattr(self, 'icon', {})
@@ -83,6 +94,8 @@ class Actor(AS2Object):
     async def synchronize(self):
         from .. import get_jejune_app
 
+        self.fixate()
+
         if self.local():
             return
 
@@ -92,6 +105,22 @@ class Actor(AS2Object):
         get_jejune_app().userns.put(u.username, 'base', u)
 
         return u
+
+    def mastodon_relationships_with(self, target):
+        return {
+            'id': target.mastodon_id(),
+            'following': collection_intersects(target.followers, self.id),
+            'requested': False,            # XXX
+            'endorsed': False,             # XXX
+            'followed_by': collection_intersects(self.followers, target.id),
+            'muting': False,               # XXX
+            'muting_notifications': False, # XXX
+            'showing_reblogs': True,       # XXX
+            'blocking': False,             # XXX
+            'blocked_by': False,           # XXX
+            'domain_blocking': False,      # XXX
+            'note': '',                    # XXX: WTF is this for?
+        }
 
 
 class Person(Actor):

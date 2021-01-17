@@ -73,3 +73,11 @@ class AS2Collection(AS2Object, TypedCollection):
         return cls.deserialize_from_json(data, use_pointers=use_pointers)
 
 registry.register_type(AS2Collection)
+
+
+def collection_intersects(collection_uri, item: str) -> bool:
+    ptr = AS2Pointer(collection_uri)
+    collection = AS2Collection.fetch_local(ptr.serialize(), use_pointers=True)
+
+    item_uris = {ptr.serialize() for ptr in collection.__items__}
+    return item in item_uris

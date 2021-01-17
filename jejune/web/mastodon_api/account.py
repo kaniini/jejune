@@ -61,8 +61,39 @@ async def update_credentials(request):
             data = await part.read(decode=False)
             app.userapi.update_avatar(request['oauth_user'], data, part.headers['Content-Type'])
 
-        logging.info('part = %r, headers = %r', part, part.headers)
-
     return json_response(request['oauth_user'].serialize_to_mastodon())
+
+
+@routes.post('/api/v1/accounts/{id}/follow')
+async def follow(request):
+    follower = request['oauth_user']
+
+    if not follower:
+        return json_response({'error': 'no oauth session found'}, status=400)
+
+    followee = Actor.fetch_from_hash(id)
+    if not followee:
+        return json_response({'error': 'account not found'}, status=404)
+
+    app.userapi.follow(follower, followee)
+
+    return json_response(follower.mastodon_relationships_with(followee))
+
+
+@routes.post('/api/v1/accounts/{id}/unfollow')
+async def unfollow(request):
+    follower = request['oauth_user']
+
+    if not follower:
+        return json_response({'error': 'no oauth session found'}, status=400)
+
+    followee = Actor.fetch_from_hash(id)
+    if not followee:
+        return json_response({'error': 'account not found'}, status=404)
+
+    app.userapi.unfollow(follower, followee)
+
+    return json_response(follower.mastodon_relationships_with(followee))
+
 
 app.add_routes(routes)

@@ -1,7 +1,7 @@
 import logging
 
 
-from ..activity_streams import AS2Activity, registry
+from ..activity_streams import AS2Activity, AS2Pointer, registry
 
 
 class Create(AS2Activity):
@@ -43,7 +43,7 @@ class Accept(AS2Activity):
                          self.id, object.id, object.type)
             return
 
-        await object.accept_side_effects()
+        await object.accept_side_effects(self)
 
 registry.register_type(Accept)
 
@@ -60,6 +60,44 @@ class Reject(AS2Activity):
                          self.id, object.id, object.type)
             return
 
-        await object.reject_side_effects()
+        await object.reject_side_effects(self)
 
 registry.register_type(Reject)
+
+
+class Follow(AS2Activity):
+    __jsonld_type__ = 'Follow'
+    __ephemeral__ = True
+
+    async def apply_side_effects(self):
+        followee = AS2Pointer(self.object).dereference()
+
+        # XXX: implement blocks collection
+        if not followee.manuallyApprovesFollowers:
+            a = Accept(actor=followee.id, object=self.serialize(dict))
+            await a.apply_side_effects()
+        else:
+            pass
+
+    async def accept_side_effects(self, parent):
+        followee = AS2Pointer(self.object).dereference()
+        followee_collection = AS2Collection.fetch_local(followee.followers, use_pointers=True)
+        followee_collection.prepend(AS2Pointer(self.actor))
+        followee_collection.commit()
+
+    async def reject_side_effects(self, parent):
+        followee = AS2Pointer(self.object).dereference()
+        followee_collection = AS2Collection.fetch_local(followee.followers, use_pointers=True)
+        followee_collection.remove(AS2Pointer(self.actor))
+        followee_collection.commit()
+
+registry.register_type(Follow)
+
+
+class Undo(AS2Activity):
+    __jsonld_type__ = 'Undo'
+    __ephemeral__ = True
+
+    # XXX: actually implement
+    async def apply_side_effects(self):
+        pass

@@ -4,6 +4,7 @@ import asyncio
 from .user import User, Token, Mailbox
 from .app import App
 from .activity_pub.actor import Actor
+from .activity_pub.verbs import Follow, Undo
 from .webfinger_client import WebfingerClient
 
 
@@ -95,3 +96,23 @@ class UserAPI:
         }
         actor.commit()
         asyncio.ensure_future(actor.announce_update())
+
+    def follow(self, follower: Actor, followee: Actor):
+        f = Follow(actor=follower.id, object=followee.id)
+
+        asyncio.ensure_future(f.apply_side_effects())
+        return f
+
+    # XXX: figure out what our actual follow activity ID was...
+    # one approach would be to have a mutations collection which serves
+    # as a log.
+    def unfollow(self, follower: Actor, followee: Actor):
+        u = Undo(actor=follower.id, object={
+            'type': Follow',
+            'actor': follower.id,
+            'object': followee.id,
+            'id': self.app.rdf_object_id()
+        })
+
+        asyncio.ensure_future(u.apply_side_effects())
+        return u
