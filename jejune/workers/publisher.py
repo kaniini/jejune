@@ -30,11 +30,14 @@ class PublisherRequest:
         return self.completed()
 
     def handle_public(self):
+        if self.activity.__ephemeral__:
+            return self.completed()
+
         self.publisher.add_activity(self.activity, self.publisher.app.shared_inbox_uri, LOCAL_DELIVERY)
         return self.completed()
 
     def handle_actor(self, actor: Actor):
-        if actor.local():
+        if actor.local() and not self.activity.__ephemeral__:
             self.publisher.add_activity(self.activity, actor.inbox, LOCAL_DELIVERY)
             return self.completed()
 
@@ -42,8 +45,9 @@ class PublisherRequest:
         return self.completed()
 
     def handle_collection(self, obj: AS2Collection):
-        local = [self.publisher.add_activity(self.activity, actor.inbox, LOCAL_DELIVERY)
-                 for actor in obj.__items__ if isinstance(obj, Actor) and obj.local()]
+        if not self.activity.__ephemeral__:
+            local = [self.publisher.add_activity(self.activity, actor.inbox, LOCAL_DELIVERY)
+                     for actor in obj.__items__ if isinstance(obj, Actor) and obj.local()]
 
         inboxes = [actor.best_inbox() for actor in obj.__items__ if isinstance(obj, Actor) and obj.remote()]
         [self.publisher.add_activity(self.activity, inbox, AP_INBOX) for inbox in set(inboxes)]

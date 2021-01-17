@@ -36,6 +36,7 @@ registry = AS2TypeRegistry()
 class AS2Object(Serializable):
     __jsonld_context__ = AS2_CONTEXT
     __jsonld_type__ = 'Object'
+    __ephemeral__ = False
 
     def __init__(self, **kwargs):
         header = {'@context': self.__jsonld_context__}
@@ -160,10 +161,15 @@ registry.register_type(AS2Object)
 
 
 class AS2Pointer:
-    def __init__(self, uri: str):
-        self.uri = uri
+    def __init__(self, uri):
+        if isinstance(uri, str):
+            self.uri = uri
+        elif isinstance(uri, dict):
+            self.uri = uri['id']
+        elif isinstance(uri, AS2Object):
+            self.uri = uri.id
 
-    def dereference(self) -> Serializable:
+    def dereference(self) -> AS2Object:
         return AS2Object.fetch_cached_from_uri(self.uri)
 
     @classmethod
