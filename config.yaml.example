@@ -13,6 +13,9 @@ paths:
   # The static web assets path.  Point this at your web client, like Pleroma FE.
   static: static
 
+  # Upload path.  Point this to your uploaded assets.
+  upload: store/upload
+
 # Listener configuration.
 listener:
   # The IP address to bind to.
