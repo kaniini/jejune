@@ -230,6 +230,12 @@ class AS2Activity(AS2Object):
         if self.local():
             await self.publish()
 
+    async def accept_side_effects(self):
+        pass
+
+    async def reject_side_effects(self):
+        pass
+
     def serialize_to_mastodon(self):
         child = self.child()
 
