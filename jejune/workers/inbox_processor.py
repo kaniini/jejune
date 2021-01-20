@@ -36,4 +36,5 @@ class InboxProcessorWorker:
             await self.event.wait()
 
     def enqueue(self, item: dict):
-        self.event += [item]
+        self.queue += [item]
+        self.event.set()
