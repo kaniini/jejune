@@ -11,6 +11,7 @@ from .app import App
 from .user_api import UserAPI
 from .common_api import CommonAPI
 from .workers.publisher import PublisherWorker
+from .workers.inbox_processor import InboxProcessorWorker
 
 
 from .middleware.oauth import oauth_middleware
@@ -33,6 +34,7 @@ class Application(aiohttp.web.Application):
         self.userapi = UserAPI(self)
         self.commonapi = CommonAPI(self)
         self.publisher = PublisherWorker(self)
+        self.inbox_processor = InboxProcessorWorker(self)
 
     @property
     def hostname(self):
