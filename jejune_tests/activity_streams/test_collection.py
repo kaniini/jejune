@@ -15,11 +15,11 @@ def test_collection():
     f2 = Foo(name='b')
 
     fc = FooCollection.new([f1, f2])
-    fc_dict = fc.serialize(dict)
+    fc_dict = fc.serialize(dict, flatten_pointers=False)
 
     assert fc_dict['@context'] == AS2Object.__jsonld_context__
     assert fc_dict['type'] == 'Collection'
     assert fc_dict['items'] == [f1.serialize(dict), f2.serialize(dict)]
 
-    fc2 = FooCollection.deserialize(fc.serialize())
-    assert fc.serialize() == fc2.serialize()
+    fc2 = FooCollection.deserialize(fc.serialize(flatten_pointers=False))
+    assert fc.serialize(flatten_pointers=False) == fc2.serialize(flatten_pointers=False)
