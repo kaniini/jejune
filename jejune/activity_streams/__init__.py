@@ -180,6 +180,9 @@ class AS2Pointer:
         elif isinstance(uri, AS2Object):
             self.uri = uri.id
 
+    def __repr__(self):
+        return f'<AS2Pointer: {self.uri}>'
+
     def dereference(self) -> AS2Object:
         return AS2Object.fetch_cached_from_uri(self.uri)
 
@@ -190,6 +193,16 @@ class AS2Pointer:
     def serialize(self):
         return self.uri
 
+    async def load(self, payload=None) -> AS2Object:
+        if not payload:
+            return await (AS2Object.fetch_from_uri(self.uri))
+
+        if isinstance(payload, dict):
+            return AS2Object.dereference_from_json(payload)
+
+        assert isinstance(payload, str)
+        return (await AS2Object.fetch_from_uri(payload))
+
 
 class AS2Activity(AS2Object):
     __jsonld_type__ = 'Activity'
@@ -197,10 +210,12 @@ class AS2Activity(AS2Object):
     def __init__(self, **kwargs):
         if 'object' in kwargs and type(kwargs['object']) != str:
             child_obj = kwargs.pop('object')
-            if type(child_obj) == dict:
-                kwargs['object'] = child_obj.get('id', get_jejune_app().rdf_object_uri())
-            else:
-                kwargs['object'] = getattr(childobj, 'id', get_jejune_app().rdf_object_uri())
+
+            child_ptr = AS2Pointer(child_obj)
+            kwargs['object'] = child_ptr.serialize()
+
+            if not child_ptr.dereference():
+                asyncio.ensure_future(child_ptr.load(payload=child_obj))
 
         super().__init__(**kwargs)
 
