@@ -58,6 +58,11 @@ class Accept(AS2Activity):
     async def apply_side_effects(self):
         object = self.child()
 
+        if not object:
+            logging.info('WTF: Accept Activity %r references child object %r which does not exist!',
+                         self.id, self.object)
+            return
+
         if not isinstance(object, AS2Activity):
             logging.info('WTF: Accept Activity %r references child object %r (%s) which does not have applicable side effects.',
                          self.id, object.id, object.type)
