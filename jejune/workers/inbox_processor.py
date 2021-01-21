@@ -27,8 +27,8 @@ class InboxProcessorWorker:
             await obj.apply_side_effects()
 
     async def process_queue(self):
-        while queue:
-            await self.process_item(queue.pop())
+        while self.queue:
+            await self.process_item(self.queue.pop())
 
     async def work_loop(self):
         logging.info('Starting inbox processor worker.')
