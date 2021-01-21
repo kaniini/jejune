@@ -83,10 +83,10 @@ class AS2Object(Serializable):
         global registry
 
         if data['type'] != cls.__jsonld_type__:
-            basetype = registry.type_from_json(data, cls)
+            basetype = registry.type_from_json(data, None)
 
             if not basetype:
-                return None
+                return cls(**data)
 
             return basetype.deserialize_from_json(data)
 
