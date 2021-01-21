@@ -150,6 +150,8 @@ class PublisherWorker:
         asyncio.ensure_future(self.wakeup_loop())
 
     def add_activity(self, activity: AS2Activity, recipient: str, kind=AS2_RECIPIENT) -> PublisherRequest:
+        logging.debug('Enqueueing activity %s for publishing.', activity.id)
+
         pr = PublisherRequest(self, activity, recipient, kind)
         self.queue += [pr]
         self.event.set()

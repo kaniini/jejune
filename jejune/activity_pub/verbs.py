@@ -69,6 +69,7 @@ class Accept(AS2Activity):
             return
 
         await object.accept_side_effects(self)
+        await super().apply_side_effects()
 
 registry.register_type(Accept)
 
@@ -80,26 +81,31 @@ class Reject(AS2Activity):
     async def apply_side_effects(self):
         object = self.child()
 
+        if not object:
+            logging.info('WTF: Accept Activity %r references child object %r which does not exist!',
+                         self.id, self.object)
+            return
+
         if not isinstance(object, AS2Activity):
             logging.info('WTF: Reject Activity %r references child object %r (%s) which does not have applicable side effects.',
                          self.id, object.id, object.type)
             return
 
         await object.reject_side_effects(self)
+        await super().apply_side_effects()
 
 registry.register_type(Reject)
 
 
 class Follow(AS2Activity):
     __jsonld_type__ = 'Follow'
-    __ephemeral__ = True
 
     async def apply_side_effects(self):
         followee = AS2Pointer(self.object).dereference()
 
         # XXX: implement blocks collection
         if not followee.manuallyApprovesFollowers:
-            a = Accept(actor=followee.id, object=self.serialize(dict))
+            a = Accept(actor=followee.id, object=self.serialize(dict), to=[self.actor])
             await a.apply_side_effects()
         else:
             pass
