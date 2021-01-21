@@ -48,6 +48,10 @@ class AS2Object(Serializable):
         if 'published' not in kwargs:
             kwargs['published'] = time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        # fail closed rather than open
+        if 'audience' not in kwargs:
+            kwargs['audience'] = kwargs.get('to', []) + kwargs.get('cc', [])
+
         kwargs['storeIdentity'] = get_jejune_app().rdf_store.hash_for_uri(kwargs['id'])
 
         asyncio.ensure_future(self.synchronize())
