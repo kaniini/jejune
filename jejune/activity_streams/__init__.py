@@ -203,7 +203,7 @@ class AS2Pointer:
             return await (AS2Object.fetch_from_uri(self.id))
 
         if isinstance(payload, dict):
-            return AS2Object.dereference_from_json(payload)
+            return AS2Object.deserialize_from_json(payload)
 
         assert isinstance(payload, str)
         return (await AS2Object.fetch_from_uri(payload))
