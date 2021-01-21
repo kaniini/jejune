@@ -174,32 +174,32 @@ registry.register_type(AS2Object)
 class AS2Pointer:
     def __init__(self, uri):
         if isinstance(uri, str):
-            self.uri = uri
+            self.id = uri
         elif isinstance(uri, dict):
             obj = AS2Object.deserialize_from_json(uri)
             if obj:
-                self.uri = obj.id
+                self.id = obj.id
             else:
-                self.uri = uri['id']
+                self.id = uri['id']
         elif isinstance(uri, AS2Object):
-            self.uri = uri.id
+            self.id = uri.id
 
     def __repr__(self):
-        return f'<AS2Pointer: {self.uri}>'
+        return f'<AS2Pointer: {self.id}>'
 
     def dereference(self) -> AS2Object:
-        return AS2Object.fetch_cached_from_uri(self.uri)
+        return AS2Object.fetch_cached_from_uri(self.id)
 
     @classmethod
     def pointerize(cls, obj: AS2Object):
         return cls(obj.id)
 
     def serialize(self):
-        return self.uri
+        return self.id
 
     async def load(self, payload=None) -> AS2Object:
         if not payload:
-            return await (AS2Object.fetch_from_uri(self.uri))
+            return await (AS2Object.fetch_from_uri(self.id))
 
         if isinstance(payload, dict):
             return AS2Object.dereference_from_json(payload)
