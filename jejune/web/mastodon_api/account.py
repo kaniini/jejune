@@ -10,6 +10,9 @@ routes = RouteTableDef()
 
 @routes.post('/api/v1/accounts')
 async def new_accounts(request):
+    if not app.config['instance']['registrations']:
+        return json_response({'error': 'registrations are not allowed'}, status=403)
+
     post = await request.json()
 
     if 'fullname' not in post.keys():
