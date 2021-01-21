@@ -26,7 +26,11 @@ class RDFStore:
     def hash_for_uri(self, uri: str) -> str:
         parse_result = urllib.parse.urlparse(uri)
 
-        key = str().join([parse_result.netloc, ':', parse_result.path])
+        base = [parse_result.netloc, ':', parse_result.path]
+        if parse_result.fragment:
+            base += ['#', parse_result.fragment]
+
+        key = str().join(base)
         return hashlib.sha256(key.encode('utf-8')).hexdigest()
 
     def directory_for_hash(self, hashed: str) -> str:
