@@ -24,7 +24,7 @@ class CommonAPI:
     async def ensure_shared_inbox(self):
         coll = AS2Collection.create_if_not_exists(self.app.shared_inbox_uri)
 
-    def post(self, actor: Actor, **kwargs) -> Create:
+    async def post(self, actor: Actor, **kwargs) -> Create:
         status = kwargs.get('status')
         if not status:
             return None
@@ -53,7 +53,7 @@ class CommonAPI:
                    cc=self.cc_for_scope(scope, actor, []),
                    audience=n.audience)
 
-        asyncio.ensure_future(c.apply_side_effects())
+        await c.apply_side_effects()
 
         return c
 
