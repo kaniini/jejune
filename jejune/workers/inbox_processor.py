@@ -21,7 +21,10 @@ class InboxProcessorWorker:
         asyncio.ensure_future(self.work_loop())
 
     async def process_item(self, item: dict):
-        AS2Object.deserialize_from_json(item).commit()
+        obj = AS2Object.deserialize_from_json(item)
+
+        if isinstance(obj, AS2Activity):
+            await obj.apply_side_effects()
 
     async def process_queue(self):
         while queue:
