@@ -23,7 +23,7 @@ class Formatter:
             if token[0] == '@':
                 mention = token[1:]
 
-                u = await self.userapi.discover_user(mention)
+                u = await self.app.userapi.discover_user(mention)
                 if not u:
                     new_tokens += [token]
                     continue
@@ -36,6 +36,7 @@ class Formatter:
                 user_uri = getattr(actor, 'uri', actor.id)
                 token = f'<span class="h-card"><a href="{user_uri}" class="u-url mention" rel="ugc">@{actor.preferredUsername}</a></span> '
                 new_tokens += [token]
+                mentions += [actor]
             else:
                 new_tokens += [token]
 
