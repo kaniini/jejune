@@ -40,7 +40,8 @@ class AS2Object(Serializable):
 
     def __init__(self, **kwargs):
         header = {'@context': self.__jsonld_context__}
-        kwargs['type'] = self.__jsonld_type__
+        if 'type' not in kwargs:
+            kwargs['type'] = self.__jsonld_type__
 
         if 'id' not in kwargs:
             kwargs['id'] = get_jejune_app().rdf_object_uri()
