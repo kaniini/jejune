@@ -2,6 +2,7 @@ import logging
 
 
 from ..activity_streams import AS2Activity, AS2Pointer, registry
+from ..activity_streams.collection import AS2Collection
 
 
 class Create(AS2Activity):
