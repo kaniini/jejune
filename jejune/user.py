@@ -26,13 +26,15 @@ class User(Serializable):
 
         kwargs['actor_uri'] = actor_uri
         kwargs['password'] = crypted_pass
-        kwargs['privateKey'] = generate_private_key()
         kwargs['shared_inbox_uri'] = app.shared_inbox_uri
         kwargs['inbox_uri'] = app.inbox_uri()
         kwargs['outbox_uri'] = app.outbox_uri()
         kwargs['followers_uri'] = app.object_uri('collection')
         kwargs['following_uri'] = app.object_uri('collection')
         kwargs['petname'] = app.username_to_petname(kwargs['username'])
+
+        if 'privateKey' not in kwargs:
+            kwargs['privateKey'] = generate_private_key()
 
         return cls(**kwargs)
 
