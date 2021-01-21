@@ -12,3 +12,4 @@ yarl
 cachetools
 async_lru
 pytest
+pytest-asyncio
