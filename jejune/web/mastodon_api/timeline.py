@@ -65,7 +65,7 @@ async def public_timeline(request):
     shared_inbox_collection = AS2Collection.fetch_local(app.shared_inbox_uri, use_pointers=True)
     deref_items = [ptr.dereference() for ptr in shared_inbox_collection.__items__[0:deref_limit]]
 
-    return render_timeline(request, items)
+    return render_timeline(request, deref_items)
 
 
 @routes.get('/api/v1/accounts/{id}/statuses')
