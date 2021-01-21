@@ -104,6 +104,9 @@ class AS2Object(Serializable):
         app = get_jejune_app()
 
         data = app.rdf_store.fetch_hash_json(hashed)
+        if not data:
+            return None
+
         return cls.deserialize_from_json(data)
 
     def commit(self):
