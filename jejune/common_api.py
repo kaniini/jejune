@@ -29,6 +29,9 @@ class CommonAPI:
         if not status:
             return None
 
+        content_type = kwargs.get('content_type', 'text/plain')
+        formatted = await self.app.formatter.format(status, content_type)
+
         scope = kwargs.get('visibility', 'public')
         media_ids = kwargs.get('media_ids', [])
 
@@ -39,10 +42,10 @@ class CommonAPI:
             if att:
                 attachments += [att]
 
-        n = Note(content=status,
+        n = Note(content=formatted,
                  summary=kwargs.get('spoiler_text', None),
                  attributedTo=actor.id,
-                 source={'content': status, 'mediaType': kwargs.get('content_type', 'text/plain')},
+                 source={'content': status, 'mediaType': content_type},
                  inReplyTo=None,
                  audience=self.audience_for_scope(scope, actor, []),
                  attachment=[att.serialize(dict) for att in attachments])

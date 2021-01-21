@@ -10,6 +10,7 @@ from .user import User, Token, Mailbox
 from .app import App
 from .user_api import UserAPI
 from .common_api import CommonAPI
+from .formatter import Formatter
 from .workers.publisher import PublisherWorker
 from .workers.inbox_processor import InboxProcessorWorker
 
@@ -33,6 +34,7 @@ class Application(aiohttp.web.Application):
         self.mailboxns = UserDBNamespace(self, 'Mailbox', Mailbox)
         self.userapi = UserAPI(self)
         self.commonapi = CommonAPI(self)
+        self.formatter = Formatter(self)
         self.publisher = PublisherWorker(self)
         self.inbox_processor = InboxProcessorWorker(self)
 
