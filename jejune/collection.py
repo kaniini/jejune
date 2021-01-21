@@ -11,6 +11,9 @@ class Collection(Serializable):
     def __repr__(self):
         return '<{0}: {1} items>'.format(type(self).__name__, len(self.__items__))
 
+    def __len__(self):
+        return len(self.__items__)
+
     @classmethod
     def new(cls, items=[]):
         return cls(__items__=items)
