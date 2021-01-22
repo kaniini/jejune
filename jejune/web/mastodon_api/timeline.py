@@ -23,6 +23,8 @@ def render_timeline(request, items):
 
     final_set = []
     for item in items:
+        if not item:
+            continue
         item_id = item.mastodon_id()
         if max_id and item_id == max_id:
             max_hit = True
@@ -35,7 +37,8 @@ def render_timeline(request, items):
             break
 
     render_items = final_set[0:limit]
-    return json_response([item.serialize_to_mastodon() for item in render_items])
+    serialized_items = [item.serialize_to_mastodon() for item in render_items if item]
+    return json_response([si for si in serialized_items if si])
 
 
 @routes.get('/api/v1/timelines/home')

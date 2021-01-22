@@ -23,7 +23,12 @@ class Announce(AS2Activity):
     def serialize_to_mastodon(self):
         actor = AS2Pointer(self.actor).dereference()
 
-        reblog = self.child().serialize_to_mastodon()
+        child = self.child()
+        if not child:
+            logging.info('WTF: Announce %r references non-existent child %r.', self.id, self.object)
+            return None
+
+        reblog = child.serialize_to_mastodon()
         reblog['account'] = actor.serialize_to_mastodon()
         reblog['id'] = self.mastodon_id()
         reblog['reblog'] = self.child().serialize_to_mastodon()
