@@ -243,7 +243,11 @@ class AS2Activity(AS2Object):
         if not self.object:
             return None
 
-        return AS2Pointer(self.object).dereference()
+        child = AS2Pointer(self.object).dereference()
+        if not child:
+            asyncio.ensure_future(AS2Pointer(self.object).load())
+
+        return child 
 
     async def publish(self):
         app = get_jejune_app()
