@@ -26,6 +26,7 @@ class InboxProcessorWorker:
         logging.debug('Processing item %r [%s]', obj.id, obj.serialize())
 
         if isinstance(obj, AS2Activity):
+            logging.debug('Applying side effects for remote activity %s', obj.id)
             await obj.apply_side_effects()
 
     async def process_queue(self):

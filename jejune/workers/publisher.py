@@ -53,7 +53,7 @@ class PublisherRequest:
     def handle_collection(self, obj: AS2Collection):
         if not self.activity.__ephemeral__:
             local = [self.publisher.add_activity(self.activity, actor.inbox, LOCAL_DELIVERY)
-                     for actor in obj.__items__ if isinstance(obj, Actor) and obj.local()]
+                     for actor in obj.__items__ if isinstance(actor, Actor) and actor.local()]
 
         inboxes = set([actor.best_inbox() for actor in obj.__items__ if isinstance(actor, Actor) and actor.remote()])
         logging.info('PUBLISHER: Expanded collection %r to %r.', obj.id, inboxes)

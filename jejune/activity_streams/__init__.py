@@ -266,9 +266,7 @@ class AS2Activity(AS2Object):
 
     async def apply_side_effects(self):
         self.fix_child_audience()
-
-        if self.local():
-            await self.publish()
+        await self.publish()
 
     async def accept_side_effects(self, parent):
         pass
