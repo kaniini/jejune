@@ -99,6 +99,7 @@ registry.register_type(Reject)
 
 class Follow(AS2Activity):
     __jsonld_type__ = 'Follow'
+    __ephemeral__ = True
 
     async def apply_side_effects(self):
         followee = AS2Pointer(self.object).dereference()

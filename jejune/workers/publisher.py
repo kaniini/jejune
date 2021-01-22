@@ -55,8 +55,9 @@ class PublisherRequest:
             local = [self.publisher.add_activity(self.activity, actor.inbox, LOCAL_DELIVERY)
                      for actor in obj.__items__ if isinstance(obj, Actor) and obj.local()]
 
-        inboxes = [actor.best_inbox() for actor in obj.__items__ if isinstance(obj, Actor) and obj.remote()]
-        [self.publisher.add_activity(self.activity, inbox, AP_INBOX) for inbox in set(inboxes)]
+        inboxes = set([actor.best_inbox() for actor in obj.__items__ if isinstance(actor, Actor) and actor.remote()])
+        logging.info('PUBLISHER: Expanded collection %r to %r.', obj.id, inboxes)
+        [self.publisher.add_activity(self.activity, inbox, AP_INBOX) for inbox in inboxes]
         return self.completed()
 
     async def handle_as2_recipient(self):
@@ -64,6 +65,7 @@ class PublisherRequest:
             return self.handle_public()
 
         obj = await AS2Object.fetch_from_uri(self.recipient)
+        logging.info('PUBLISHER: Recipient %r', obj)
         if isinstance(obj, AS2Collection):
             return self.handle_collection(obj)
         elif isinstance(obj, Actor):
@@ -154,7 +156,7 @@ class PublisherWorker:
         asyncio.ensure_future(self.wakeup_loop())
 
     def add_activity(self, activity: AS2Activity, recipient: str, kind=AS2_RECIPIENT) -> PublisherRequest:
-        logging.debug('Enqueueing activity %s for publishing.', activity.id)
+        logging.debug('Enqueueing activity %s for publishing to recipient %r (kind %d).', activity.id, recipient, kind)
 
         pr = PublisherRequest(self, activity, recipient, kind)
         self.queue += [pr]

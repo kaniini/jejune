@@ -116,7 +116,7 @@ class AS2Object(Serializable):
         return cls.deserialize_from_json(data)
 
     def commit(self):
-        logging.debug('RDF: Committing %r.', self.id)
+        # logging.debug('RDF: Committing %r.', self.id)
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
 
     @classmethod
@@ -127,7 +127,9 @@ class AS2Object(Serializable):
 
         if app.rdf_store.hash_exists(hashed):
             data = app.rdf_store.fetch_hash_json(hashed)
-            return cls.deserialize_from_json(data)
+
+            if data:
+                return cls.deserialize_from_json(data)
 
         return cls(**kwargs, id=uri)
 
@@ -135,7 +137,7 @@ class AS2Object(Serializable):
         return self
 
     def local(self):
-        return get_jejune_app().rdf_store.local_uri_exists(self.id)
+        return get_jejune_app().rdf_store.uri_is_local(self.id)
 
     def remote(self):
         return not self.local()
