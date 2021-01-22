@@ -98,7 +98,7 @@ class UserAPI:
         asyncio.ensure_future(actor.announce_update())
 
     def follow(self, follower: Actor, followee: Actor):
-        f = Follow(actor=follower.id, object=followee.id)
+        f = Follow(actor=follower.id, object=followee.id, to=[followee.id])
 
         asyncio.ensure_future(f.apply_side_effects())
         return f
