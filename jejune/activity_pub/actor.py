@@ -94,6 +94,10 @@ class Actor(AS2Object):
     async def synchronize(self):
         from .. import get_jejune_app
 
+        app = get_jejune_app()
+        if app.userns.exists(self.make_petname(), 'base'):
+            return
+
         self.fixate()
 
         if self.local():
@@ -102,7 +106,7 @@ class Actor(AS2Object):
         if not getattr(self, 'preferredUsername'):
             return
 
-        # logging.debug('Synchronizing user store entry for actor %s', self.id)
+        logging.debug('Synchronizing user store entry for actor %s', self.id)
 
         u = User(actor_uri=self.id, username=self.make_petname(), remote=True)
         get_jejune_app().userns.put(u.username, 'base', u)

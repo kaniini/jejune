@@ -111,7 +111,7 @@ class UserAPI:
             'type': 'Follow',
             'actor': follower.id,
             'object': followee.id,
-            'id': self.app.rdf_object_id()
+            'id': self.app.rdf_object_uri()
         })
 
         asyncio.ensure_future(u.apply_side_effects())

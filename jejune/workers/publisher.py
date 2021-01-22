@@ -74,6 +74,14 @@ class PublisherRequest:
         return self.fatality()
 
     async def handle_ap_inbox(self):
+        # We can't deliver on behalf of remote users.
+        actor = AS2Pointer(self.activity.actor).dereference()
+        if not actor.local():
+            logging.info('PUBLISHER: WTF: Trying to deliver messages on behalf of remote user %s.', actor.id)
+            return self.completed()
+
+        user = actor.user()
+
         payload = self.activity.serialize()
         uri = urllib.parse.urlsplit(self.recipient)
         digest = base64.b64encode(hashlib.sha256(payload.encode('utf-8')).digest()).decode('utf-8')
@@ -88,8 +96,6 @@ class PublisherRequest:
             'Date': time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime()),
         }
 
-        actor = AS2Pointer(self.activity.actor).dereference()
-        user = actor.user()
         privkey = user.privkey()
 
         headers['signature'] = self.publisher.signer.sign(headers, privkey, actor.publicKey['id'])

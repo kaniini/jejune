@@ -5,6 +5,9 @@ from ... import app
 from aiohttp.web import RouteTableDef, json_response
 
 
+from ...activity_pub.actor import Actor
+
+
 routes = RouteTableDef()
 
 
@@ -69,12 +72,13 @@ async def update_credentials(request):
 
 @routes.post('/api/v1/accounts/{id}/follow')
 async def follow(request):
-    follower = request['oauth_user']
+    user = request['oauth_user']
 
-    if not follower:
+    if not user:
         return json_response({'error': 'no oauth session found'}, status=400)
 
-    followee = Actor.fetch_from_hash(id)
+    follower = user.actor()
+    followee = Actor.fetch_from_hash(request.match_info['id'])
     if not followee:
         return json_response({'error': 'account not found'}, status=404)
 
@@ -85,12 +89,13 @@ async def follow(request):
 
 @routes.post('/api/v1/accounts/{id}/unfollow')
 async def unfollow(request):
-    follower = request['oauth_user']
+    user = request['oauth_user']
 
-    if not follower:
+    if not user:
         return json_response({'error': 'no oauth session found'}, status=400)
 
-    followee = Actor.fetch_from_hash(id)
+    follower = user.actor()
+    followee = Actor.fetch_from_hash(request.match_info['id'])
     if not followee:
         return json_response({'error': 'account not found'}, status=404)
 
