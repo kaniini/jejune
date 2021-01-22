@@ -10,6 +10,10 @@ in real-time using IPFS.
 
 It has some level of API compatibility with Mastodon and Pleroma applications.
 
+**This is alpha-quality software and does not yet support many features necessary
+for running a secure instance, it also lacks moderation tools.  You should not
+run this software in production yet.**
+
 # Installation
 
 1. `python3 -m virtualenv prod`
