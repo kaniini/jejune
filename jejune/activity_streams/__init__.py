@@ -96,6 +96,8 @@ class AS2Object(Serializable):
     @classmethod
     async def fetch_from_uri(cls, uri):
         data = await get_jejune_app().rdf_store.fetch_json(uri)
+        if not data:
+            return None
         return cls.deserialize_from_json(data)
 
     @classmethod
