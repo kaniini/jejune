@@ -59,6 +59,7 @@ class AS2Object(Serializable):
 
         if '@context' in kwargs:
             super(AS2Object, self).__init__(**kwargs)
+            self.commit()
             return
 
         super(AS2Object, self).__init__(**header, **kwargs)
@@ -115,6 +116,7 @@ class AS2Object(Serializable):
         return cls.deserialize_from_json(data)
 
     def commit(self):
+        logging.debug('RDF: Committing %r.', self.id)
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
 
     @classmethod

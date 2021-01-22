@@ -1,6 +1,9 @@
 import aiohttp
 import asyncio
+import base64
+import hashlib
 import logging
+import time
 import urllib.parse
 
 
@@ -71,14 +74,15 @@ class PublisherRequest:
     async def handle_ap_inbox(self):
         payload = self.activity.serialize()
         uri = urllib.parse.urlsplit(self.recipient)
+        digest = base64.b64encode(hashlib.sha256(payload.encode('utf-8')).digest()).decode('utf-8')
 
         headers = {
             '(request-target)': 'post %s' % uri.path,
-            'Content-Length': str(len(data)),
+            'Content-Length': str(len(payload)),
             'Content-Type': 'application/activity+json',
             'User-Agent': self.publisher.app.user_agent,
             'Host': uri.netloc,
-            'Digest': digest,
+            'Digest': 'SHA-256=' + digest,
             'Date': time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime()),
         }
 
@@ -86,7 +90,7 @@ class PublisherRequest:
         user = actor.user()
         privkey = user.privkey()
 
-        headers['signature'] = self.publisher.signer.sign_headers(headers, privkey, actor.publicKey['id'])
+        headers['signature'] = self.publisher.signer.sign(headers, privkey, actor.publicKey['id'])
         headers.pop('(request-target)')
         headers.pop('Host')
 
@@ -94,13 +98,13 @@ class PublisherRequest:
             async with aiohttp.ClientSession() as session:
                 async with session.post(self.recipient, data=payload, headers=headers) as resp:
                     if resp.status == 202:
-                        return self.complete()
+                        return self.completed()
                     elif resp.status >= 500:
                         return self.error()
 
                     resp_payload = await resp.text()
                     logging.debug('%r >> %r', self.recipient, resp_payload)
-                    return self.complete()
+                    return self.completed()
         except Exception as e:
             logging.info('Exception %r when pushing to %s.', e, self.recipient)
             return self.error()

@@ -99,6 +99,9 @@ class Actor(AS2Object):
         if self.local():
             return
 
+        if not getattr(self, 'preferredUsername'):
+            return
+
         logging.debug('Synchronizing user store entry for actor %s', self.id)
 
         u = User(actor_uri=self.id, username=self.make_petname(), remote=True)

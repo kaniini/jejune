@@ -23,6 +23,8 @@ class InboxProcessorWorker:
     async def process_item(self, item: dict):
         obj = AS2Object.deserialize_from_json(item)
 
+        logging.debug('Processing item %r [%s]', obj.id, obj.serialize())
+
         if isinstance(obj, AS2Activity):
             await obj.apply_side_effects()
 
