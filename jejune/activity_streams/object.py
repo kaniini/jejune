@@ -17,7 +17,7 @@ class Note(AS2Object):
         reply = None
         reply_actor = None
 
-        if self.inReplyTo:
+        if getattr(self, 'inReplyTo', None):
             reply = AS2Pointer(self.inReplyTo).dereference()
             if reply:
                 reply_actor = AS2Pointer(reply.attributedTo).dereference()

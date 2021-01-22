@@ -155,8 +155,17 @@ class AS2Object(Serializable):
         if not self.published:
             return 0.0
 
-        st = time.strptime(self.published, '%Y-%m-%dT%H:%M:%SZ')
-        return time.mktime(st)
+        try:
+            st = time.strptime(self.published, '%Y-%m-%dT%H:%M:%SZ')
+            return time.mktime(st)
+        except ValueError:
+            try:
+                st = time.strptime(self.published, '%Y-%m-%dT%H:%M:%S.%fZ')
+                return time.mktime(st)
+            except ValueError:
+                pass
+
+        return 0.0
 
     def visible_for(self, actor=None) -> bool:
         audience = getattr(self, 'audience', [self.attributedTo or self.actor])
