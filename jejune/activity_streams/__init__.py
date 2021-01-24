@@ -298,4 +298,13 @@ class AS2Activity(AS2Object):
 
         return super().serialize_to_mastodon()
 
+    def serialize(self, method=simplejson.dumps):
+        base = super().serialize(dict)
+
+        child = self.child()
+        if child and child.local():
+            base['object'] = child.serialize(dict)
+
+        return method(base)
+
 registry.register_type(AS2Activity)
