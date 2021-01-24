@@ -30,3 +30,6 @@ app = JEJUNE_APP = application_factory.Application(os.environ['JEJUNE_CONFIG'])
 
 
 from . import web
+
+
+app.load_plugins()

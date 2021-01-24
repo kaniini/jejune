@@ -41,6 +41,7 @@ def get_instance(yaml_file: dict) -> dict:
         'frontend-configurations': instance.get('frontend-configurations', dict()),
         'limits': get_limits(instance.get('limits', dict())),
         'registrations': instance.get('registrations', False),
+        'plugins': instance.get('plugins', []),
     }
 
 

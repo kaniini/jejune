@@ -80,3 +80,6 @@ class Application(aiohttp.web.Application):
     def user_agent(self) -> str:
         from . import __version__
         return f'Jejune {__version__} (https://{self.hostname})'
+
+    def load_plugins(self):
+        [__import__(pkg) for pkg in self.config['instance'].get('plugins', [])]

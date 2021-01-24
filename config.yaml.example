@@ -64,6 +64,10 @@ instance:
   # Whether registrations are enabled.
   registrations: true
 
+  # Plugins to use.
+  plugins:
+    - jejune.plugin.web.simple_frontend
+
 # Federation configuration.
 federation:
   # Whether federation is enabled at all.
