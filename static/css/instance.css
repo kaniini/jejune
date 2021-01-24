@@ -1,0 +1,78 @@
+:root {
+	--brand-color: #d8a070;
+	--background-color: #121a24;
+	--foreground-color: #182230;
+	--primary-text-color: #b9b9ba;
+	--muted-text-color: #89898a;
+	--selected-color: #2a384a;
+}
+
+body {
+	background-color: var(--background-color);
+	font-family: sans-serif;
+	color: var(--primary-text-color);
+	padding: 0;
+	margin: 0;
+}
+
+header {
+	height: 2em;
+	padding: 1em;
+	background: var(--foreground-color);
+	box-shadow: 0 1px 4px 0px rgba(0, 0, 0, 0.5);
+}
+
+header .content {
+	display: flex;
+	align-items: center;
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+header > .title {
+	font-size: 16px;
+	font-weight: bold;
+	color: var(--primary-text-color);
+}
+
+#container {
+	max-width: 400px;
+	background-color: var(--foreground-color);
+	border-radius: 4px;
+	overflow: hidden;
+	margin: 2em auto;
+	box-shadow: 0 1px 4px 0px rgba(0, 0, 0, 0.5);
+	padding: 1em;
+}
+
+#container h1 {
+	text-align: center;
+}
+
+form {
+	width: 100%;
+}
+
+.form-input {
+	color: var(--muted-text-color);
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 1em;
+}
+
+input {
+	box-sizing: content-box;
+	background-color: var(--background-color);
+	color: var(--primary-text-color);
+	border: 0;
+	border-bottom: 2px solid var(--muted-text-color);
+	font-size: 1.25em;
+}
+
+button {
+	width: 100%;
+	background-color: var(--background-color);
+	color: var(--primary-text-color);
+	border: none;
+	font-size: 1.25em;
+}

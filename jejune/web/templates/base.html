@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimal-ui">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/.well-known/jejune/css/instance.css">
+  </head>
+  <body>
+    <header>
+      <a class="title" href="/">{{ app.config['instance']['name'] }}</a>
+    </header>
+
+    <section id="container">
+      {% block container %}{% endblock %}
+    </section>
+  </body>
+</html>

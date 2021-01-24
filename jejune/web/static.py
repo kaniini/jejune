@@ -8,5 +8,6 @@ async def index_html(request):
 
 
 app.router.add_get('/.well-known/jejune', index_html)
+app.router.add_static('/.well-known/jejune/css', path=app.config['paths']['static'] + '/css', name='css')
 app.router.add_static('/static', path=app.config['paths']['static'] + '/static', name='static')
 app.router.add_static('/.well-known/jejune/upload', path=app.config['paths']['upload'], name='upload')

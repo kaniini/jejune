@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block container %}
+
+<p>Application <strong>{{ client_app.name }}</strong> wishes to use your account.</p>
+
+<form action="/.well-known/jejune/oauth/authorize" method="post">
+
+<div class="form-input">
+	<label for="username">Username</label>
+	<input id="username" name="username" type="text">
+</div>
+
+<div class="form-input">
+	<label for="password">Passphrase</label>
+	<input id="password" name="password" type="password">
+</div>
+
+<input type="hidden" name="client_id" value="{{ client_app.client_id }}">
+<input type="hidden" name="response_type" value="code">
+<input type="hidden" name="redirect_uri" value="{{ redirect_uri }}">
+
+<button type="submit">Log In</button>
+
+</form>
+
+{% endblock %}
