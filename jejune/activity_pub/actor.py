@@ -49,6 +49,10 @@ class Actor(AS2Object):
         if followers:
             AS2Collection.create_if_not_exists(followers)
 
+    def avatar_icon(self):
+        avatar = getattr(self, 'icon', {})
+        return avatar.get('url', None)
+
     def serialize_to_mastodon(self):
         avatar = getattr(self, 'icon', {})
         banner = getattr(self, 'image', {})

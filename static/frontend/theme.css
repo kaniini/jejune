@@ -1,0 +1,58 @@
+html {
+	background: url('/frontend/default-bg.jpg');
+	background-size: cover;
+	background-attachment: fixed;
+	font-family: sans-serif;
+	color: #eee;
+}
+
+body {
+	max-width: 1450px;
+	margin: 0 auto;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+header {
+	text-align: center;
+}
+
+h1.brand {
+	font-size: 48px;
+	margin: 0;
+	padding: 1em;
+}
+
+a {
+	text-decoration: none;
+	color: #fff;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+aside {
+	flex: 1;
+	width: 250px;
+	text-align: center;
+}
+
+#container {
+	display: flex;
+}
+
+section {
+	flex: 4;
+}
+
+aside .author {
+	margin-top: 1em;
+	width: 128px;
+	height: 128px;
+	border-radius: 96px;
+}
+
+.activity {
+	border-radius: 4px;
+	background: rgba(0, 0, 0, 0.25);
+}

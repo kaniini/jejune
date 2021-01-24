@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ app.config['instance']['name'] }}</title>
+    <link rel="stylesheet" href="/frontend/theme.css">
+  </head>
+  <body>
+    <header>
+      <h1 class="brand">
+        <a href="/">{{ app.config['instance']['name'] }}</a>
+      </h1>
+    </header>
+    <div id="container">
+      <section>
+        {% block container %}{% endblock %}
+      </section>
+      <aside>
+        <img src="{{ featured_user.avatar_icon() }}" alt="{{ featured_user.name }}" class="author">
+        <h4>{{ featured_user.name }}</h4>
+        <p>{{ featured_user.summary }}</p>
+      </aside>
+    </div>
+  </body>
+</html>
