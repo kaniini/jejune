@@ -1,7 +1,7 @@
 import logging
 
 
-from . import jinja_env
+from . import jinja_env, fetch_request_data
 from .. import app
 from aiohttp.web import RouteTableDef, Response, json_response, HTTPFound
 
@@ -18,7 +18,7 @@ async def oauth_revoke(request):
 @routes.post('/oauth/token')
 @routes.post('/.well-known/jejune/oauth/token')
 async def oauth_token(request):
-    post = await request.post()
+    post = await fetch_request_data(request)
 
     if post['grant_type'] == 'password':
         if not 'username' in post:
@@ -43,8 +43,6 @@ async def oauth_token(request):
         token = app.userapi.find_token(post['code'])
         if not token:
             return json_response({'error': 'invalid token'}, status=403)
-
-        logging.info('TOKEN %r', token.serialize(dict))
 
         return json_response(token.serialize(dict))
 

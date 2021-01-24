@@ -8,7 +8,10 @@ jinja_env = jinja2.Environment(
 
 async def fetch_request_data(request):
     if request.content_type == 'application/json':
-        return (await request.json())
+        try:
+            return (await request.json())
+        except:
+            return request.query
 
     return (await request.post())
 
