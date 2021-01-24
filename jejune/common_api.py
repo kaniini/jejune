@@ -46,7 +46,7 @@ class CommonAPI:
                  summary=kwargs.get('spoiler_text', None),
                  attributedTo=actor.id,
                  source={'content': status, 'mediaType': content_type},
-                 inReplyTo=None,
+                 inReplyTo=kwargs.get('in_reply_to_uri', None),
                  audience=self.audience_for_scope(scope, actor, []),
                  attachment=[att.serialize(dict) for att in attachments])
 

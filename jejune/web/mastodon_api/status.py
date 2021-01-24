@@ -20,12 +20,21 @@ async def status_new(request):
     if not 'status' in post:
         return json_response({'error': 'post must have a status'}, status=400)
 
+    in_reply_to_uri = None
+    if 'in_reply_to_id' in post:
+        hashed = post['in_reply_to_id'].split('.')[1]
+        in_reply_to_note = Note.fetch_from_hash(hashed)
+
+        if in_reply_to_note:
+            in_reply_to_uri = in_reply_to_note.id
+
     create_activity = await app.commonapi.post(user.actor(),
                                                spoiler_text=post.get('spoiler_text', None),
                                                status=post.get('status', None),
                                                content_type=post.get('content_type', 'text/plain'),
                                                visibility=post.get('visibility', 'public'),
-                                               media_ids=post.getall('media_ids[]', []))
+                                               media_ids=post.getall('media_ids[]', []),
+                                               in_reply_to_uri=in_reply_to_uri)
 
     return json_response(create_activity.serialize_to_mastodon())
 
