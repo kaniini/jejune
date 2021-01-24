@@ -113,7 +113,7 @@ class RDFStore:
                             return None
                         return (await response.text())
         except:
-            pass
+            logging.info('Timeout while fetching remote object %r.', uri)
 
         return None
 
