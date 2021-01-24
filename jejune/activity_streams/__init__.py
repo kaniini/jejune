@@ -146,7 +146,8 @@ class AS2Object(Serializable):
 
     def serialize_to_mastodon(self):
         return {'error': 'serialization to mastodon format is not supported for this type',
-                'type': self.__jsonld_type__}
+                'type': self.__jsonld_type__,
+                'asid': self.id}
 
     def mastodon_id(self):
         return self.storeIdentity
