@@ -81,6 +81,6 @@ class Token(Serializable):
                    token_type='Bearer',
                    access_token=str(uuid.uuid4()),
                    refresh_token=str(uuid.uuid4()),
-                   scopes="read write follow",
+                   scope="read write follow",
                    expires_in=9999999999,
                    created_at=time.time())

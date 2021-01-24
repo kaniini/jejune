@@ -6,6 +6,13 @@ jinja_env = jinja2.Environment(
 )
 
 
+async def fetch_request_data(request):
+    if request.content_type == 'application/json':
+        return (await request.json())
+
+    return (await request.post())
+
+
 from .. import app
 jinja_env.globals['app'] = app
 

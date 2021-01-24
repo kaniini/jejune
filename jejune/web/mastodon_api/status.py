@@ -1,6 +1,7 @@
 import logging
 
 
+from .. import fetch_request_data
 from ... import app, __version__
 from ...activity_streams.object import Note
 from aiohttp.web import RouteTableDef, Response, json_response
@@ -15,7 +16,7 @@ async def status_new(request):
     if not user:
         return json_response({'error': 'no oauth session found'}, status=400)
 
-    post = await request.post()
+    post = await fetch_request_data(request)
 
     if not 'status' in post:
         return json_response({'error': 'post must have a status'}, status=400)
@@ -28,12 +29,17 @@ async def status_new(request):
         if in_reply_to_note:
             in_reply_to_uri = in_reply_to_note.id
 
+    if request.content_type == 'application/json':
+        media_ids = post['media_ids']
+    else:
+        media_ids = post.getall('media_ids[]', [])
+
     create_activity = await app.commonapi.post(user.actor(),
                                                spoiler_text=post.get('spoiler_text', None),
                                                status=post.get('status', None),
                                                content_type=post.get('content_type', 'text/plain'),
                                                visibility=post.get('visibility', 'public'),
-                                               media_ids=post.getall('media_ids[]', []),
+                                               media_ids=media_ids,
                                                in_reply_to_uri=in_reply_to_uri)
 
     return json_response(create_activity.serialize_to_mastodon())
