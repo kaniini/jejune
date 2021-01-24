@@ -49,6 +49,13 @@ class AS2Object(Serializable):
         if 'published' not in kwargs:
             kwargs['published'] = time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        # ensure we are fetching any relevant actors ahead of time
+        if 'attributedTo' in kwargs:
+            AS2Pointer(kwargs['attributedTo']).dereference()
+
+        if 'actor' in kwargs:
+            AS2Pointer(kwargs['actor']).dereference()
+
         # fail closed rather than open
         if 'audience' not in kwargs:
             kwargs['audience'] = kwargs.get('to', []) + kwargs.get('cc', [])
