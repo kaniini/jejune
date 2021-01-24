@@ -105,12 +105,15 @@ class RDFStore:
             'User-Agent': self.app.user_agent,
         }
 
-        async with aiohttp.ClientSession() as session:
+        try:
             async with timeout(5.0):
-                async with session.get(uri, headers=headers) as response:
-                    if response.status != 200:
-                        return None
-                    return (await response.text())
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(uri, headers=headers) as response:
+                        if response.status != 200:
+                            return None
+                        return (await response.text())
+        except:
+            pass
 
         return None
 
