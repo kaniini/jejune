@@ -19,6 +19,9 @@ class UserAPI:
         self.webfinger = WebfingerClient(self.app)
 
     def create_user(self, description: str, actor_type: str, username: str, email: str, password: str, bio: str, locked: bool) -> User:
+        if self.find_user(username):
+            return None
+
         u = User.new(self.app, password,
                      description=description,
                      actor_type=actor_type,
