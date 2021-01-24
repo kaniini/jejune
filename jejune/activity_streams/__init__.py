@@ -205,7 +205,10 @@ class AS2Pointer:
         return f'<AS2Pointer: {self.id}>'
 
     def dereference(self) -> AS2Object:
-        return AS2Object.fetch_cached_from_uri(self.id)
+        obj = AS2Object.fetch_cached_from_uri(self.id)
+        if not obj:
+            asyncio.ensure_future(self.load())
+        return obj
 
     @classmethod
     def pointerize(cls, obj: AS2Object):
