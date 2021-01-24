@@ -25,11 +25,11 @@ class Note(AS2Object):
         return {
             'id': self.mastodon_id(),
             'created_at': self.published,
-            'in_reply_to_id': getattr(reply, 'storeIdentity', None),
+            'in_reply_to_id': reply.mastodon_id() if reply else None,
             'in_reply_to_account_id': getattr(reply_actor, 'storeIdentity', None),
             'sensitive': getattr(self, 'summary', None) is not None,
             'spoiler_text': getattr(self, 'summary', None) or '',
-            'content': self.content,
+            'content': getattr(self, 'content', None),
             'visibility': 'public',    # XXX: scopes
             'language': 'en',          # XXX: languages
             'uri': self.id,
