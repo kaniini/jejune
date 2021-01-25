@@ -14,3 +14,4 @@ async_lru
 pytest
 pytest-asyncio
 aiohttp-jinja2
+markdown
