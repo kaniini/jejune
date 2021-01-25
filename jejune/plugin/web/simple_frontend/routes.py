@@ -14,8 +14,11 @@ routes = RouteTableDef()
 async def index(request):
     from . import outbox, featured_user
 
-    coll = AS2Pointer(outbox).dereference()
-    activities = [act for act in coll.__items__ if act.type in ['Create', 'Announce', 'Like']]
+    activities = []
+
+    if outbox:
+        coll = AS2Pointer(outbox).dereference()
+        activities = [act for act in coll.__items__ if act.type in ['Create', 'Announce', 'Like']]
 
     template = jinja_env.get_template('index.html')
 

@@ -15,9 +15,11 @@
         {% block container %}{% endblock %}
       </section>
       <aside>
+        {% if featured_user %}
         <img src="{{ featured_user.avatar_icon() }}" alt="{{ featured_user.name }}" class="author">
         <h4>{{ featured_user.name }}</h4>
         <p>{{ featured_user.summary }}</p>
+        {% endif %}
       </aside>
     </div>
   </body>

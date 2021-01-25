@@ -22,7 +22,7 @@ featured_user = app.userapi.find_user(config.get('user', None)).actor()
 logging.info('Simple Frontend: Config: %r', config)
 
 
-if not outbox:
+if not outbox and featured_user:
     outbox = getattr(featured_user, 'outbox', None)
 
 
