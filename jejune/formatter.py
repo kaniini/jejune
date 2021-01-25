@@ -1,4 +1,5 @@
 import logging
+import markdown
 import re
 
 
@@ -45,16 +46,13 @@ class Formatter:
     def replace_hashtags(self, message: str) -> [str, list]:
         return (message, [])
 
-    def linebreak(self, message: str) -> str:
-        return '<br>\n'.join(message.splitlines())
-
     async def format(self, message: str, content_type: str) -> str:
         orig_message = message
 
         try:
             message, mentions = await self.replace_mentions(message)
             message, hashtags = self.replace_hashtags(message)
-            message = self.linebreak(message)
+            message = markdown.markdown(message)
         except:
             return orig_message
 
