@@ -19,6 +19,9 @@ from .middleware.oauth import oauth_middleware
 from .middleware.http_signatures import http_signatures_middleware
 
 
+from .frontend_support import FrontendSupport
+
+
 class Application(aiohttp.web.Application):
     def __init__(self, config: str):
         super(Application, self).__init__(middlewares=[
@@ -37,6 +40,7 @@ class Application(aiohttp.web.Application):
         self.formatter = Formatter(self)
         self.publisher = PublisherWorker(self)
         self.inbox_processor = InboxProcessorWorker(self)
+        self.frontend_support = FrontendSupport()
 
     @property
     def hostname(self):
