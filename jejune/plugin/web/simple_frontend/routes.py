@@ -18,7 +18,7 @@ async def index(request):
 
     if outbox:
         coll = AS2Pointer(outbox).dereference()
-        activities = [act for act in coll.__items__ if act.type in ['Create', 'Announce', 'Like']]
+        activities = [act for act in coll.__items__[0:20] if act.type in ['Create', 'Announce', 'Like']]
 
     template = jinja_env.get_template('index.html')
 
