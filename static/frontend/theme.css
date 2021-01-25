@@ -35,14 +35,21 @@ aside {
 	flex: 1;
 	width: 250px;
 	text-align: center;
+	margin: 1em 1em 0 0;
 }
 
 #container {
 	display: flex;
 }
 
+date {
+	display: block;
+	margin-bottom: 0.5em;
+}
+
 section {
 	flex: 4;
+	margin: 1em;
 }
 
 aside .author {
@@ -53,6 +60,51 @@ aside .author {
 }
 
 .activity {
+	display: flex;
 	border-radius: 4px;
 	background: rgba(0, 0, 0, 0.25);
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+.activity-icon {
+	flex: 1;
+	margin-left: -1em;
+	max-width: 10em;
+	text-align: center;
+}
+
+.activity-icon img {
+	width: 5em;
+	height: 5em;
+	border-radius: 5em;
+}
+
+.activity-content {
+	flex: 4;
+}
+
+.activity-quote {
+	display: flex;
+	margin: 0.5em 0 0.5em 0;
+	padding: 1em;
+	background: rgba(0, 0, 0, 0.25);
+	border-radius: 4px;
+	align-items: center;
+}
+
+.activity-quote .content {
+	margin-left: 1em;
+}
+
+.attribution {
+	flex: 1;
+	max-width: 5em;
+	align-self: flex-start;
+}
+
+.attribution-icon img {
+	width: 4em;
+	height: 4em;
+	border-radius: 4em;
 }

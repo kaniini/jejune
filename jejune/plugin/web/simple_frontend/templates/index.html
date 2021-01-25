@@ -1,27 +1,9 @@
 {% extends "base.html" %}
 
+{% from "activity.html" import render_activity %}
+
 {% block container %}
-
 {% for activity in activities %}
-
-<div class="activity">
-
-{% set obj=activity.child() %}
-
-{% if activity.summary %}
-<h2>{{ activity.summary }}</h2>
-{% endif %}
-
-<div class="content">
-{{ obj.content | safe }}
-</div>
-
-<h3>
-  <date>{{ activity.published }}</date>
-</h3>
-
-</div>
-
+{{ render_activity(activity) }}
 {% endfor %}
-
 {% endblock %}

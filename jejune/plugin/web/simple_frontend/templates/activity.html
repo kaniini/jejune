@@ -1,0 +1,62 @@
+{% macro render_activity(activity) %}
+
+<div class="activity">
+
+{% set obj=activity.child() %}
+
+<div class="activity-icon">
+
+{% set attribution=activity.attributed_object() %}
+
+<img src="{{ attribution.avatar_icon() }}" alt="{{ attribution.name }}">
+
+</div>
+
+<div class="activity-content">{{ render_object(obj) }}</div>
+
+</div>
+
+{% endmacro %}
+
+{% macro render_object(obj) %}
+
+{% if obj.summary %}
+<h2 class="activity-summary">{{ obj.summary }}</h2>
+{% endif %}
+
+<small class="activity-date">
+  <date>{{ obj.published }}</date>
+</small>
+
+{% set reply=obj.reply() %}
+
+{% if reply %}
+{{ render_quote(reply) }}
+{% endif %}
+
+<div class="content">
+{{ obj.content | safe }}
+</div>
+
+{% endmacro %}
+
+{% macro render_quote(obj) %}
+
+{% set attribution=obj.attributed_object() %}
+
+<blockquote class="activity-quote">
+
+<div class="attribution">
+  <a href="{{ attribution.url or attribution.id }}">
+    <span class="attribution-icon">
+      <img src="{{ attribution.avatar_icon() }}" alt="{{ attribution.name }}">
+    </span>
+  </a>
+</div>
+
+<div class="content">
+{{ obj.content | safe }}
+</div>
+
+</blockquote>
+{% endmacro %}
