@@ -31,6 +31,9 @@ async def activity(request):
     if not activity:
         return Response(text='activity not found', status=404)
 
+    if request.headers.get('Accept', 'text/html') in ['application/activity+json', 'application/ld+json']:
+        return json_response(activity.serialize(dict), content_type='application/activity+json')
+
     template = jinja_env.get_template('activity-view.html')
 
     return Response(text=template.render(activity=activity, replies=[]), content_type='text/html')
