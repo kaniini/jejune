@@ -20,12 +20,15 @@
 
 {% macro render_object(obj) %}
 
+{# XXX: articles #}
 {% if obj.summary %}
-<h2 class="activity-summary">{{ obj.summary }}</h2>
+<h2 class="activity-summary">
+  <a href="{{ app.frontend_support.friendly_uri(obj) }}">{{ obj.summary }}</a>
+</h2>
 {% endif %}
 
 <small class="activity-date">
-  <date>{{ obj.published }}</date>
+  <date><a href="{{ app.frontend_support.friendly_uri(obj) }}">{{ obj.published }}</a></date>
 </small>
 
 {% set reply=obj.reply() %}

@@ -124,7 +124,12 @@ class AS2Object(Serializable):
 
         return cls.deserialize_from_json(data)
 
+    def update_url(self):
+        self.url = get_jejune_app().frontend_support.friendly_uri(self)
+
     def commit(self):
+        self.update_url()
+
         # logging.debug('RDF: Committing %r.', self.id)
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
 
