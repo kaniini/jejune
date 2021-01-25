@@ -3,7 +3,7 @@ import logging
 
 from . import jinja_env
 from jejune import app
-from jejune.activity_streams import AS2Pointer
+from jejune.activity_streams import AS2Object, AS2Pointer
 from aiohttp.web import RouteTableDef, Response, json_response, HTTPFound
 
 
