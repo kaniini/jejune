@@ -198,6 +198,13 @@ class AS2Object(Serializable):
 
         return None
 
+    def attributed_object(self):
+        attribution = getattr(self, 'attributedTo', getattr(self, 'actor', None))
+        if not attribution:
+            return None
+
+        return AS2Pointer(attribution).dereference()
+
 registry.register_type(AS2Object)
 
 
