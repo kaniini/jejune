@@ -14,13 +14,8 @@ class Note(AS2Object):
     def serialize_to_mastodon(self):
         actor = AS2Pointer(self.attributedTo).dereference()
 
-        reply = None
-        reply_actor = None
-
-        if getattr(self, 'inReplyTo', None):
-            reply = AS2Pointer(self.inReplyTo).dereference()
-            if reply:
-                reply_actor = AS2Pointer(reply.attributedTo).dereference()
+        reply = self.reply()
+        reply_actor = getattr(reply, 'attributedTo', None)
 
         return {
             'id': self.mastodon_id(),

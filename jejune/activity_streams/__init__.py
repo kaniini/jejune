@@ -192,6 +192,12 @@ class AS2Object(Serializable):
     async def synchronize(self):
         pass
 
+    def reply(self):
+        if getattr(self, 'inReplyTo', None):
+            return AS2Pointer(self.inReplyTo).dereference()
+
+        return None
+
 registry.register_type(AS2Object)
 
 
