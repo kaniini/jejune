@@ -211,6 +211,9 @@ class AS2Object(Serializable):
 
         return AS2Pointer(attribution).dereference()
 
+    def attachments(self):
+        return getattr(self, 'attachment', [])
+
 registry.register_type(AS2Object)
 
 

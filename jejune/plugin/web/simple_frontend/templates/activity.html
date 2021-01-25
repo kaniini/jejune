@@ -20,6 +20,10 @@
 
 {% macro render_object(obj) %}
 
+<small class="activity-date">
+  <date><a href="{{ app.frontend_support.friendly_uri(obj) }}">{{ obj.published }}</a></date>
+</small>
+
 {# XXX: articles #}
 {% if obj.summary %}
 <h2 class="activity-summary">
@@ -27,14 +31,30 @@
 </h2>
 {% endif %}
 
-<small class="activity-date">
-  <date><a href="{{ app.frontend_support.friendly_uri(obj) }}">{{ obj.published }}</a></date>
-</small>
-
 {% set reply=obj.reply() %}
 
 {% if reply %}
 {{ render_quote(reply) }}
+{% endif %}
+
+{% if obj.attachments() %}
+<div class="attachments">
+{% for att in obj.attachments() %}
+<div class="attachment">
+
+{% if att['mediaType'].startswith('image') %}
+<a href="{{ att['url'] }}" target="_blank">
+  <img src="{{ att['url'] }}" alt="{{ att['name'] }}">
+</a>
+{% elif att['mediaType'].startswith('video') %}
+<video src="{{ att['url'] }}" controls="controls" playsinline=""></video>
+{% elif att['mediaType'].startswith('audio') %}
+<audio src="{{ att['url'] }}" controls="controls" playsinline=""></video>
+{% endif %}
+
+</div>
+{% endfor %}
+</div>
 {% endif %}
 
 <div class="content">
