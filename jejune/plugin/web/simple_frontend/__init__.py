@@ -30,6 +30,9 @@ if not outbox and featured_user:
 logging.info('Simple Frontend: Using outbox %r.', outbox)
 
 
+jinja_env.globals['featured_user'] = featured_user
+
+
 from jejune.activity_streams import AS2Object
 
 

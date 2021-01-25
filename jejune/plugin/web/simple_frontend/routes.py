@@ -12,7 +12,7 @@ routes = RouteTableDef()
 
 @routes.get('/')
 async def index(request):
-    from . import outbox, featured_user
+    from . import outbox
 
     activities = []
 
@@ -22,7 +22,18 @@ async def index(request):
 
     template = jinja_env.get_template('index.html')
 
-    return Response(text=template.render(activities=activities, featured_user=featured_user), content_type='text/html')
+    return Response(text=template.render(activities=activities), content_type='text/html')
+
+
+@routes.get('/activity/{hash}/{stem}')
+async def activity(request):
+    activity = AS2Object.fetch_from_hash(request.match_info['hash'])
+    if not activity:
+        return Response(text='activity not found', status=404)
+
+    template = jinja_env.get_template('activity-view.html')
+
+    return Response(text=template.render(activity=activity, replies=[]), content_type='text/html')
 
 
 app.add_routes(routes)

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% from "activity.html" import render_object %}
+
+{% macro render_one(object) %}
+<div class="activity">
+<div class="activity-icon">
+  {% set attribution=object.attributed_object() %}
+  <img src="{{ attribution.avatar_icon() }}" alt="{{ attribution.name }}">
+</div>
+<div class="activity-content">{{ render_object(object) }}</div>
+</div>
+{% endmacro %}
+
+{% block container %}
+{{ render_one(activity) }}
+{% for reply in replies %}
+{{ render_one(reply) }}
+{% endfor %}
+{% endblock %}
