@@ -18,6 +18,26 @@
 
 {% endmacro %}
 
+{% macro render_attachments(obj) %}
+<div class="attachments">
+{% for att in obj.attachments() %}
+<div class="attachment">
+
+{% if att['mediaType'].startswith('image') %}
+<a href="{{ att['url'] }}" target="_blank">
+  <img src="{{ att['url'] }}" alt="{{ att['name'] }}">
+</a>
+{% elif att['mediaType'].startswith('video') %}
+<video src="{{ att['url'] }}" controls="controls" playsinline=""></video>
+{% elif att['mediaType'].startswith('audio') %}
+<audio src="{{ att['url'] }}" controls="controls" playsinline=""></video>
+{% endif %}
+
+</div>
+{% endfor %}
+</div>
+{% endmacro %}
+
 {% macro render_object(obj) %}
 
 <small class="activity-date">
@@ -38,23 +58,7 @@
 {% endif %}
 
 {% if obj.attachments() %}
-<div class="attachments">
-{% for att in obj.attachments() %}
-<div class="attachment">
-
-{% if att['mediaType'].startswith('image') %}
-<a href="{{ att['url'] }}" target="_blank">
-  <img src="{{ att['url'] }}" alt="{{ att['name'] }}">
-</a>
-{% elif att['mediaType'].startswith('video') %}
-<video src="{{ att['url'] }}" controls="controls" playsinline=""></video>
-{% elif att['mediaType'].startswith('audio') %}
-<audio src="{{ att['url'] }}" controls="controls" playsinline=""></video>
-{% endif %}
-
-</div>
-{% endfor %}
-</div>
+{{ render_attachments(obj) }}
 {% endif %}
 
 <div class="content">
@@ -78,6 +82,10 @@
 </div>
 
 <div class="content">
+{% if obj.attachments() %}
+{{ render_attachments(obj) }}
+{% endif %}
+
 {{ obj.content | safe }}
 </div>
 
