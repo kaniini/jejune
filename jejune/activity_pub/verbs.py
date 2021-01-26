@@ -14,6 +14,7 @@ class Create(AS2Activity):
 registry.register_type(Create)
 
 
+# TODO: Add announce to an object's announces collection if one exists.
 class Announce(AS2Activity):
     __jsonld_type__ = 'Announce'
 
@@ -36,6 +37,13 @@ class Announce(AS2Activity):
         return reblog
 
 registry.register_type(Announce)
+
+
+# TODO: Add likes to an object's likes collection if one exists.
+class Like(AS2Activity):
+    __jsonld_type__ = 'Like'
+
+registry.register_type(Like)
 
 
 class Update(AS2Activity):
