@@ -76,7 +76,7 @@
     </span>
 
     <span>
-      by <author>{{ attribution.name }}</author>
+      by <author><a href="{{ attribution.url or attribution.id }}" target="_blank">{{ attribution.name }}</a></author>
     </span>
 
     {% if attribution.remote() %}
