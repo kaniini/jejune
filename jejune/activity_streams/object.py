@@ -78,3 +78,24 @@ class Document(AS2Object):
         }
 
 registry.register_type(Document)
+
+
+class Image(AS2Object):
+    __jsonld_type__ = 'Image'
+
+    def mastodon_id(self):
+        return '{0:d}.{1}'.format(int(self.published_ts()), self.storeIdentity)
+
+    def serialize_to_mastodon(self):
+        mediatype = self.mediaType.split('/')[0]
+        if mediatype not in ['image', 'audio', 'video']:
+            mediatype = 'unknown'
+
+        return {
+            'id': self.mastodon_id(),
+            'type': mediatype,
+            'url': self.url,
+            'preview_url': self.url,
+        }
+
+registry.register_type(Image)
