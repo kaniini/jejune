@@ -56,11 +56,19 @@ aside .author {
 }
 
 .activity {
-	display: flex;
 	border-radius: 4px;
 	background: rgba(0, 0, 0, 0.25);
 	padding: 1em;
 	margin-bottom: 1em;
+}
+
+.activity-header {
+	margin-bottom: 1em;
+	margin-left: 9em;
+}
+
+.activity-item {
+	display: flex;
 }
 
 .activity-icon {

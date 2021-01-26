@@ -1,21 +1,21 @@
 {% macro render_activity(activity) %}
-
-<div class="activity">
-
 {% set obj=activity.child() %}
-
-<div class="activity-icon">
-
 {% set attribution=activity.attributed_object() %}
-
-<img src="{{ attribution.avatar_icon() }}" alt="{{ attribution.name }}">
-
+<div class="activity">
+  <div class="activity-item">
+    <div class="activity-icon">
+      <img src="{{ attribution.avatar_icon() }}" alt="{{ attribution.name }}">
+    </div>
+    <div class="activity-content">
+      {% if activity.type == 'Announce' %}
+        {{ render_quote(obj) }}
+        {{ render_date(activity) }}
+      {% else %}
+        {{ render_object(obj) }}
+      {% endif %}
+    </div>
+  </div>
 </div>
-
-<div class="activity-content">{{ render_object(obj) }}</div>
-
-</div>
-
 {% endmacro %}
 
 {% macro render_attachments(obj) %}
@@ -81,7 +81,7 @@
 
     {% if attribution.remote() %}
     <span>
-      ({{ attribution.domain() }})
+      via {{ attribution.domain() }}
     </span>
     {% endif %}
   </small>
