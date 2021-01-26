@@ -2,10 +2,11 @@ import asyncio
 import logging
 
 
+from .activity_streams import AS2Object
 from .activity_streams.collection import AS2Collection
 from .activity_streams.object import Note, Document
 from .activity_pub.actor import Actor
-from .activity_pub.verbs import Create
+from .activity_pub.verbs import Create, Like
 
 
 class CommonAPIError(Exception):
@@ -23,6 +24,17 @@ class CommonAPI:
 
     async def ensure_shared_inbox(self):
         coll = AS2Collection.create_if_not_exists(self.app.shared_inbox_uri)
+
+    async def like(self, actor: Actor, obj: AS2Object) -> Like:
+        l = Like(actor=actor.id,
+                 object=obj.id,
+                 to=[object.attributedTo],
+                 cc=[actor.followers],
+                 audience=[object.attributedTo, actor.followers])
+
+        await l.apply_side_effects()
+
+        return l
 
     async def post(self, actor: Actor, **kwargs) -> Create:
         status = kwargs.get('status')
