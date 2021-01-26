@@ -6,7 +6,7 @@ from .activity_streams import AS2Object
 from .activity_streams.collection import AS2Collection
 from .activity_streams.object import Note, Document
 from .activity_pub.actor import Actor
-from .activity_pub.verbs import Create, Like
+from .activity_pub.verbs import Create, Like, Announce
 
 
 class CommonAPIError(Exception):
@@ -24,6 +24,19 @@ class CommonAPI:
 
     async def ensure_shared_inbox(self):
         coll = AS2Collection.create_if_not_exists(self.app.shared_inbox_uri)
+
+    async def announce(self, actor: Actor, obj: AS2Object, **kwargs) -> Announce:
+        scope = kwargs.get('visibility', 'public')
+
+        a = Announce(actor=actor.id,
+                     object=obj.id,
+                     to=self.to_for_scope(scope, actor, []),
+                     cc=self.cc_for_scope(scope, actor, []),
+                     audience=self.audience_for_scope(scope, actor, []))
+
+        await a.apply_side_effects()
+
+        return a
 
     async def like(self, actor: Actor, obj: AS2Object) -> Like:
         l = Like(actor=actor.id,
