@@ -40,10 +40,6 @@
 
 {% macro render_object(obj) %}
 
-<small class="activity-date">
-  <date><a href="{{ app.frontend_support.friendly_uri(obj) }}">{{ obj.published }}</a></date>
-</small>
-
 {# XXX: articles #}
 {% if obj.summary %}
 <h2 class="activity-summary">
@@ -51,6 +47,7 @@
 </h2>
 {% endif %}
 
+{% set attribution=obj.attributed_object() %}
 {% set reply=obj.reply() %}
 
 {% if reply %}
@@ -63,8 +60,32 @@
 
 <div class="content">
 {{ obj.content | safe }}
+
+{{ render_date(obj) }}
 </div>
 
+{% endmacro %}
+
+{% macro render_date(obj) %}
+{% set attribution=obj.attributed_object() %}
+
+<p>
+  <small class="activity-date">
+    <span>
+      <date><a href="{{ app.frontend_support.friendly_uri(obj) }}">{{ obj.published_time() }}</a></date>
+    </span>
+
+    <span>
+      by <author>{{ attribution.name }}</author>
+    </span>
+
+    {% if attribution.remote() %}
+    <span>
+      ({{ attribution.domain() }})
+    </span>
+    {% endif %}
+  </small>
+</p>
 {% endmacro %}
 
 {% macro render_quote(obj) %}
@@ -87,6 +108,8 @@
 {% endif %}
 
 {{ obj.content | safe }}
+
+{{ render_date(obj) }}
 </div>
 
 </blockquote>

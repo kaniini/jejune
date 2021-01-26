@@ -43,11 +43,6 @@ aside {
 	display: flex;
 }
 
-date {
-	display: block;
-	margin-bottom: 0.5em;
-}
-
 section {
 	flex: 4;
 	margin: 1em;
@@ -112,6 +107,7 @@ aside .author {
 
 .attachments {
 	display: flex;
+	margin-bottom: 1em;
 }
 
 .attachment {
@@ -131,6 +127,10 @@ aside .author {
 	width: 100%;
 }
 
-.content:last-child > * {
+.content > :first-child {
+	margin-top: 0;
+}
+
+.content > :last-child {
 	margin-bottom: 0;
 }

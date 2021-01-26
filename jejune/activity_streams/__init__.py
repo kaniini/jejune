@@ -2,6 +2,7 @@ import asyncio
 import logging
 import simplejson
 import time
+import urllib.parse
 
 
 from .. import get_jejune_app
@@ -181,6 +182,9 @@ class AS2Object(Serializable):
 
         return 0.0
 
+    def published_time(self):
+        return time.strftime('%B %d, %Y [%H:%M:%S]', time.localtime(self.published_ts()))
+
     def visible_for(self, actor=None) -> bool:
         audience = getattr(self, 'audience', [self.attributedTo or self.actor])
 
@@ -213,6 +217,9 @@ class AS2Object(Serializable):
 
     def attachments(self):
         return getattr(self, 'attachment', [])
+
+    def domain(self):
+        return urllib.parse.urlparse(self.id).netloc
 
 registry.register_type(AS2Object)
 
