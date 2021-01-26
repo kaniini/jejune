@@ -26,6 +26,43 @@ class AS2Collection(AS2Object, TypedCollection):
     __jsonld_type__ = 'Collection'
     __child_type__ = AS2Object
 
+    def walk(self, object_types: set, limit: int, skip=0, max_id=None, since_id=None, min_id=None) -> list:
+        yielded = 0
+        skipped = 0
+        max_hit = max_id is None
+
+        for obj in self.__items__:
+            real = obj.dereference()
+            if not real:
+                continue
+
+            if real.type not in object_types:
+                continue
+
+            if skip and skipped < skip:
+                skipped += 1
+                continue
+
+            if limit and yielded > limit:
+                break
+
+            item_id = real.mastodon_id()
+            if max_id and item_id == max_id:
+                max_hit = True
+
+            if not max_hit:
+                continue
+
+            if since_id and item_id == since_id:
+                break
+
+            yielded += 1
+            logging.info('yield %r', real)
+            yield real
+
+            if min_id and item_id == min_id:
+                break
+
     def serialize(self, method=simplejson.dumps, flatten_pointers=True):
         if not flatten_pointers:
             return super().serialize(method)
