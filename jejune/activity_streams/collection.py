@@ -1,3 +1,4 @@
+
 import asyncio
 import logging
 import simplejson
@@ -30,7 +31,7 @@ class AS2Collection(AS2Object, TypedCollection):
             return super().serialize(method)
 
         obj = {k: v for k, v in self.__dict__.items() if not k.startswith('__')}
-        obj[self.__item_key__] = [obj.id for obj in self.__items__]
+        obj[self.__item_key__] = [obj.id for obj in self.__items__ if obj]
 
         return method(obj)
 
@@ -47,6 +48,9 @@ class AS2Collection(AS2Object, TypedCollection):
 
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> AS2Object:
+        from . import get_jejune_app
+        get_jejune_app().rdf_store.override(uri)
+
         return super().create_if_not_exists(uri, __items__=[])
 
     @classmethod
@@ -78,6 +82,8 @@ registry.register_type(AS2Collection)
 def collection_intersects(collection_uri, item: str) -> bool:
     ptr = AS2Pointer(collection_uri)
     collection = AS2Collection.fetch_local(ptr.serialize(), use_pointers=True)
+    if not collection:
+        return False
 
     item_uris = {ptr.serialize() for ptr in collection.__items__}
     return item in item_uris

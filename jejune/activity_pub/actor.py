@@ -32,7 +32,28 @@ class Actor(AS2Object):
     def best_inbox(self):
         return getattr(self, 'endpoints', {}).get('sharedInbox', self.inbox)
 
+    def override_collections(self):
+        from .. import get_jejune_app
+
+        inbox = getattr(self, 'inbox', None)
+        if inbox:
+            get_jejune_app().rdf_store.override(inbox)
+
+        outbox = getattr(self, 'outbox', None)
+        if outbox:
+            get_jejune_app().rdf_store.override(outbox)
+
+        following = getattr(self, 'following', None)
+        if following:
+            get_jejune_app().rdf_store.override(following)
+
+        followers = getattr(self, 'followers', None)
+        if followers:
+            get_jejune_app().rdf_store.override(followers)
+
     def fixate(self):
+        self.override_collections()
+
         inbox = getattr(self, 'inbox', None)
         if inbox:
             AS2Collection.create_if_not_exists(inbox)

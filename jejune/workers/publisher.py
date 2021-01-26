@@ -66,7 +66,6 @@ class PublisherRequest:
             return self.handle_public()
 
         obj = await AS2Object.fetch_from_uri(self.recipient)
-        logging.info('PUBLISHER: Recipient %r', obj)
         if isinstance(obj, AS2Collection):
             return self.handle_collection(obj)
         elif isinstance(obj, Actor):

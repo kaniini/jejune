@@ -65,6 +65,27 @@ class RDFStore:
         except:
             return False
 
+    def overridden(self, uri: str) -> bool:
+        hashed = self.hash_for_uri(uri)
+        path = self.path_for_hash(hashed) + '.override'
+
+        try:
+            st = os.stat(path)
+            return st.st_mtime > 0
+        except:
+            return False
+
+    def override(self, uri: str):
+        hashed = self.hash_for_uri(uri)
+        path = self.path_for_hash(hashed) + '.override'
+
+        self.make_parents_for_hash(hashed)
+
+        logging.debug('RDF: Marking URI %r as overridden.', uri)
+
+        with open(path, 'w') as f:
+            pass
+
     def fetch_hash(self, hashed: str) -> (str, float):
         if hashed in self.cache:
             return self.cache[hashed]
@@ -133,7 +154,7 @@ class RDFStore:
 
         logging.debug('Got %r from fetch_cached', entry)
 
-        if self.uri_is_local(uri):
+        if self.uri_is_local(uri) or self.overridden(uri):
             logging.debug('Returning local object: %s', uri)
             return entry
 
