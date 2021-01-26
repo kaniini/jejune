@@ -54,7 +54,8 @@ class Note(AS2Object):
         return AS2Pointer(att).dereference().serialize_to_mastodon()
 
     def serialize_attachments_to_mastodon(self):
-        return [self.serialize_attachment_to_mastodon(att) for att in self.attachment]
+        attachment = getattr(self, 'attachment', [])
+        return [self.serialize_attachment_to_mastodon(att) for att in attachment]
 
 registry.register_type(Note)
 
