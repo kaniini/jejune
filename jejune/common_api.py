@@ -28,9 +28,9 @@ class CommonAPI:
     async def like(self, actor: Actor, obj: AS2Object) -> Like:
         l = Like(actor=actor.id,
                  object=obj.id,
-                 to=[object.attributedTo],
+                 to=[obj.attributedTo],
                  cc=[actor.followers],
-                 audience=[object.attributedTo, actor.followers])
+                 audience=[obj.attributedTo, actor.followers])
 
         await l.apply_side_effects()
 
