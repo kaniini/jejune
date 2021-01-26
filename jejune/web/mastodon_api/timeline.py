@@ -13,33 +13,7 @@ routes = RouteTableDef()
 
 # XXX: optimize
 def render_timeline(request, items):
-    limit = int(request.query.get('limit', 20))
-
-    min_id = request.query.get('min_id', None)
-    max_id = request.query.get('max_id', None)
-    since_id = request.query.get('since_id', None)
-
-    max_hit = max_id is None
-
-    final_set = []
-    for item in items:
-        if not item:
-            continue
-        if item.type not in ['Announce', 'Create']:
-            continue
-        item_id = item.mastodon_id()
-        if max_id and item_id == max_id:
-            max_hit = True
-        if not max_hit:
-            continue
-        if since_id and item_id == since_id:
-            break
-        final_set += [item]
-        if min_id and item_id == min_id:
-            break
-
-    render_items = final_set[0:limit]
-    serialized_items = [item.serialize_to_mastodon() for item in render_items if item]
+    serialized_items = [item.serialize_to_mastodon() for item in items if item]
     return json_response([si for si in serialized_items if si and 'error' not in si])
 
 
@@ -54,12 +28,15 @@ async def home_timeline(request):
         return json_response({'error': 'bogus account - no AP actor found'}, status=500)
 
     limit = int(request.query.get('limit', 20))
-    deref_limit = app.max_timeline_length
 
     inbox_collection = AS2Collection.fetch_local(actor.inbox, use_pointers=True)
-    deref_items = [ptr.dereference() for ptr in inbox_collection.__items__[0:deref_limit]]
+    items = inbox_collection.walk({'Create', 'Announce'}, limit,
+                                  skip=0,
+                                  max_id=request.query.get('max_id', None),
+                                  since_id=request.query.get('since_id', None),
+                                  min_id=request.query.get('min_id', None))
 
-    return render_timeline(request, deref_items)
+    return render_timeline(request, items)
 
 
 @routes.get('/api/v1/timelines/public')
@@ -90,8 +67,13 @@ async def user_timeline(request):
     if not inbox_collection:
         return json_response([])
 
-    deref_items = [ptr.dereference() for ptr in inbox_collection.__items__[0:deref_limit]]
-    return render_timeline(request, deref_items)
+    items = inbox_collection.walk({'Create', 'Announce'}, limit,
+                                  skip=0,
+                                  max_id=request.query.get('max_id', None),
+                                  since_id=request.query.get('since_id', None),
+                                  min_id=request.query.get('min_id', None))
+
+    return render_timeline(request, items)
 
 
 app.add_routes(routes)
