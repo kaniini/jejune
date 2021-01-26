@@ -57,7 +57,6 @@ class AS2Collection(AS2Object, TypedCollection):
                 break
 
             yielded += 1
-            logging.info('yield %r', real)
             yield real
 
             if min_id and item_id == min_id:

@@ -12,15 +12,20 @@ routes = RouteTableDef()
 
 
 @routes.get('/')
+@routes.get('/page/{page}')
 async def index(request):
     from . import outbox
+
+    page = int(request.match_info.get('page', 1))
+    activities_per_page = 20
+    skip = (page - 1) * activities_per_page
 
     activities = []
 
     if outbox:
         coll = AS2Collection.fetch_local(outbox, use_pointers=True)
         if coll:
-            activities = list(coll.walk({'Create', 'Announce'}, 20))
+            activities = coll.walk({'Create', 'Announce'}, activities_per_page, skip=skip)
 
     template = jinja_env.get_template('index.html')
 
