@@ -4,11 +4,13 @@
 
 {% macro render_one(object) %}
 <div class="activity">
+<div class="activity-item">
 <div class="activity-icon">
   {% set attribution=object.attributed_object() %}
   <img src="{{ attribution.avatar_icon() }}" alt="{{ attribution.name }}">
 </div>
 <div class="activity-content">{{ render_object(object) }}</div>
+</div>
 </div>
 {% endmacro %}
 
