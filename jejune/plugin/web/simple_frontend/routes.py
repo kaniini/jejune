@@ -22,14 +22,23 @@ async def index(request):
 
     activities = []
 
+    coll_size = 0
     if outbox:
         coll = AS2Collection.fetch_local(outbox, use_pointers=True)
         if coll:
+            coll_size = len(coll)
             activities = coll.walk({'Create', 'Announce'}, activities_per_page, skip=skip)
+
+    total_pages = 0
+    if coll_size:
+        total_pages = int(coll_size / activities_per_page)
 
     template = jinja_env.get_template('index.html')
 
-    return Response(text=template.render(activities=activities), content_type='text/html')
+    return Response(text=template.render(activities=activities,
+                                         page=page,
+                                         total_pages=total_pages),
+                    content_type='text/html')
 
 
 @routes.get('/activity/{hash}/{stem}')

@@ -142,3 +142,15 @@ aside .author {
 .content > :last-child {
 	margin-bottom: 0;
 }
+
+.pagination {
+	text-align: center;
+	margin-top: 2em;
+	margin-bottom: 1em;
+}
+
+.pagination-link {
+	background: rgba(0, 0, 0, 0.25);
+	padding: 1em;
+	border-radius: 4px;
+}

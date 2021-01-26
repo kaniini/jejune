@@ -1,9 +1,32 @@
 {% extends "base.html" %}
 
+{% macro render_page_link(page) %}
+  <a href="/page/{{ page }}" class="pagination-link">{{ page }}</a>
+{% endmacro %}
+
 {% from "activity.html" import render_activity %}
 
 {% block container %}
-{% for activity in activities %}
-{{ render_activity(activity) }}
-{% endfor %}
+  {% for activity in activities %}
+    {{ render_activity(activity) }}
+  {% endfor %}
+
+  {# pagination #}
+  <div class="pagination">
+    {{ render_page_link(1) }}
+
+    {% if page > 2 %}
+      {{ render_page_link(page - 1) }}
+    {% endif %}
+
+    {% if page != 1 and page != total_pages %}
+      {{ render_page_link(page) }}
+    {% endif %}
+
+    {% if page + 1 != total_pages %}
+      {{ render_page_link(page + 1) }}
+    {% endif %}
+
+    {{ render_page_link(total_pages) }}
+  </div>
 {% endblock %}
