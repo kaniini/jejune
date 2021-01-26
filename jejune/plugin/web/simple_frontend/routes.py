@@ -4,6 +4,7 @@ import logging
 from . import jinja_env
 from jejune import app
 from jejune.activity_streams import AS2Object, AS2Pointer
+from jejune.activity_streams.collection import AS2Collection
 from aiohttp.web import RouteTableDef, Response, json_response, HTTPFound
 
 
@@ -17,8 +18,9 @@ async def index(request):
     activities = []
 
     if outbox:
-        coll = AS2Pointer(outbox).dereference()
-        activities = [act for act in coll.__items__[0:20] if act.type in ['Create', 'Announce']]
+        coll = AS2Collection.fetch_local(outbox, use_pointers=True)
+        if coll:
+            activities = list(coll.walk({'Create', 'Announce'}, 20))
 
     template = jinja_env.get_template('index.html')
 
