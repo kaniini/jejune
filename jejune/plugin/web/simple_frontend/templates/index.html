@@ -15,6 +15,7 @@
   <div class="pagination">
     {{ render_page_link(1) }}
 
+    {% if page < total_pages %}
     {% if page > 2 %}
       {{ render_page_link(page - 1) }}
     {% endif %}
@@ -23,8 +24,9 @@
       {{ render_page_link(page) }}
     {% endif %}
 
-    {% if page + 1 != total_pages %}
+    {% if page + 1 != total_pages and page + 1 < total_pages %}
       {{ render_page_link(page + 1) }}
+    {% endif %}
     {% endif %}
 
     {{ render_page_link(total_pages) }}
