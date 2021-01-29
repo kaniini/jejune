@@ -210,4 +210,5 @@ class PublisherWorker:
 
     async def notify_listeners(self, uri: str, activity):
         tasks = [listener(uri, activity) for listener in self.listeners_for_uri(uri)]
-        await asyncio.wait(tasks, timeout=5)
+        if tasks:
+            await asyncio.wait(tasks, timeout=5)
