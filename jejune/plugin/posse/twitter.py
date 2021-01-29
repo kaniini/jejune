@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 
@@ -32,7 +33,7 @@ def stemmer(msg):
 
 
 async def listener(uri: str, activity: AS2Object):
-    logging.info('POSSE to Twitter: Listener was called!')
+    logging.debug('POSSE to Twitter: Listener was called!')
 
     if activity.type != 'Create':
         return
@@ -54,7 +55,16 @@ async def listener(uri: str, activity: AS2Object):
     stem = stemmer(source)
     final_status = ' '.join([stem, child.url])
 
-    result = await client.api.statuses.update.post(status=final_status)
+    # upload media
+    attachments = getattr(child, 'attachment', [])
+    uris = [attachment['url'] for attachment in attachments if 'url' in attachment.keys()]
+    upload_tasks = [client.upload_media(uri) for uri in uris]
+
+#    medias = await asyncio.gather(*upload_tasks)
+    medias = []
+    result = await client.api.statuses.update.post(status=final_status,
+                                                   media_ids=[media.media_id for media in medias])
+
     logging.debug('POSSE to Twitter: got %r from API', result)
 
 
