@@ -41,6 +41,22 @@ async def index(request):
                     content_type='text/html')
 
 
+@routes.get('/feed.atom')
+async def feed(request):
+    from . import outbox
+
+    activities_per_page = 20
+    activities = []
+
+    if outbox:
+        coll = AS2Collection.fetch_local(outbox, use_pointers=True)
+        if coll:
+            activities = coll.walk({'Create', 'Announce'}, activities_per_page)
+
+    template = jinja_env.get_template('feed.xml')
+    return Response(text=template.render(activities=list(activities)), content_type='application/atom+xml')
+
+
 @routes.get('/activity/{hash}/{stem}')
 async def activity(request):
     activity = AS2Object.fetch_from_hash(request.match_info['hash'])

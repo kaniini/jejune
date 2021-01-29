@@ -32,3 +32,7 @@
     {{ render_page_link(total_pages) }}
   </div>
 {% endblock %}
+
+{% block head %}
+<link rel="alternate" type="application/atom+xml" title="ATOM Feed for {{ app.config['instance']['name'] }}" href="/feed.atom">
+{% endblock %}

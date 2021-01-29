@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ app.config['instance']['name'] }}</title>
+  <link href="https://{{ app.hostname }}/feed.atom" rel="self" />
+  <id>https://{{ app.hostname }}/</id>
+
+  {% if featured_user %}
+  <author>
+    <name>{{ featured_user.name }}</name>
+  </author>
+  {% endif %}
+
+  {% if activities %}
+  <updated>{{ activities[0].published }}</updated>
+  {% endif %}
+
+  {% for activity in activities %}
+  <entry>
+    {% set child=activity.child() %}
+    {% set attribution=child.attributed_object() %}
+    {% if child.name or child.summary %}
+    <title>{{ child.name or child.summary }}</title>
+    {% else %}
+    <title>{{ attribution.name }} made a post</title>
+    {% endif %}
+    <link href="{{ child.url }}" />
+    <id>{{ child.id }}</id>
+    <updated>{{ child.published }}</updated>
+    <content type="html">{{ child.content }}</content>
+    <author>
+      <name>{{ attribution.name }}</name>
+    </author>
+  </entry>
+  {% endfor %}
+</feed>
