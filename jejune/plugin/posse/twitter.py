@@ -56,6 +56,10 @@ async def listener(uri: str, activity: AS2Object):
     if not child:
         return
 
+    # do not POSSE replies
+    if getattr(child, 'inReplyTo', None):
+        return
+
     # get the markdown source
     source = getattr(child, 'summary', None)
     if not source:
@@ -69,8 +73,8 @@ async def listener(uri: str, activity: AS2Object):
     stem = stemmer(source)
     final_status = ' '.join([stem, child.url])
 
-    # upload media
-    attachments = getattr(child, 'attachment', [])
+    # upload media (4 attachments max)
+    attachments = getattr(child, 'attachment', [])[0:4]
     uris = [attachment['url'] for attachment in attachments if 'url' in attachment.keys()]
     local_paths = [attachment_uri_to_path(uri) for uri in uris]
     upload_tasks = [client.upload_media(path) for path in local_paths]
