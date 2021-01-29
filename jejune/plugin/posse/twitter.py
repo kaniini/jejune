@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import urllib.parse
 
 
 from jejune import app
@@ -32,6 +33,19 @@ def stemmer(msg):
     return ''.join([chopped, '…'])
 
 
+path_base = '/.well-known/jejune/upload'
+path_base_len = len(path_base)
+
+
+def attachment_uri_to_path(uri):
+    url = urllib.parse.urlsplit(uri)
+    path = url.path[path_base_len:]
+
+    logging.debug('path: %r', path)
+
+    return ''.join([app.config['paths']['upload'], path])
+
+
 async def listener(uri: str, activity: AS2Object):
     logging.debug('POSSE to Twitter: Listener was called!')
 
@@ -58,12 +72,17 @@ async def listener(uri: str, activity: AS2Object):
     # upload media
     attachments = getattr(child, 'attachment', [])
     uris = [attachment['url'] for attachment in attachments if 'url' in attachment.keys()]
-    upload_tasks = [client.upload_media(uri) for uri in uris]
+    local_paths = [attachment_uri_to_path(uri) for uri in uris]
+    upload_tasks = [client.upload_media(path) for path in local_paths]
 
-#    medias = await asyncio.gather(*upload_tasks)
-    medias = []
+    try:
+        medias = await asyncio.gather(*upload_tasks)
+    except Exception as e:
+        logging.info('POSSE to Twitter: Encountered %r while uploading media.', e)
+        medias = []
+
     result = await client.api.statuses.update.post(status=final_status,
-                                                   media_ids=[media.media_id for media in medias])
+                                                   media_ids=[media.media_id for media in medias if media])
 
     logging.debug('POSSE to Twitter: got %r from API', result)
 
