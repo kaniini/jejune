@@ -34,6 +34,8 @@ class PublisherRequest:
             obj.prepend(self.activity)
             obj.commit()
 
+            asyncio.ensure_future(self.publisher.notify_listeners(obj.id, self.activity))
+
         return self.completed()
 
     def handle_public(self):
@@ -157,6 +159,7 @@ class PublisherWorker:
         self.queue = []
         self.event = asyncio.Event()
         self.signer = HTTPSignatureSigner()
+        self.listeners = {}
 
         asyncio.ensure_future(self.work_loop())
         asyncio.ensure_future(self.wakeup_loop())
@@ -197,3 +200,14 @@ class PublisherWorker:
         while True:
             await asyncio.sleep(sleep_time)
             self.event.set()
+
+    def listeners_for_uri(self, uri: str) -> list:
+        return self.listeners.get(uri, [])
+
+    def attach_uri_listener(self, uri: str, listener):
+        listeners = self.listeners_for_uri(uri)
+        self.listeners[uri] = listeners + [listener]
+
+    async def notify_listeners(self, uri: str, activity):
+        tasks = [listener(uri, activity) for listener in self.listeners_for_uri(uri)]
+        await asyncio.wait(tasks, timeout=5)
