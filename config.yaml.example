@@ -77,7 +77,13 @@ federation:
 # You will need to go to the Twitter developer portal and create an account,
 # then you create an app and issue yourself an access token and secret.
 twitter:
+  # Local accounts to POSSE to the configured account with.
+  users: []
+
+  # Access token and secret issued by Twitter.
   access-token: whatever
   access-secret: whatever
+
+  # Consumer token and secret issued by Twitter for a specific account.
   consumer-key: whatever
   consumer-secret: whatever
