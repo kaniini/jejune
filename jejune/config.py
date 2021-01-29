@@ -68,5 +68,6 @@ def load_config(path='jejune.yaml') -> dict:
             'listener': get_listener(yaml_file),
             'instance': get_instance(yaml_file),
             'federation': get_federation(yaml_file),
+            'raw': yaml_file,
         }
         return config

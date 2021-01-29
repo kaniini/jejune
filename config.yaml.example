@@ -72,3 +72,12 @@ instance:
 federation:
   # Whether federation is enabled at all.
   enabled: true
+
+# Twitter configuration (if POSSE to Twitter plugin is loaded).
+# You will need to go to the Twitter developer portal and create an account,
+# then you create an app and issue yourself an access token and secret.
+twitter:
+  access_token: whatever
+  access_secret: whatever
+  consumer_key: whatever
+  consumer_secret: whatever
