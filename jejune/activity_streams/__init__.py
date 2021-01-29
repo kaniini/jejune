@@ -51,7 +51,7 @@ class AS2Object(Serializable):
             kwargs['published'] = time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # ensure we are fetching any relevant actors ahead of time
-        if 'attributedTo' in kwargs:
+        if kwargs.get('attributedTo', None):
             AS2Pointer(kwargs['attributedTo']).dereference()
 
         if 'actor' in kwargs:
@@ -236,6 +236,8 @@ class AS2Pointer:
                 self.id = uri['id']
         elif isinstance(uri, AS2Object):
             self.id = uri.id
+        else:
+            logging.exception('AS2Pointer: Cannot construct a pointer for %r.', uri)
 
     def __repr__(self):
         return f'<AS2Pointer: {self.id}>'
