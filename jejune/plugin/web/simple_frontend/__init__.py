@@ -61,7 +61,7 @@ class SimpleFrontendSupport:
         if object.type not in ['Note', 'Article', 'Image']:
             return object.id
 
-        inthash = int('0x' + object.storeIdentity, 16)
+        inthash = int('0x' + object.storeIdentity[0:12], 16)
         hash = base62.encode(inthash)
         stem = self.stem(object)
 
