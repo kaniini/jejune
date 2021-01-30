@@ -1,3 +1,4 @@
+import base62
 import jinja2
 import logging
 import re
@@ -60,8 +61,11 @@ class SimpleFrontendSupport:
         if object.type not in ['Note', 'Article', 'Image']:
             return object.id
 
+        inthash = int('0x' + object.storeIdentity, 16)
+        hash = base62.encode(inthash)
         stem = self.stem(object)
-        return f'https://{app.hostname}/activity/{object.storeIdentity}/{stem}'
+
+        return f'https://{app.hostname}/activity/{hash}/{stem}'
 
 
 app.frontend_support = SimpleFrontendSupport()

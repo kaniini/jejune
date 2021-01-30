@@ -1,4 +1,5 @@
 import logging
+import base62
 
 
 from . import jinja_env
@@ -59,7 +60,12 @@ async def feed(request):
 
 @routes.get('/activity/{hash}/{stem}')
 async def activity(request):
-    activity = AS2Object.fetch_from_hash(request.match_info['hash'])
+    hash = request.match_info['hash']
+    if not len(hash) == 64:
+        inthash = base62.decode(hash)
+        hash = hex(inthash)[2:]
+
+    activity = AS2Object.fetch_from_hash(hash)
     if not activity:
         return Response(text='activity not found', status=404)
 
