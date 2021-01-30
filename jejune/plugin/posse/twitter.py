@@ -71,7 +71,7 @@ async def listener(uri: str, activity: AS2Object):
 
     # trim the source text down so it will fit in a tweet (240 chars, allowing 40 for the shortlink)
     stem = stemmer(source)
-    final_status = ' '.join([stem, child.url])
+    final_status = ' '.join([stem, app.frontend_support.shortlink(child)])
 
     # upload media (4 attachments max)
     attachments = getattr(child, 'attachment', [])[0:4]
