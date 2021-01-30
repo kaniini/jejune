@@ -86,7 +86,21 @@ class RDFStore:
         with open(path, 'w') as f:
             pass
 
+    def fetch_partial_hash(self, partial: str) -> (str, float):
+        if len(partial) < 6:
+            return None
+
+        bucket = self.directory_for_hash(partial)
+        for obj in os.listdir(bucket):
+            if obj.startswith(partial):
+                return self.fetch_hash(obj)
+
+        return None
+
     def fetch_hash(self, hashed: str) -> (str, float):
+        if len(hashed) < 64:
+            return self.fetch_partial_hash(hashed)
+
         if hashed in self.cache:
             return self.cache[hashed]
 
