@@ -7,3 +7,5 @@ class FrontendSupport:
             return object.url
 
         return object.id
+
+    shortlink = friendly_uri
