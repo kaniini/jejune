@@ -54,6 +54,10 @@ class SimpleFrontendSupport:
 
         return '-'.join(payload.lower().split()[0:10])
 
+    def hash_for_object(self, object: AS2Object) -> str:
+        inthash = int('0x' + object.storeIdentity[0:12], 16)
+        return base62.encode(inthash)
+
     def friendly_uri(self, object: AS2Object) -> str:
         if not object.local():
             return object.id
@@ -61,11 +65,21 @@ class SimpleFrontendSupport:
         if object.type not in ['Note', 'Article', 'Image']:
             return object.id
 
-        inthash = int('0x' + object.storeIdentity[0:12], 16)
-        hash = base62.encode(inthash)
+        hash = self.hash_for_object(object)
         stem = self.stem(object)
 
         return f'https://{app.hostname}/activity/{hash}/{stem}'
+
+    def shortlink(self, object: AS2Object) -> str:
+        if not object.local():
+            return object.id
+
+        if object.type not in ['Note', 'Article', 'Image']:
+            return object.id
+
+        hash = self.hash_for_object(object)
+
+        return f'https://{app.hostname}/l/{hash}'
 
 
 app.frontend_support = SimpleFrontendSupport()

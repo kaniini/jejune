@@ -77,5 +77,19 @@ async def activity(request):
     return Response(text=template.render(activity=activity, replies=[]), content_type='text/html')
 
 
+@routes.get('/l/{hash}')
+async def shortlink(request):
+    hash = request.match_info['hash']
+    if not len(hash) == 64:
+        inthash = base62.decode(hash)
+        hash = hex(inthash)[2:]
+
+    activity = AS2Object.fetch_from_hash(hash)
+    if not activity:
+        return Response(text='activity not found', status=404)
+
+    raise HTTPFound(activity.url)
+
+
 app.add_routes(routes)
 app.router.add_static('/frontend', path=app.config['paths']['static'] + '/frontend', name='frontend')
