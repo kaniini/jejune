@@ -16,3 +16,4 @@ pytest-asyncio
 aiohttp-jinja2
 markdown
 peony-twitter
+pybase62
