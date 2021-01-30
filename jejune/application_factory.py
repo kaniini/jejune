@@ -54,6 +54,9 @@ class Application(aiohttp.web.Application):
             if not self.rdf_store.local_uri_exists(uri):
                 return uri
 
+    def make_well_known_uri(self, path: str) -> str:
+        return str().join(['https://', self.hostname, '/.well-known/jejune/', path])
+
     def object_uri_for(self, object_uuid: str, object_type: str) -> str:
         return str().join(['https://', self.hostname, '/.well-known/jejune/', object_type, '/', object_uuid])
 

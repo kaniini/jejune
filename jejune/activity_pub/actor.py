@@ -21,13 +21,29 @@ class Actor(AS2Object):
                'outbox': user.outbox_uri,
                'following': user.following_uri,
                'followers': user.followers_uri,
-               'endpoints': {
-                   'sharedInbox': user.shared_inbox_uri,
-               },
                'petName': user.username}
         actor = cls(**obj)
+        actor.update_endpoints()
         actor.fixate()
         return actor
+
+    def update_endpoints(self):
+        from .. import get_jejune_app
+
+        app = get_jejune_app()
+
+        if self.remote():
+            return
+
+        self.endpoints = {
+            'sharedInbox': app.shared_inbox_uri,
+            'oauthAuthorizationEndpoint': app.make_well_known_uri('oauth/authorize'),
+            'oauthRegistrationEndpoint': app.make_well_known_uri('oauth/register'),
+            'oauthTokenEndpoint': app.make_well_known_uri('oauth/token'),
+            'uploadMedia': app.make_well_known_uri('media'),
+        }
+
+        self.commit()
 
     def best_inbox(self):
         return getattr(self, 'endpoints', {}).get('sharedInbox', self.inbox)
@@ -118,6 +134,8 @@ class Actor(AS2Object):
 
     async def synchronize(self):
         from .. import get_jejune_app
+
+        self.update_endpoints()
 
         app = get_jejune_app()
         if app.userns.exists(self.make_petname(), 'base'):
