@@ -83,4 +83,5 @@ class Token(Serializable):
                    refresh_token=str(uuid.uuid4()),
                    scope="read write follow",
                    expires_in=9999999999,
-                   created_at=time.time())
+                   created_at=time.time(),
+                   me=user.actor_uri)
