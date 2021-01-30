@@ -15,7 +15,12 @@ AS2_CONTEXT = [
     'https://w3id.org/security/v1',
     {'jejune': 'https://jejune.dereferenced.org/ns#',
      'storeIdentity': 'jejune:storeIdentity',
-     'petName': 'jejune:petName'},
+     'petName': 'jejune:petName',
+     'litepub': 'http://litepub.social/ns#',
+     'oauthRegistrationEndpoint': {
+          '@type': '@id',
+          '@id': 'litepub:oauthRegistrationEndpoint'
+     }},
 ]
 
 
@@ -67,6 +72,10 @@ class AS2Object(Serializable):
 
         if '@context' in kwargs:
             super(AS2Object, self).__init__(**kwargs)
+
+            if self.local():
+                self.update_context()
+
             self.commit()
             return
 
@@ -81,6 +90,9 @@ class AS2Object(Serializable):
     @jsonld_context.setter
     def set_jsonld_context(self, context):
         setattr(self, '@context', context)
+
+    def update_context(self):
+        setattr(self, '@context', AS2_CONTEXT)
 
     @classmethod
     def deserialize(cls, data: str) -> Serializable:
