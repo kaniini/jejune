@@ -5,6 +5,7 @@ from aiohttp.web import RouteTableDef, Response
 routes = RouteTableDef()
 
 
+@routes.post('/.well-known/jejune/oauth/authorize')
 @routes.post('/api/v1/apps')
 async def new_app(request):
     post = await request.post()
