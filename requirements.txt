@@ -5,7 +5,6 @@ chardet
 idna
 idna-ssl
 multidict
-pycryptodome
 PyYAML>=5.1
 simplejson
 yarl
