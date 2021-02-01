@@ -59,12 +59,13 @@ class HTTPSignatureVerifier:
         sign_alg, _, hash_alg = sig['algorithm'].partition('-')
         sigdata = base64.b64decode(sig['signature'])
 
-        result = pubkey.verify(sigdata, sigstring.encode('utf-8'), padding.PKCS1v15(), self.hashes[hash_alg]())
-
-        request['validated'] = result
-
-        logging.debug('validates? %r', result)
-        return result
+        try:
+            pubkey.verify(sigdata, sigstring.encode('utf-8'), padding.PKCS1v15(), self.hashes[hash_alg]())
+            request['validated'] = True
+            return True
+        except:
+            request['validated'] = False
+            return False
 
 
 class HTTPSignatureSigner:
