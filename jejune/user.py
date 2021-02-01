@@ -3,15 +3,16 @@ import time
 import uuid
 
 
-from Crypto.PublicKey import RSA
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 
 
 from .serializable import Serializable
 
 
 def generate_private_key():
-    privkey = RSA.generate(4096)
-    return privkey.exportKey('PEM').decode('utf-8')
+    privkey = rsa.generate_private_key(public_exponent=65537, key_size=4096)
+    return privkey.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.NoEncryption())
 
 
 class User(Serializable):
@@ -44,18 +45,19 @@ class User(Serializable):
 
     def get_public_key(self):
         privkey = self.privkey()
-        pubkey = privkey.publickey()
+        pubkey = privkey.public_key()
+        pem = pubkey.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
 
         return {
             'id': '#'.join([self.actor_uri, 'main-key']),
             'owner': self.actor_uri,
-            'publicKeyPem': pubkey.exportKey('PEM').decode('utf-8')
+            'publicKeyPem': pem,
         }
 
-    def privkey(self) -> RSA:
+    def privkey(self) -> object:
         assert self.privateKey
 
-        return RSA.importKey(self.privateKey)
+        return serialization.load_pem_private_key(self.privateKey, password=None)
 
     def serialize_to_mastodon(self):
         return self.actor().serialize_to_mastodon()

@@ -17,3 +17,4 @@ aiohttp-jinja2
 markdown
 peony-twitter
 pybase62
+pyopenssl
