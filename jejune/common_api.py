@@ -50,12 +50,10 @@ class CommonAPI:
         return l
 
     async def post(self, actor: Actor, **kwargs) -> Create:
-        status = kwargs.get('status')
-        if not status:
-            return None
-
+        status = kwargs.get('status', '')
         content_type = kwargs.get('content_type', 'text/plain')
-        formatted = await self.app.formatter.format(status, content_type)
+        formatted, mentions = await self.app.formatter.format(status, content_type)
+        mentioned_uris = [actor.id for actor in mentions]
 
         scope = kwargs.get('visibility', 'public')
         media_ids = kwargs.get('media_ids', [])
@@ -67,13 +65,24 @@ class CommonAPI:
             if att:
                 attachments += [att]
 
+        tags = [{'href': actor.id, 'name': f'@{actor.petName}', 'type': 'Mention'} for actor in mentions]
+
+        in_reply_to = kwargs.get('in_reply_to_uri', None)
+        if in_reply_to:
+            parent = await Note.fetch_from_uri(in_reply_to)
+
+            if parent and parent.attributedTo not in mentioned_uris:
+                parent_actor = parent.attributed_object()
+                tags += [{'href': parent_actor.id, 'name': f'@{parent_actor.petName}', 'type': 'Mention'}]
+
         n = Note(content=formatted,
                  summary=kwargs.get('spoiler_text', None),
                  attributedTo=actor.id,
                  source={'content': status, 'mediaType': content_type},
-                 inReplyTo=kwargs.get('in_reply_to_uri', None),
+                 inReplyTo=in_reply_to,
                  audience=self.audience_for_scope(scope, actor, []),
-                 attachment=[att.serialize(dict) for att in attachments])
+                 attachment=[att.serialize(dict) for att in attachments],
+                 tag=tags)
 
         c = Create(actor=actor.id,
                    object=n.id,

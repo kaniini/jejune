@@ -46,7 +46,7 @@ class Formatter:
     def replace_hashtags(self, message: str) -> [str, list]:
         return (message, [])
 
-    async def format(self, message: str, content_type: str) -> str:
+    async def format(self, message: str, content_type: str) -> [str, list]:
         orig_message = message
 
         try:
@@ -56,4 +56,4 @@ class Formatter:
         except:
             return orig_message
 
-        return message
+        return (message, mentions)
