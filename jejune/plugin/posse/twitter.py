@@ -25,6 +25,9 @@ client = None
 
 
 def stemmer(msg):
+    if len(msg) <= 240:
+        return msg
+
     chopped = msg[0:240]
     if chopped[-1] in {'.', '?', '!'}:
         return chopped
@@ -71,7 +74,10 @@ async def listener(uri: str, activity: AS2Object):
 
     # trim the source text down so it will fit in a tweet (240 chars, allowing 40 for the shortlink)
     stem = stemmer(source)
-    final_status = ' '.join([stem, app.frontend_support.shortlink(child)])
+    if stem != source:
+        final_status = ' '.join([stem, app.frontend_support.shortlink(child)])
+    else:
+        final_status = source
 
     # upload media (4 attachments max)
     attachments = getattr(child, 'attachment', [])[0:4]
