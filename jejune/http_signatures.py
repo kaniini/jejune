@@ -4,16 +4,15 @@ import base64
 import logging
 
 
-from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA, SHA256, SHA512
-from Crypto.Signature import PKCS1_v1_5
+from cryptography.hazmat.primitives.asymmetric import rsa, utils, padding
+from cryptography.hazmat.primitives import hashes, serialization
 
 
 class HTTPSignatureVerifier:
     hashes = {
-        'sha1': SHA,
-        'sha256': SHA256,
-        'sha512': SHA512,
+        'sha1': hashes.SHA1,
+        'sha256': hashes.SHA256,
+        'sha512': hashes.SHA512,
     }
 
     def split_signature(self, sig: str) -> dict:
@@ -29,7 +28,7 @@ class HTTPSignatureVerifier:
         default['headers'] = default['headers'].split()
         return default
 
-    async def load_key(self, actor_uri: str) -> RSA:
+    async def load_key(self, actor_uri: str) -> object:
         from .activity_streams import AS2Pointer
         actor_uri = AS2Pointer(actor_uri).serialize()
 
@@ -39,7 +38,7 @@ class HTTPSignatureVerifier:
             return None
 
         try:
-            return RSA.importKey(actor.publicKey['publicKeyPem'])
+            return serialization.load_pem_public_key(actor.publicKey['publicKeyPem'].encode('utf-8'))
         except:
             return None
 
@@ -60,10 +59,7 @@ class HTTPSignatureVerifier:
         sign_alg, _, hash_alg = sig['algorithm'].partition('-')
         sigdata = base64.b64decode(sig['signature'])
 
-        pkcs = PKCS1_v1_5.new(pubkey)
-        h = self.hashes[hash_alg].new()
-        h.update(sigstring.encode('utf-8'))
-        result = pkcs.verify(h, sigdata)
+        result = pubkey.verify(sigdata, sigstring.encode('utf-8'), padding.PKCS1v15(), self.hashes[hash_alg]())
 
         request['validated'] = result
 
@@ -72,7 +68,7 @@ class HTTPSignatureVerifier:
 
 
 class HTTPSignatureSigner:
-    def sign(self, headers: dict, key: RSA, key_id: str) -> str:
+    def sign(self, headers: dict, key: object, key_id: str) -> str:
         headers = {x.lower(): y for x, y in headers.items()}
         used_headers = headers.keys()
 
@@ -91,11 +87,7 @@ class HTTPSignatureSigner:
     def build_signing_string(self, headers: dict, used_headers: list) -> str:
         return '\n'.join(map(lambda x: ': '.join([x.lower(), headers[x]]), used_headers))
 
-    def sign_signing_string(self, sigstring: str, key: RSA) -> str:
-        pkcs = PKCS1_v1_5.new(key)
-        h = SHA256.new()
-        h.update(sigstring.encode('utf-8'))
-        sigdata = pkcs.sign(h)
-
+    def sign_signing_string(self, sigstring: str, key: object) -> str:
+        sigdata = key.sign(sigstring.encode('utf-8'), padding.PKCS1v15(), hashes.SHA256())
         sigdata = base64.b64encode(sigdata)
         return sigdata.decode('utf-8')

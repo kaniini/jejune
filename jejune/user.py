@@ -57,7 +57,7 @@ class User(Serializable):
     def privkey(self) -> object:
         assert self.privateKey
 
-        return serialization.load_pem_private_key(self.privateKey, password=None)
+        return serialization.load_pem_private_key(self.privateKey.encode('utf-8'), password=None)
 
     def serialize_to_mastodon(self):
         return self.actor().serialize_to_mastodon()
