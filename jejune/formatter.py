@@ -3,7 +3,7 @@ import markdown
 import re
 
 
-MENTIONS_RE = re.compile(r'(@[a-zA-Z0-9@\.]*)\s*')
+MENTIONS_RE = re.compile(r'^|\s(@[a-zA-Z0-9@\.]*)\s*')
 
 
 class Formatter:
@@ -53,7 +53,8 @@ class Formatter:
             message, mentions = await self.replace_mentions(message)
             message, hashtags = self.replace_hashtags(message)
             message = markdown.markdown(message)
-        except:
-            return orig_message
+        except Exception as e:
+            logging.exception('Formatter: Encountered %r while formatting %r.', e, message) 
+            return (orig_message, [])
 
         return (message, mentions)
