@@ -28,7 +28,7 @@ class PublisherRequest:
         self.complete = False
 
     async def handle_local_delivery(self):
-        obj = await AS2Object.fetch_from_uri(self.recipient)
+        obj = AS2Collection.fetch_local(self.recipient, use_pointers=True)
 
         if isinstance(obj, AS2Collection):
             obj.prepend(self.activity)
