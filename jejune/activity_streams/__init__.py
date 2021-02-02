@@ -16,6 +16,7 @@ AS2_CONTEXT = [
     {'jejune': 'https://jejune.dereferenced.org/ns#',
      'storeIdentity': 'jejune:storeIdentity',
      'petName': 'jejune:petName',
+     'submittedBy': 'jejune:submittedBy',
      'litepub': 'http://litepub.social/ns#',
      'oauthRegistrationEndpoint': {
           '@type': '@id',
@@ -67,6 +68,9 @@ class AS2Object(Serializable):
             kwargs['audience'] = kwargs.get('to', []) + kwargs.get('cc', [])
 
         kwargs['storeIdentity'] = get_jejune_app().rdf_store.hash_for_uri(kwargs['id'])
+
+        if 'actor' not in kwargs and 'attributedTo' not in kwargs and 'submittedBy' in kwargs:
+            kwargs['attributedTo'] = kwargs['submittedBy']
 
         asyncio.ensure_future(self.synchronize())
 
@@ -283,6 +287,9 @@ class AS2Activity(AS2Object):
     __jsonld_type__ = 'Activity'
 
     def __init__(self, **kwargs):
+        if 'actor' not in kwargs and 'attributedTo' not in kwargs and 'submittedBy' in kwargs:
+            kwargs['actor'] = kwargs['submittedBy']
+
         if 'object' in kwargs and type(kwargs['object']) != str:
             child_obj = kwargs.pop('object')
 

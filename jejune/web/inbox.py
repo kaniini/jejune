@@ -93,7 +93,7 @@ async def outbox_post(request):
         if not resp:
             return json_response({'status': 'rejected; malformed payload'}, status=406)
 
-        app.inbox_processor.enqueue(resp)
+        app.inbox_processor.enqueue_local(resp, a.id)
     except:
         return json_response({'status': 'rejected; malformed payload'}, status=406)
 
