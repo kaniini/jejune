@@ -26,7 +26,7 @@ class AS2Collection(AS2Object, TypedCollection):
     __jsonld_type__ = 'Collection'
     __child_type__ = AS2Object
 
-    def walk(self, object_types: set, limit: int, skip=0, max_id=None, since_id=None, min_id=None) -> list:
+    def walk(self, object_types: set, limit: int, skip=0, max_id=None, since_id=None, min_id=None, visible_for=None) -> list:
         yielded = 0
         skipped = 0
         max_hit = max_id is None
@@ -51,6 +51,9 @@ class AS2Collection(AS2Object, TypedCollection):
                 max_hit = True
 
             if not max_hit:
+                continue
+
+            if not real.visible_for(visible_for):
                 continue
 
             if since_id and item_id == since_id:
@@ -133,6 +136,11 @@ class OrderedCollectionAdapter:
         items_per_page = 20
         last_page = int(len(self.coll) / items_per_page)
 
+        actor = None
+        user = request.get('oauth_user', None)
+        if user:
+            actor = user.actor()
+
         if 'page' not in request.query:
             return {
                 '@context': AS2_CONTEXT,
@@ -145,7 +153,7 @@ class OrderedCollectionAdapter:
 
         page = int(request.query.get('page', 0))
         skip = items_per_page * page
-        items = self.coll.walk({}, items_per_page, skip=skip)
+        items = self.coll.walk({}, items_per_page, skip=skip, visible_for=actor)
         result = {
             '@context': AS2_CONTEXT,
             'id': self.coll.id + f'?page={page}',

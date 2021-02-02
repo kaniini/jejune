@@ -198,7 +198,8 @@ class AS2Object(Serializable):
         return time.strftime('%B %d, %Y [%H:%M:%S]', time.localtime(self.published_ts()))
 
     def visible_for(self, actor=None) -> bool:
-        audience = getattr(self, 'audience', [self.attributedTo or self.actor])
+        attribution = getattr(self, 'attributedTo', getattr(self, 'actor', None))
+        audience = getattr(self, 'audience', [attribution])
 
         if AS2_PUBLIC in audience:
             return True

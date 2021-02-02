@@ -53,4 +53,20 @@ async def inbox_get(request):
     return json_response(adapter.serialize(request))
 
 
+@routes.get('/.well-known/jejune/outbox/{id}')
+async def outbox_get(request):
+    outbox_id = request.match_info.get('id', None)
+
+    if not outbox_id:
+        return json_response({'status': 'invalid capability URI'}, status=403)
+
+    rdf_uri = ''.join(['https://', app.hostname, request.path])
+    logging.debug('ActivityPub: C2S: fetching outbox %r', rdf_uri)
+
+    outbox_collection = await AS2Collection.fetch_from_uri(rdf_uri, use_pointers=True)
+    adapter = OrderedCollectionAdapter(outbox_collection)
+
+    return json_response(adapter.serialize(request))
+
+
 app.add_routes(routes)
