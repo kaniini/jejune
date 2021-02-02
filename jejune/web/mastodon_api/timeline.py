@@ -41,13 +41,23 @@ async def home_timeline(request):
 
 @routes.get('/api/v1/timelines/public')
 async def public_timeline(request):
+    user = request.get('oauth_user', None)
+    if not user:
+        return json_response({'error': 'no oauth session found'}, status=403)
+
+    actor = user.actor()
+    if not actor:
+        return json_response({'error': 'bogus account - no AP actor found'}, status=500)
+
     limit = int(request.query.get('limit', 20))
-    deref_limit = app.max_timeline_length
 
-    shared_inbox_collection = AS2Collection.fetch_local(app.shared_inbox_uri, use_pointers=True)
-    deref_items = [ptr.dereference() for ptr in shared_inbox_collection.__items__[0:deref_limit]]
+    inbox_collection = AS2Collection.fetch_local(app.shared_inbox_uri, use_pointers=True)
+    items = inbox_collection.walk({'Create', 'Announce'}, limit, skip=0,
+                                  max_id=request.query.get('max_id', None),
+                                  since_id=request.query.get('since_id', None),
+                                  min_id=request.query.get('min_id', None))
 
-    return render_timeline(request, deref_items)
+    return render_timeline(request, items)
 
 
 @routes.get('/api/v1/accounts/{id}/statuses')
