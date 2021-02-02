@@ -1,4 +1,3 @@
-
 import asyncio
 import logging
 import simplejson
@@ -88,9 +87,19 @@ class AS2Collection(AS2Object, TypedCollection):
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> AS2Object:
         from . import get_jejune_app
-        get_jejune_app().rdf_store.override(uri)
 
-        return super().create_if_not_exists(uri, __items__=[])
+        app = get_jejune_app()
+        app.rdf_store.override(uri)
+
+        hashed = app.rdf_store.hash_for_uri(uri)
+
+        if app.rdf_store.hash_exists(hashed):
+            data = app.rdf_store.fetch_hash_json(hashed)
+
+            if data:
+                return cls.deserialize_from_json(data, use_pointers=True)
+
+        return cls(**kwargs, id=uri, __items__=[])
 
     @classmethod
     def fetch_local(cls, uri: str, use_pointers=True) -> AS2Object:
