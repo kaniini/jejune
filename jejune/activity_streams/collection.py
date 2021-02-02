@@ -4,7 +4,7 @@ import logging
 import simplejson
 
 
-from . import AS2Object, AS2Pointer, registry
+from . import AS2_CONTEXT, AS2Object, AS2Pointer, registry
 from ..collection import TypedCollection
 
 
@@ -36,7 +36,7 @@ class AS2Collection(AS2Object, TypedCollection):
             if not real:
                 continue
 
-            if real.type not in object_types:
+            if object_types and real.type not in object_types:
                 continue
 
             if skip and skipped < skip:
@@ -123,3 +123,41 @@ def collection_intersects(collection_uri, item: str) -> bool:
 
     item_uris = {ptr.serialize() for ptr in collection.__items__}
     return item in item_uris
+
+
+class OrderedCollectionAdapter:
+    def __init__(self, coll: AS2Collection):
+        self.coll = coll
+
+    def serialize(self, request):
+        items_per_page = 20
+        last_page = int(len(self.coll) / items_per_page)
+
+        if 'page' not in request.query:
+            return {
+                '@context': AS2_CONTEXT,
+                'id': self.coll.id,
+                'type': 'OrderedCollection',
+                'totalItems': len(self.coll),
+                'first': self.coll.id + '?page=0',
+                'last': self.coll.id + f'?page={last_page}'
+            }
+
+        page = int(request.query.get('page', 0))
+        skip = items_per_page * page
+        items = self.coll.walk({}, items_per_page, skip=skip)
+        result = {
+            '@context': AS2_CONTEXT,
+            'id': self.coll.id + f'?page={page}',
+            'type': 'OrderedCollectionPage',
+            'partOf': self.coll.id,
+            'orderedItems': [item.serialize(dict) for item in items],
+        }
+
+        if page:
+            result['prev'] = self.coll.id + f'?page={page - 1}'
+
+            if page < last_page:
+                result['next'] = self.coll.id + f'?page={page + 1}'
+
+        return result

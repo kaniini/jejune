@@ -355,7 +355,7 @@ class AS2Activity(AS2Object):
         base = super().serialize(dict)
 
         child = self.child()
-        if child and child.local():
+        if child:
             base['object'] = child.serialize(dict)
 
         return method(base)
