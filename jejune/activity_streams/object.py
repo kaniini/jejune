@@ -1,4 +1,5 @@
 import logging
+import markdown
 
 
 from . import AS2Object, AS2Pointer, registry
@@ -7,6 +8,18 @@ from ..activity_pub.actor import Actor
 
 class Note(AS2Object):
     __jsonld_type__ = 'Note'
+
+    def __init__(self, **kwargs):
+        if 'content' not in kwargs and 'source' in kwargs:
+            source = kwargs['source']
+
+            # XXX: run this through the real formatter
+            if isinstance(source, dict):
+                kwargs['content'] = markdown.markdown(source['content'])
+            elif isinstance(source, str):
+                kwargs['content'] = markdown.markdown(source)
+
+        super().__init__(**kwargs)
 
     def mastodon_id(self):
         return '{0:d}.{1}'.format(int(self.published_ts()), self.storeIdentity)

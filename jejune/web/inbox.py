@@ -84,16 +84,16 @@ async def outbox_post(request):
     if not a:
         return json_response({'status': 'unauthorized; oauth session token is associated with non-existent actor'}, status=403)
 
-    if not a.inbox.endswith(outbox_id):
+    if not a.outbox.endswith(outbox_id):
         return json_response({'status': 'outbox capability URI does not match session token'}, status=403)
 
     try:
         payload = await request.json()
 
-        if not resp:
+        if not payload:
             return json_response({'status': 'rejected; malformed payload'}, status=406)
 
-        app.inbox_processor.enqueue_local(resp, a.id)
+        app.inbox_processor.enqueue_local(payload, a.id)
     except:
         return json_response({'status': 'rejected; malformed payload'}, status=406)
 
