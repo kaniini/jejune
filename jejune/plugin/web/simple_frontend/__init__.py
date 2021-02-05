@@ -17,17 +17,11 @@ from . import routes
 
 
 config = app.config['instance'].get('frontend-configurations', {}).get('simple-frontend')
-outbox = config.get('outbox', None)
+outbox = app.shared_outbox_uri
 featured_user = app.userapi.find_user(config.get('user', None)).actor()
 
 
 logging.info('Simple Frontend: Config: %r', config)
-
-
-if not outbox and featured_user:
-    outbox = getattr(featured_user, 'outbox', None)
-
-
 logging.info('Simple Frontend: Using outbox %r.', outbox)
 
 
