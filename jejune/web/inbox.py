@@ -29,6 +29,7 @@ async def inbox_post(request):
 
 @routes.get('/.well-known/jejune/inbox/{id}')
 @routes.get('/.well-known/jejune/sharedinbox')
+@routes.get('/.well-known/jejune/sharedoutbox')
 async def inbox_get(request):
     inbox_id = request.match_info.get('id', None)
 
