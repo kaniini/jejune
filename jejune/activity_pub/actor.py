@@ -37,6 +37,7 @@ class Actor(AS2Object):
 
         self.endpoints = {
             'sharedInbox': app.shared_inbox_uri,
+            'sharedOutbox': app.shared_outbox_uri,
             'oauthAuthorizationEndpoint': app.make_well_known_uri('oauth/authorize'),
             'oauthRegistrationEndpoint': app.make_well_known_uri('oauth/register'),
             'oauthTokenEndpoint': app.make_well_known_uri('oauth/token'),

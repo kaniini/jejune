@@ -21,9 +21,13 @@ class CommonAPI:
     def __init__(self, app):
         self.app = app
         asyncio.ensure_future(self.ensure_shared_inbox())
+        asyncio.ensure_future(self.ensure_shared_outbox())
 
     async def ensure_shared_inbox(self):
         coll = AS2Collection.create_if_not_exists(self.app.shared_inbox_uri)
+
+    async def ensure_shared_outbox(self):
+        coll = AS2Collection.create_if_not_exists(self.app.shared_outbox_uri)
 
     async def announce(self, actor: Actor, obj: AS2Object, **kwargs) -> Announce:
         scope = kwargs.get('visibility', 'public')

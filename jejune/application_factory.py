@@ -70,6 +70,10 @@ class Application(aiohttp.web.Application):
         return str().join(['https://', self.hostname, '/.well-known/jejune/sharedinbox'])
 
     @property
+    def shared_outbox_uri(self):
+        return str().join(['https://', self.hostname, '/.well-known/jejune/sharedoutbox'])
+
+    @property
     def max_timeline_length(self):
         return self.config['instance']['limits']['timeline-length']
 
