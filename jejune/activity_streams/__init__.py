@@ -323,6 +323,11 @@ class AS2Activity(AS2Object):
         if actor:
             app.publisher.add_activity(self, actor.outbox, 3)
 
+        # splice into shared outbox
+        if self.local():
+            app.publisher.add_activity(self, get_jejune_app().shared_outbox_uri, 3)
+
+        # enqueue sends to recipients
         [app.publisher.add_activity(self, recipient) for recipient in self.get_audience()]
 
     def address_list(self, attrlist: str) -> list:
