@@ -21,7 +21,11 @@ AS2_CONTEXT = [
      'oauthRegistrationEndpoint': {
           '@type': '@id',
           '@id': 'litepub:oauthRegistrationEndpoint'
-     }},
+     },
+     'sharedOutbox': {
+          '@type': '@id',
+          '@id': 'jejune:sharedOutbox'
+     }}
 ]
 
 
