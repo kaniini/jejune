@@ -30,7 +30,7 @@ class PublisherRequest:
     async def handle_local_delivery(self):
         obj = AS2Collection.fetch_local(self.recipient, use_pointers=True)
 
-        if isinstance(obj, AS2Collection):
+        if isinstance(obj, AS2Collection) and not obj.contains_uri(self.activity.id):
             obj.prepend(self.activity)
             obj.commit()
 

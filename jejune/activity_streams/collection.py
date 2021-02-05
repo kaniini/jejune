@@ -124,6 +124,10 @@ class AS2Collection(AS2Object, TypedCollection):
 
         return cls.deserialize_from_json(data, use_pointers=use_pointers)
 
+    def contains_uri(self, uri: str) -> bool:
+        uris = {item.id for item in self.__items__}
+        return uri in uris
+
 registry.register_type(AS2Collection)
 
 
