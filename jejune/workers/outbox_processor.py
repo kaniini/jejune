@@ -29,9 +29,7 @@ class OutboxProcessorWorker:
 
             content = source['content']
             content, mentions = await self.app.formatter.format(content, source.get('mediaType', 'text/markdown'))
-
-            source['content'] = content
-            child['source'] = source
+            child['content'] = content
 
             tags = [{'href': actor.id, 'name': f'@{actor.petName}', 'type': 'Mention'} for actor in mentions]
             child['tag'] = child.get('tag', []) + tags
