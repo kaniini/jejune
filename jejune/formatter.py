@@ -3,7 +3,7 @@ import markdown
 import re
 
 
-MENTIONS_RE = re.compile(r'^|\s(@[a-zA-Z0-9@\.]*)\s*')
+MENTIONS_RE = re.compile(r'\B(@[a-zA-Z0-9@\.]*)\s*')
 
 
 class Formatter:
