@@ -55,7 +55,3 @@ class InboxProcessorWorker:
     def enqueue(self, item: dict):
         self.queue += [item]
         self.event.set()
-
-    def enqueue_local(self, item: dict, actor: str):
-        item['submittedBy'] = actor
-        self.enqueue(item)

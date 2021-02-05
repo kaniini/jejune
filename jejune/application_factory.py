@@ -13,6 +13,7 @@ from .common_api import CommonAPI
 from .formatter import Formatter
 from .workers.publisher import PublisherWorker
 from .workers.inbox_processor import InboxProcessorWorker
+from .workers.outbox_processor import OutboxProcessorWorker
 
 
 from .middleware.oauth import oauth_middleware
@@ -40,6 +41,7 @@ class Application(aiohttp.web.Application):
         self.formatter = Formatter(self)
         self.publisher = PublisherWorker(self)
         self.inbox_processor = InboxProcessorWorker(self)
+        self.outbox_processor = OutboxProcessorWorker(self)
         self.frontend_support = FrontendSupport()
 
     @property
