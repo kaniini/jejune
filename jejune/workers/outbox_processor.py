@@ -33,6 +33,9 @@ class OutboxProcessorWorker:
             source['content'] = content
             child['source'] = source
 
+            tags = [{'href': actor.id, 'name': f'@{actor.petName}', 'type': 'Mention'} for actor in mentions]
+            child['tag'] = child.get('tag', []) + tags
+
             if child != item:
                 item['object'] = child
 
