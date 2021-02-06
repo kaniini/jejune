@@ -27,6 +27,62 @@ run this software in production yet.**
 
 ## Installation
 
-1. `python3 -m virtualenv prod`
-2. `source ./prod/bin/activate`
-3. `pip3 install -r requirements.txt`
+These instructions assume the user is using Alpine Linux.  If you are using a
+different OS, you will need to translate the directions accordingly.
+
+Before you proceed, you will need to install some dependencies:
+
+```
+# apk add build-base python3-dev openssl-dev
+```
+
+You will also want to create a user.  Do not run Jejune as root!
+
+```
+# adduser jejune
+[...]
+# su - jejune
+$ git clone https://github.com/kaniini/jejune
+[...]
+$ cd jejune
+```
+
+We recommend the use of a Python `virtualenv`.  First, create a `virtualenv` using
+the `virtualenv` module and enter it:
+
+```
+$ python3 -m virtualenv prod
+$ source ./prod/bin/activate
+```
+
+Next, install the dependencies:
+
+```
+(prod) $ pip3 install -r requirements.txt
+```
+
+You will need to configure your instance.  Copy `config.yaml.example` and edit it:
+
+```
+(prod) $ cp config.yaml.example config.yaml
+(prod) $ nano config.yaml
+```
+
+Finally, you will need to create your admin user:
+
+```
+(prod) $ JEJUNE_CONFIG=config.yaml python3 -m jejune.tasks.create_user
+[...]
+```
+
+You can now launch the Jejune server, which will listen on localhost:8080.  You should
+configure nginx or caddy or whatever server you use to proxy requests to localhost:8080.
+
+```
+(prod) $ JEJUNE_CONFIG=config.yaml python3 -m jejune
+[...]
+Starting webserver on 127.0.0.1:8080
+```
+
+At this point, you can go to `/.well-known/jejune` on your instance to access
+jejune-client.  Happy blogging!
