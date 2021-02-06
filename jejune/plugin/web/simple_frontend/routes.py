@@ -65,6 +65,9 @@ async def activity(request):
         inthash = base62.decode(hash)
         hash = hex(inthash)[2:]
 
+        if len(hash) % 2 == 1:
+            hash = '0' + hash
+
     activity = AS2Object.fetch_from_hash(hash)
     if not activity:
         return Response(text='activity not found', status=404)
@@ -83,6 +86,9 @@ async def shortlink(request):
     if not len(hash) == 64:
         inthash = base62.decode(hash)
         hash = hex(inthash)[2:]
+
+        if len(hash) % 2 == 1:
+            hash = '0' + hash
 
     activity = AS2Object.fetch_from_hash(hash)
     if not activity:
