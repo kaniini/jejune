@@ -21,7 +21,7 @@ class OutboxProcessorWorker:
         mentions = []
         child = item.get('object', item)
 
-        if 'source' in child.keys():
+        if isinstance(child, dict) and 'source' in child.keys():
             source = child['source']
 
             if isinstance(source, str):
