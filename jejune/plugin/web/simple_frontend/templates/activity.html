@@ -59,7 +59,9 @@
 {% endif %}
 
 <div class="content">
+{% if obj.content %}
 {{ obj.content | safe }}
+{% endif %}
 
 {{ render_date(obj) }}
 </div>
