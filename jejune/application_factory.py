@@ -6,7 +6,7 @@ import uuid
 from .config import load_config
 from .rdf_store import RDFStore
 from .userdb_store import UserDBStore, UserDBNamespace
-from .user import User, Token, Mailbox
+from .user import User, Token
 from .app import App
 from .user_api import UserAPI
 from .common_api import CommonAPI
@@ -35,7 +35,6 @@ class Application(aiohttp.web.Application):
         self.userns = UserDBNamespace(self, 'User', User)
         self.appns = UserDBNamespace(self, 'App', App)
         self.tokenns = UserDBNamespace(self, 'Token', Token)
-        self.mailboxns = UserDBNamespace(self, 'Mailbox', Mailbox)
         self.userapi = UserAPI(self)
         self.commonapi = CommonAPI(self)
         self.formatter = Formatter(self)

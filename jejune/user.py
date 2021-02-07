@@ -70,12 +70,6 @@ class User(Serializable):
         return Actor.fetch_cached_from_uri(self.actor_uri)
 
 
-class Mailbox(Serializable):
-    @classmethod
-    def new(cls, user: User) -> Serializable:
-        return cls(user=user.username)
-
-
 class Token(Serializable):
     @classmethod
     def new(cls, user: User) -> Serializable:
