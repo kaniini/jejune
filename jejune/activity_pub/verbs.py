@@ -118,7 +118,7 @@ class Follow(AS2Activity):
         followee = AS2Pointer(self.object).dereference()
 
         # XXX: implement blocks collection
-        if not followee.manuallyApprovesFollowers and followee.local():
+        if not getattr(followee, 'manuallyApprovesFollowers', False) and followee.local():
             a = Accept(actor=followee.id, object=self.serialize(dict), to=[self.actor])
             await a.apply_side_effects()
         else:
