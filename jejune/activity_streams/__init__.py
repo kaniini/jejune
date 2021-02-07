@@ -69,7 +69,16 @@ class AS2Object(Serializable):
 
         # fail closed rather than open
         if 'audience' not in kwargs:
-            kwargs['audience'] = kwargs.get('to', []) + kwargs.get('cc', [])
+            to = kwargs.get('to', [])
+            cc = kwargs.get('cc', [])
+
+            if not isinstance(to, list):
+                to = [to]
+
+            if not isinstance(cc, list):
+                cc = [cc]
+
+            kwargs['audience'] = to + cc
 
         kwargs['storeIdentity'] = get_jejune_app().rdf_store.hash_for_uri(kwargs['id'])
 
