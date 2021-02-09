@@ -42,6 +42,7 @@ class Actor(AS2Object):
             'oauthRegistrationEndpoint': app.make_well_known_uri('oauth/register'),
             'oauthTokenEndpoint': app.make_well_known_uri('oauth/token'),
             'uploadMedia': app.make_well_known_uri('media'),
+            'searchEndpoint': app.make_well_known_uri('search'),
         }
 
         self.commit()

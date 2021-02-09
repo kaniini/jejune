@@ -29,3 +29,4 @@ from . import static
 from . import inbox
 from . import oauth
 from . import media
+from . import search
