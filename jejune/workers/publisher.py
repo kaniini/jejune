@@ -26,6 +26,7 @@ class PublisherRequest:
         self.kind = kind
         self.error_count = 0
         self.complete = False
+        self.originator = AS2Pointer(self.activity.actor).dereference()
 
     async def handle_local_delivery(self):
         obj = AS2Collection.fetch_local(self.recipient, use_pointers=True)
@@ -77,12 +78,11 @@ class PublisherRequest:
 
     async def handle_ap_inbox(self):
         # We can't deliver on behalf of remote users.
-        actor = AS2Pointer(self.activity.actor).dereference()
-        if not actor.local():
-            logging.info('PUBLISHER: WTF: Trying to deliver messages on behalf of remote user %s.', actor.id)
+        if not self.originator.local():
+            logging.info('PUBLISHER: WTF: Trying to deliver messages on behalf of remote user %s.', self.originator.id)
             return self.completed()
 
-        user = actor.user()
+        user = self.originator.user()
 
         payload = self.activity.serialize()
         uri = urllib.parse.urlsplit(self.recipient)
