@@ -25,6 +25,10 @@ AS2_CONTEXT = [
      'sharedOutbox': {
           '@type': '@id',
           '@id': 'jejune:sharedOutbox'
+     },
+     'searchEndpoint': {
+          '@type': '@id',
+          '@id': 'jejune:searchEndpoint'
      }}
 ]
 
