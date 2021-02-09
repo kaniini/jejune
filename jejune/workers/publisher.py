@@ -51,7 +51,9 @@ class PublisherRequest:
             self.publisher.add_activity(self.activity, actor.inbox, LOCAL_DELIVERY)
             return self.completed()
 
-        self.publisher.add_activity(self.activity, actor.inbox, AP_INBOX)
+        if self.originator.local() or actor.local():
+            self.publisher.add_activity(self.activity, actor.inbox, AP_INBOX)
+
         return self.completed()
 
     def handle_collection(self, obj: AS2Collection):
@@ -100,7 +102,7 @@ class PublisherRequest:
 
         privkey = user.privkey()
 
-        headers['signature'] = self.publisher.signer.sign(headers, privkey, actor.publicKey['id'])
+        headers['signature'] = self.publisher.signer.sign(headers, privkey, self.originator.publicKey['id'])
         headers.pop('(request-target)')
         headers.pop('Host')
 
