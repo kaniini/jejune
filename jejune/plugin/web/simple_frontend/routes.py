@@ -76,8 +76,9 @@ async def activity(request):
     accept_types = request.headers.get('Accept', 'text/html').split(',')
     accept_prefs = []
     for accept_type in accept_types:
+        accept_type = accept_type.strip()
         frags = accept_type.split(';')
-        q = 0.5
+        q = 1.0
 
         props = {}
         for frag in frags[1:]:
