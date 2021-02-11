@@ -72,7 +72,26 @@ async def activity(request):
     if not activity:
         return Response(text='activity not found', status=404)
 
-    if request.headers.get('Accept', 'text/html') in ['application/activity+json', 'application/ld+json']:
+    # TODO: Make this a function somewhere.
+    accept_types = request.headers.get('Accept', 'text/html').split(',')
+    accept_prefs = []
+    for accept_type in accept_types:
+        frags = accept_type.split(';')
+        q = 0.5
+
+        props = {}
+        for frag in frags[1:]:
+            k, _, v = frag.partition('=')
+            props[k] = v
+
+        if 'q' in props.keys():
+            q = float(props['q'])
+
+        accept_prefs += [[frags[0], q]]
+
+    sorted_prefs = sorted(accept_prefs, key=lambda x: x[1], reverse=True)
+
+    if sorted_prefs[0][0] in ['application/activity+json', 'application/ld+json']:
         return json_response(activity.serialize(dict), content_type='application/activity+json')
 
     template = jinja_env.get_template('activity-view.html')
