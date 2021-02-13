@@ -9,6 +9,9 @@ import time
 import urllib.parse
 
 
+from .http_signatures import HTTPSignatureSigner
+
+
 from cachetools import TTLCache
 
 
@@ -133,12 +136,29 @@ class RDFStore:
             f.write(entry)
 
     async def fetch_remote(self, uri: str) -> str:
+        u = self.app.instance_actor()
+        if not u:
+            logging.info('WTF: Instance actor is not available; cannot fetch remote objects!')
+            return None
+
+        privkey = u.privkey()
+
         logging.debug('Fetching uncached remote object: %s', uri)
 
+        splituri = urllib.parse.urlsplit(uri)
+
         headers = {
-            'Accept': 'application/activity+json',
+            '(request-target)': f'get {splituri.path}',
+            'Accept': 'application/activity+json,application/ld+json;profile="https://www.w3.org/ns/activitystreams"',
             'User-Agent': self.app.user_agent,
+            'Date': time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime()),
+            'Host': splituri.netloc,
         }
+
+        signer = HTTPSignatureSigner()
+        headers['signature'] = signer.sign(headers, privkey, u.actor().publicKey['id'])
+        headers.pop('(request-target)')
+        headers.pop('Host')
 
         try:
             async with timeout(5.0):

@@ -99,3 +99,7 @@ class Application(aiohttp.web.Application):
 
     def ensure_instance_actor(self):
         self.userapi.create_user('Instance actor.', 'Application', 'internal.actor', None, None, None, False, self.make_well_known_uri('actor'))
+
+    def instance_actor(self):
+        u = self.userapi.find_user('internal.actor')
+        return u
