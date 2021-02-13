@@ -17,7 +17,7 @@ class UserAPI:
         self.rdf_store = app.rdf_store
         self.webfinger = WebfingerClient(self.app)
 
-    def create_user(self, description: str, actor_type: str, username: str, email: str, password: str, bio: str, locked: bool) -> User:
+    def create_user(self, description: str, actor_type: str, username: str, email: str, password: str, bio: str, locked: bool, actor_uri=None) -> User:
         if self.find_user(username):
             return None
 
@@ -27,7 +27,8 @@ class UserAPI:
                      username=username,
                      bio=bio,
                      email=email,
-                     locked=locked)
+                     locked=locked,
+                     actor_uri=actor_uri)
         self.store.put(u.username, 'base', u)
 
         actor = Actor.new_from_user(u)
