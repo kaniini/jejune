@@ -22,7 +22,11 @@ class InboxProcessorWorker:
         asyncio.ensure_future(self.work_loop())
 
     async def process_item(self, item: dict):
-        obj = AS2Object.deserialize_from_json(item)
+        try:
+            obj = AS2Object.deserialize_from_json(item)
+        except:
+            logging.exception('Exception encountered while processing message %r.', item)
+            return
 
         logging.debug('Processing item %r [%s]', obj.id, obj.serialize())
 
