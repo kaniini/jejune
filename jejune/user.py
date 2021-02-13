@@ -17,13 +17,14 @@ def generate_private_key():
 
 class User(Serializable):
     @classmethod
-    def new(cls, app, password: str, **kwargs) -> Serializable:
+    def new(cls, app, password: str, actor_uri=None, **kwargs) -> Serializable:
         if password:
             crypted_pass = crypt.crypt(password, crypt.mksalt(crypt.METHOD_BLOWFISH))
         else:
             crypted_pass = None
 
-        actor_uri = app.rdf_object_uri()
+        if not actor_uri:
+            actor_uri = app.rdf_object_uri()
 
         kwargs['actor_uri'] = actor_uri
         kwargs['password'] = crypted_pass
