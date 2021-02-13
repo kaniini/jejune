@@ -43,6 +43,7 @@ class Actor(AS2Object):
             'oauthTokenEndpoint': app.make_well_known_uri('oauth/token'),
             'uploadMedia': app.make_well_known_uri('media'),
             'searchEndpoint': app.make_well_known_uri('search'),
+            'proxyUrl': app.make_well_known_uri('object-proxy'),
         }
 
         self.commit()
