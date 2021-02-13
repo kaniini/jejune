@@ -38,6 +38,9 @@ async def object_proxy(request):
          return json_response({'status': 'invalid request; missing id parameter'}, status=500)
 
      object = await app.rdf_store.fetch(rdata['id'])
+     if not object:
+         return json_response({'error': 'object not found'}, status=404)
+
      return Response(text=object, content_type='application/activity+json')
 
 
