@@ -42,6 +42,7 @@ class Application(aiohttp.web.Application):
         self.inbox_processor = InboxProcessorWorker(self)
         self.outbox_processor = OutboxProcessorWorker(self)
         self.frontend_support = FrontendSupport()
+        self.ensure_instance_actor()
 
     @property
     def hostname(self):
@@ -95,3 +96,6 @@ class Application(aiohttp.web.Application):
 
     def load_plugins(self):
         [__import__(pkg) for pkg in self.config['instance'].get('plugins', [])]
+
+    def ensure_instance_actor(self):
+        self.userapi.create_user('Instance actor.', 'Application', 'internal.actor', None, None, None, False, self.make_well_known_uri('actor'))
