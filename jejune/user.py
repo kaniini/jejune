@@ -12,7 +12,7 @@ from .serializable import Serializable
 
 def generate_private_key():
     privkey = rsa.generate_private_key(public_exponent=65537, key_size=4096)
-    return privkey.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.NoEncryption())
+    return privkey.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.NoEncryption()).decode('ascii')
 
 
 class User(Serializable):
