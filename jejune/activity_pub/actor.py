@@ -66,12 +66,23 @@ class Actor(AS2Object):
             self.fixate()
             self.commit()
 
+        shared = getattr(self, 'shared', None)
+        if not shared:
+            shared = get_jejune_app().object_uri('collection')
+            self.shared = shared
+            self.fixate()
+            self.commit()
+
     def override_collections(self):
         from .. import get_jejune_app
 
         liked = getattr(self, 'liked', None)
         if liked:
             get_jejune_app().rdf_store.override(liked)
+
+        shared = getattr(self, 'liked', None)
+        if shared:
+            get_jejune_app().rdf_store.override(shared)
 
         inbox = getattr(self, 'inbox', None)
         if inbox:
@@ -95,6 +106,10 @@ class Actor(AS2Object):
         liked = getattr(self, 'liked', None)
         if liked:
             AS2Collection.create_if_not_exists(liked)
+
+        shared = getattr(self, 'shared', None)
+        if shared:
+            AS2Collection.create_if_not_exists(shared)
 
         inbox = getattr(self, 'inbox', None)
         if inbox:
