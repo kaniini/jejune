@@ -11,6 +11,32 @@ class Create(AS2Activity):
     def mastodon_id(self):
         return self.child().mastodon_id()
 
+    async def apply_side_effects(self):
+        await super().apply_side_effects()
+
+        child = self.child()
+        if not child:
+            return
+
+        in_reply_to = getattr(child, 'inReplyTo', None)
+        if not in_reply_to:
+            return
+
+        parent = AS2Pointer(in_reply_to).dereference()
+        if not parent:
+            return
+
+        replies_collection_uri = getattr(parent, 'replies', None)
+        if not replies_collection_uri:
+            return
+
+        replies_collection = AS2Collection.fetch_local(replies_collection_uri, use_pointers=True)
+        if not isinstance(replies_collection, AS2Collection):
+            return
+
+        replies_collection.prepend(AS2Pointer(child.id))
+        replies_collection.commit()
+
 registry.register_type(Create)
 
 
