@@ -92,6 +92,7 @@ class AS2Object(Serializable):
 
         if self.__interactive__:
             kwargs['replies'] = self.create_collection(kwargs.get('replies', None))
+            kwargs['likes'] = self.create_collection(kwargs.get('likes', None))
 
         asyncio.ensure_future(self.synchronize())
 

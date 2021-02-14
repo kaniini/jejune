@@ -40,7 +40,7 @@ class Create(AS2Activity):
 registry.register_type(Create)
 
 
-# TODO: Add announce to an object's announces collection if one exists.
+# TODO: Add announce to an object's shares collection if one exists.
 class Announce(AS2Activity):
     __jsonld_type__ = 'Announce'
 
@@ -65,9 +65,29 @@ class Announce(AS2Activity):
 registry.register_type(Announce)
 
 
-# TODO: Add likes to an object's likes collection if one exists.
 class Like(AS2Activity):
     __jsonld_type__ = 'Like'
+
+    async def apply_side_effects(self):
+        await super().apply_side_effects()
+
+        self.splice_child()
+
+    def splice_child(self):
+        child = self.child()
+        if not child:
+            return
+
+        likes_collection_uri = getattr(child, 'likes', None)
+        if not likes_collection_uri:
+            return
+
+        likes_collection = AS2Collection.fetch_local(likes_collection_uri, use_pointers=True)
+        if not isinstance(likes_collection, AS2Collection):
+            return
+
+        likes_collection.prepend(AS2Pointer(self.id))
+        likes_collection.commit()
 
 registry.register_type(Like)
 
