@@ -90,6 +90,9 @@ class AS2Object(Serializable):
         if 'actor' not in kwargs and 'attributedTo' not in kwargs and 'submittedBy' in kwargs:
             kwargs['attributedTo'] = kwargs['submittedBy']
 
+        if self.__interactive__:
+            kwargs['replies'] = self.create_collection()
+
         asyncio.ensure_future(self.synchronize())
 
         if '@context' in kwargs:
@@ -104,6 +107,17 @@ class AS2Object(Serializable):
         super(AS2Object, self).__init__(**header, **kwargs)
 
         self.commit()
+
+    def create_collection(self):
+        from .collection import AS2Collection
+
+        app = get_jejune_app()
+        uri = app.object_uri('collection')
+
+        AS2Collection.create_if_not_exists(uri)
+        app.rdf_store.override(uri)
+
+        return uri
 
     @property
     def jsonld_context(self):
