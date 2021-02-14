@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from "activity.html" import render_object %}
+{% from "activity.html" import render_object, render_quote %}
 
 {% macro render_one(object) %}
 <div class="activity">
@@ -14,9 +14,34 @@
 </div>
 {% endmacro %}
 
+{% macro render_interaction(object) %}
+<div class="activity interaction">
+  <div class="activity-item">
+    <div class="activity-icon">
+      {% set attribution=object.attributed_object() %}
+      <img src="{{ attribution.avatar_icon() }}" alt="{{ attribution.name }}">
+    </div>
+
+    <div class="activity-content">
+      <span class="activity-author">
+        <a href="{{ attribution.url }}" target="_blank">{{ attribution.name }}</a>
+      </span>
+
+      <span class="activity-action">
+        {% if object.type == 'Like' %}liked this post.
+        {% elif object.type == 'Announce' %}shared this post.
+        {% else %}replied to this post: {{ render_quote(object) }}{% endif %}
+      </span>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% block container %}
 {{ render_one(activity) }}
-{% for reply in replies %}
-{{ render_one(reply) }}
+{% set interactions = activity.gather_interactions() %}
+{% for interaction in interactions %}
+{{ render_interaction(interaction) }}
 {% endfor %}
+
 {% endblock %}

@@ -241,6 +241,32 @@ class AS2Object(Serializable):
     def published_time(self):
         return time.strftime('%B %d, %Y [%H:%M:%S]', time.localtime(self.published_ts()))
 
+    def gather_interaction_stream(self, stream: str) -> list:
+        from .collection import AS2Collection
+
+        if not self.__interactive__:
+            return []
+
+        stream_uri = getattr(self, stream, None)
+        if not stream_uri:
+            return []
+
+        collection = AS2Collection.fetch_local(stream_uri, use_pointers=True)
+        return collection.__items__
+
+    def gather_interactions(self):
+        if not self.__interactive__:
+            return []
+
+        replies = self.gather_interaction_stream('replies')
+        likes = self.gather_interaction_stream('likes')
+        shares = self.gather_interaction_stream('shares')
+
+        merged = [item.dereference() for item in replies + likes + shares]
+        merged = [item for item in merged if item]
+
+        return sorted(merged, key=lambda x: x.published_ts(), reverse=True)
+
     def visible_for(self, actor=None) -> bool:
         attribution = getattr(self, 'attributedTo', getattr(self, 'actor', None))
         audience = getattr(self, 'audience', [attribution])

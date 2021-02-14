@@ -154,3 +154,13 @@ aside .author {
 	padding: 1em;
 	border-radius: 4px;
 }
+
+.interaction .activity-icon img {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 1.5em;
+}
+
+.interaction .activity-icon {
+	max-width: 3em;
+}
