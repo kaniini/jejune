@@ -115,10 +115,11 @@ class AS2Object(Serializable):
         if not uri:
             uri = app.object_uri('collection')
 
-        AS2Collection.create_if_not_exists(uri)
-        app.rdf_store.override(uri)
+        ptr = AS2Pointer(ptr)
+        AS2Collection.create_if_not_exists(ptr.id)
+        app.rdf_store.override(ptr.id)
 
-        return uri
+        return ptr.id
 
     @property
     def jsonld_context(self):
