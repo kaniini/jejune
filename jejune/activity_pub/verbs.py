@@ -132,11 +132,21 @@ class Follow(AS2Activity):
         followee_collection.prepend(AS2Pointer(self.actor))
         followee_collection.commit()
 
+        follower = AS2Pointer(self.actor).dereference()
+        follower_collection = AS2Collection.fetch_local(follower.following, use_pointers=True)
+        follower_collection.prepend(AS2Pointer(self.object))
+        follower_collection.commit()
+
     async def reject_side_effects(self, parent):
         followee = AS2Pointer(self.object).dereference()
         followee_collection = AS2Collection.fetch_local(followee.followers, use_pointers=True)
         followee_collection.remove(AS2Pointer(self.actor))
         followee_collection.commit()
+
+        follower = AS2Pointer(self.actor).dereference()
+        follower_collection = AS2Collection.fetch_local(follower.following, use_pointers=True)
+        follower_collection.remove(AS2Pointer(self.object))
+        follower_collection.commit()
 
 registry.register_type(Follow)
 
