@@ -27,6 +27,9 @@ class Actor(AS2Object):
         actor.fixate()
         return actor
 
+    def visible_for(self, actor=None) -> bool:
+        return actor is not None
+
     def update_endpoints(self):
         from .. import get_jejune_app
 
