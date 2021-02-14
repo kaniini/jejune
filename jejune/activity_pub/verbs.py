@@ -40,7 +40,6 @@ class Create(AS2Activity):
 registry.register_type(Create)
 
 
-# TODO: Add announce to an object's shares collection if one exists.
 class Announce(AS2Activity):
     __jsonld_type__ = 'Announce'
 
@@ -61,6 +60,44 @@ class Announce(AS2Activity):
         reblog['reblog'] = self.child().serialize_to_mastodon()
 
         return reblog
+
+    async def apply_side_effects(self):
+        await super().apply_side_effects()
+
+        self.splice_child()
+        self.splice_actor()
+
+    def splice_child(self):
+        child = self.child()
+        if not child:
+            return
+
+        shares_collection_uri = getattr(child, 'shares', None)
+        if not shares_collection_uri:
+            return
+
+        shares_collection = AS2Collection.fetch_local(shares_collection_uri, use_pointers=True)
+        if not isinstance(shares_collection, AS2Collection):
+            return
+
+        shares_collection.prepend(AS2Pointer(self.id))
+        shares_collection.commit()
+
+    def splice_actor(self):
+        actor = AS2Pointer(self.actor).dereference()
+        if not actor:
+            return
+
+        shared_collection_uri = getattr(actor, 'shared', None)
+        if not shared_collection_uri:
+            return
+
+        shared_collection = AS2Collection.fetch_local(shared_collection_uri, use_pointers=True)
+        if not isinstance(shared_collection, AS2Collection):
+            return
+
+        shared_collection.prepend(AS2Pointer(self.id))
+        shared_collection.commit()
 
 registry.register_type(Announce)
 
