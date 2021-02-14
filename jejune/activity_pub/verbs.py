@@ -72,6 +72,7 @@ class Like(AS2Activity):
         await super().apply_side_effects()
 
         self.splice_child()
+        self.splice_actor()
 
     def splice_child(self):
         child = self.child()
@@ -88,6 +89,22 @@ class Like(AS2Activity):
 
         likes_collection.prepend(AS2Pointer(self.id))
         likes_collection.commit()
+
+    def splice_actor(self):
+        actor = AS2Pointer(self.actor).dereference()
+        if not actor:
+            return
+
+        liked_collection_uri = getattr(actor, 'liked', None)
+        if not liked_collection_uri:
+            return
+
+        liked_collection = AS2Collection.fetch_local(liked_collection_uri, use_pointers=True)
+        if not isinstance(liked_collection, AS2Collection):
+            return
+
+        liked_collection.prepend(AS2Pointer(self.id))
+        liked_collection.commit()
 
 registry.register_type(Like)
 
