@@ -24,6 +24,7 @@ def handle_flat_pointer(obj):
 class AS2Collection(AS2Object, TypedCollection):
     __jsonld_type__ = 'Collection'
     __child_type__ = AS2Object
+    __interactive__ = False
 
     def walk(self, object_types: set, limit: int, skip=0, max_id=None, since_id=None, min_id=None, visible_for=None) -> list:
         yielded = 0
