@@ -115,7 +115,7 @@ class AS2Object(Serializable):
         if not uri:
             uri = app.object_uri('collection')
 
-        ptr = AS2Pointer(ptr)
+        ptr = AS2Pointer(uri)
         AS2Collection.create_if_not_exists(ptr.id)
         app.rdf_store.override(ptr.id)
 
