@@ -29,6 +29,10 @@ AS2_CONTEXT = [
      'searchEndpoint': {
           '@type': '@id',
           '@id': 'jejune:searchEndpoint'
+     },
+     'shared': {
+          '@type': '@id',
+          '@id': 'jejune:shared'
      }}
 ]
 
