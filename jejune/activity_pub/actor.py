@@ -56,8 +56,22 @@ class Actor(AS2Object):
     def best_inbox(self):
         return getattr(self, 'endpoints', {}).get('sharedInbox', self.inbox)
 
+    def update_collections(self):
+        from .. import get_jejune_app
+
+        liked = getattr(self, 'liked', None)
+        if not liked:
+            liked = get_jejune_app().object_uri('collection')
+            self.liked = liked
+            self.fixate()
+            self.commit()
+
     def override_collections(self):
         from .. import get_jejune_app
+
+        liked = getattr(self, 'liked', None)
+        if liked:
+            get_jejune_app().rdf_store.override(liked)
 
         inbox = getattr(self, 'inbox', None)
         if inbox:
@@ -77,6 +91,10 @@ class Actor(AS2Object):
 
     def fixate(self):
         self.override_collections()
+
+        liked = getattr(self, 'liked', None)
+        if liked:
+            AS2Collection.create_if_not_exists(liked)
 
         inbox = getattr(self, 'inbox', None)
         if inbox:
@@ -144,6 +162,9 @@ class Actor(AS2Object):
         from .. import get_jejune_app
 
         self.update_endpoints()
+
+        if self.local():
+            self.update_collections()
 
         app = get_jejune_app()
         if app.userns.exists(self.make_petname(), 'base'):
