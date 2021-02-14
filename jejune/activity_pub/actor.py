@@ -8,6 +8,8 @@ from ..user import User
 
 
 class Actor(AS2Object):
+    __interactive__ = False
+
     @classmethod
     def new_from_user(cls, user: User) -> AS2Object:
         obj = {'name': user.description,

@@ -52,6 +52,7 @@ class AS2Object(Serializable):
     __jsonld_context__ = AS2_CONTEXT
     __jsonld_type__ = 'Object'
     __ephemeral__ = False
+    __interactive__ = True
 
     def __init__(self, **kwargs):
         header = {'@context': self.__jsonld_context__}
@@ -302,6 +303,7 @@ class AS2Pointer:
 
 class AS2Activity(AS2Object):
     __jsonld_type__ = 'Activity'
+    __interactive__ = False
 
     def __init__(self, **kwargs):
         if 'actor' not in kwargs and 'attributedTo' not in kwargs and 'submittedBy' in kwargs:
