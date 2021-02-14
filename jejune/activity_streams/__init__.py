@@ -91,7 +91,7 @@ class AS2Object(Serializable):
             kwargs['attributedTo'] = kwargs['submittedBy']
 
         if self.__interactive__:
-            kwargs['replies'] = self.create_collection()
+            kwargs['replies'] = self.create_collection(kwargs.get('replies', None))
 
         asyncio.ensure_future(self.synchronize())
 
@@ -108,11 +108,12 @@ class AS2Object(Serializable):
 
         self.commit()
 
-    def create_collection(self):
+    def create_collection(self, uri=None):
         from .collection import AS2Collection
 
         app = get_jejune_app()
-        uri = app.object_uri('collection')
+        if not uri:
+            uri = app.object_uri('collection')
 
         AS2Collection.create_if_not_exists(uri)
         app.rdf_store.override(uri)
