@@ -33,7 +33,8 @@ AS2_CONTEXT = [
      'shared': {
           '@type': '@id',
           '@id': 'jejune:shared'
-     }}
+     },
+     'interactionCount': 'jejune:interactionCount'}
 ]
 
 
@@ -98,6 +99,7 @@ class AS2Object(Serializable):
             kwargs['replies'] = self.create_collection(kwargs.get('replies', None))
             kwargs['likes'] = self.create_collection(kwargs.get('likes', None))
             kwargs['shares'] = self.create_collection(kwargs.get('shares', None))
+            kwargs['interactionCount'] = kwargs.get('interactionCount', 0)
 
         asyncio.ensure_future(self.synchronize())
 
@@ -265,7 +267,13 @@ class AS2Object(Serializable):
         merged = [item.dereference() for item in replies + likes + shares]
         merged = [item for item in merged if item]
 
+        self.interactionCount = len(merged)
+        self.commit()
+
         return sorted(merged, key=lambda x: x.published_ts(), reverse=True)
+
+    def update_interaction_count(self):
+        self.gather_interactions()
 
     def visible_for(self, actor=None) -> bool:
         attribution = getattr(self, 'attributedTo', getattr(self, 'actor', None))
