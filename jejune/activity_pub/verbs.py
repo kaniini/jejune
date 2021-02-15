@@ -12,26 +12,29 @@ class Create(AS2Activity):
         return self.child().mastodon_id()
 
     async def apply_side_effects(self):
-        await super().apply_side_effects()
-
         child = self.child()
         if not child:
+            await super().apply_side_effects()
             return
 
         in_reply_to = getattr(child, 'inReplyTo', None)
         if not in_reply_to:
+            await super().apply_side_effects()
             return
 
         parent = AS2Pointer(in_reply_to).dereference()
         if not parent:
+            await super().apply_side_effects()
             return
 
         replies_collection_uri = getattr(parent, 'replies', None)
         if not replies_collection_uri:
+            await super().apply_side_effects()
             return
 
         replies_collection = AS2Collection.fetch_local(replies_collection_uri, use_pointers=True)
         if not isinstance(replies_collection, AS2Collection):
+            await super().apply_side_effects()
             return
 
         replies_collection.prepend(AS2Pointer(child.id))
@@ -39,6 +42,8 @@ class Create(AS2Activity):
 
         parent.interactionCount += 1
         parent.commit()
+
+        await super().apply_side_effects()
 
 registry.register_type(Create)
 
@@ -65,10 +70,10 @@ class Announce(AS2Activity):
         return reblog
 
     async def apply_side_effects(self):
-        await super().apply_side_effects()
-
         self.splice_child()
         self.splice_actor()
+
+        await super().apply_side_effects()
 
     def splice_child(self):
         child = self.child()
@@ -112,10 +117,10 @@ class Like(AS2Activity):
     __jsonld_type__ = 'Like'
 
     async def apply_side_effects(self):
-        await super().apply_side_effects()
-
         self.splice_child()
         self.splice_actor()
+
+        await super().apply_side_effects()
 
     def splice_child(self):
         child = self.child()
