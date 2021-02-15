@@ -10,6 +10,10 @@ from .. import get_jejune_app
 from ..serializable import Serializable
 
 
+from cachetools import TTLCache
+
+
+
 AS2_PUBLIC = 'https://www.w3.org/ns/activitystreams#Public'
 AS2_CONTEXT = [
     'https://www.w3.org/ns/activitystreams',
@@ -35,8 +39,10 @@ AS2_CONTEXT = [
           '@type': '@id',
           '@id': 'jejune:shared'
      },
-     'interactionCount': 'jejune:interactionCount'}
+     'interactionCount': 'jejune:interactionCount',
+     'objectSerial': 'jejune:objectSerial'}
 ]
+SERIAL_CACHE = TTLCache(500, 300)
 
 
 class AS2TypeRegistry:
@@ -95,6 +101,9 @@ class AS2Object(Serializable):
 
         if 'actor' not in kwargs and 'attributedTo' not in kwargs and 'submittedBy' in kwargs:
             kwargs['attributedTo'] = kwargs['submittedBy']
+
+        if 'objectSerial' not in kwargs:
+            kwargs['objectSerial'] = 0
 
         if self.__interactive__:
             kwargs['replies'] = self.create_collection(kwargs.get('replies', None))
@@ -189,10 +198,17 @@ class AS2Object(Serializable):
             self.url = get_jejune_app().frontend_support.friendly_uri(self)
 
     def commit(self):
+        if self.objectSerial < SERIAL_CACHE.get(self.id, 0):
+            logging.info('WTF: Serial for %r went backwards (%d < %d).', self.id, self.objectSerial, SERIAL_CACHE.get(self.id, 0))
+            traceback.print_stack()
+            return
+
+        self.objectSerial += 1
         self.update_url()
 
         # logging.debug('RDF: Committing %r.', self.id)
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
+        SERIAL_CACHE[self.id] = self.objectSerial
 
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> Serializable:
