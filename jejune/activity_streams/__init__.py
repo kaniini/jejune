@@ -43,6 +43,7 @@ AS2_CONTEXT = [
      'objectSerial': 'jejune:objectSerial'}
 ]
 SERIAL_CACHE = TTLCache(500, 300)
+AS2_OBJECT_CACHE = TTLCache(16384, 3600)
 
 
 class AS2TypeRegistry:
@@ -157,6 +158,9 @@ class AS2Object(Serializable):
 
     @classmethod
     def deserialize_from_json(cls, data: dict) -> Serializable:
+        if 'id' in data and data['id'] in AS2_OBJECT_CACHE:
+            return AS2_OBJECT_CACHE[data['id']]
+
         global registry
 
         if data['type'] != cls.__jsonld_type__:
@@ -171,13 +175,20 @@ class AS2Object(Serializable):
 
     @classmethod
     async def fetch_from_uri(cls, uri):
+        if uri in AS2_OBJECT_CACHE:
+            return AS2_OBJECT_CACHE[uri]
+
         data = await get_jejune_app().rdf_store.fetch_json(uri)
         if not data:
             return None
+
         return cls.deserialize_from_json(data)
 
     @classmethod
     def fetch_cached_from_uri(cls, uri):
+        if uri in AS2_OBJECT_CACHE:
+            return AS2_OBJECT_CACHE[uri]
+
         app = get_jejune_app()
         hashed = app.rdf_store.hash_for_uri(uri)
 
@@ -185,6 +196,9 @@ class AS2Object(Serializable):
 
     @classmethod
     def fetch_from_hash(cls, hashed):
+        if hashed in AS2_OBJECT_CACHE:
+            return AS2_OBJECT_CACHE[hashed]
+
         app = get_jejune_app()
 
         data = app.rdf_store.fetch_hash_json(hashed)
@@ -209,9 +223,14 @@ class AS2Object(Serializable):
         # logging.debug('RDF: Committing %r.', self.id)
         get_jejune_app().rdf_store.put_entry(self.id, self.serialize())
         SERIAL_CACHE[self.id] = self.objectSerial
+        AS2_OBJECT_CACHE[self.id] = self
+        AS2_OBJECT_CACHE[self.storeIdentity] = self
 
     @classmethod
     def create_if_not_exists(cls, uri: str, **kwargs) -> Serializable:
+        if uri in AS2_OBJECT_CACHE:
+            return AS2_OBJECT_CACHE[uri]
+
         app = get_jejune_app()
 
         hashed = app.rdf_store.hash_for_uri(uri)
