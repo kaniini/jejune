@@ -2,6 +2,7 @@ import asyncio
 import logging
 import simplejson
 import time
+import traceback
 import urllib.parse
 
 
@@ -387,7 +388,12 @@ class AS2Activity(AS2Object):
         if not child:
             asyncio.ensure_future(AS2Pointer(self.object).load())
 
-        return child 
+        return child
+
+    def update_interaction_count(self):
+        child = self.child()
+        if child:
+            child.update_interaction_count()
 
     async def publish(self):
         app = get_jejune_app()

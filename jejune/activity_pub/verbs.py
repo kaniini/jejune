@@ -37,6 +37,9 @@ class Create(AS2Activity):
         replies_collection.prepend(AS2Pointer(child.id))
         replies_collection.commit()
 
+        parent.interactionCount += 1
+        parent.commit()
+
 registry.register_type(Create)
 
 
@@ -83,6 +86,9 @@ class Announce(AS2Activity):
         shares_collection.prepend(AS2Pointer(self.id))
         shares_collection.commit()
 
+        child.interactionCount += 1
+        child.commit()
+
     def splice_actor(self):
         actor = AS2Pointer(self.actor).dereference()
         if not actor:
@@ -126,6 +132,9 @@ class Like(AS2Activity):
 
         likes_collection.prepend(AS2Pointer(self.id))
         likes_collection.commit()
+
+        child.interactionCount += 1
+        child.commit()
 
     def splice_actor(self):
         actor = AS2Pointer(self.actor).dereference()

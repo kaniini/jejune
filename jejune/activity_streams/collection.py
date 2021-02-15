@@ -36,8 +36,6 @@ class AS2Collection(AS2Object, TypedCollection):
             if not real:
                 continue
 
-            real.update_interaction_count()
-
             if object_types and real.type not in object_types:
                 continue
 
