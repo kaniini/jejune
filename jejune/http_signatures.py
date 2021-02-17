@@ -2,7 +2,6 @@ import aiohttp
 import aiohttp.web
 import base64
 import logging
-import urllib.parse
 
 
 from cryptography.hazmat.primitives.asymmetric import rsa, utils, padding
@@ -35,23 +34,11 @@ class HTTPSignatureVerifier(HTTPSignatureSigningStringMixIn):
         default['headers'] = default['headers'].split()
         return default
 
+    def load_pem_public_key(self, key_data: str) -> object:
+        return serialization.load_pem_public_key(key_data.encode('utf-8'))
+
     async def load_key(self, key_id: str) -> object:
-        keyid_uri = urllib.parse.urlsplit(key_id)._replace(fragment='')
-        if keyid_uri.path.endswith('/publickey'):
-            keyid_uri = keyid_uri._replace(path=keyid_uri.path[0:-10])  # len('/publickey')
-
-        from .activity_streams import AS2Pointer
-        actor_uri = AS2Pointer(urllib.parse.urlunsplit(keyid_uri)).serialize()
-
-        from .activity_pub.actor import Actor
-        actor = await Actor.fetch_from_uri(actor_uri)
-        if not actor:
-            return None
-
-        try:
-            return serialization.load_pem_public_key(actor.publicKey['publicKeyPem'].encode('utf-8'))
-        except:
-            return None
+        raise NotImplementedError()
 
     async def validate(self, request) -> bool:
         headers = request.headers.copy()
@@ -97,3 +84,4 @@ class HTTPSignatureSigner(HTTPSignatureSigningStringMixIn):
         sigdata = key.sign(sigstring.encode('utf-8'), padding.PKCS1v15(), hashes.SHA256())
         sigdata = base64.b64encode(sigdata)
         return sigdata.decode('utf-8')
+
