@@ -178,7 +178,7 @@ class PublisherWorker:
         self.queue = [pr for pr in self.queue if not pr.maybe_cull()]
 
     async def process_requests(self):
-        logging.info('Publisher work queue has %d items.', len(self.queue))
+        logging.debug('Publisher work queue has %d items.', len(self.queue))
 
         if len(self.queue) == 0:
             return
