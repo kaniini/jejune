@@ -8,7 +8,13 @@ from cryptography.hazmat.primitives.asymmetric import rsa, utils, padding
 from cryptography.hazmat.primitives import hashes, serialization
 
 
-class HTTPSignatureVerifier:
+class HTTPSignatureSigningStringMixIn:
+    "A class which provides build_signing_string()."
+    def build_signing_string(self, headers: dict, used_headers: list) -> str:
+        return '\n'.join(map(lambda x: ': '.join([x.lower(), headers[x]]), used_headers))
+
+
+class HTTPSignatureVerifier(HTTPSignatureSigningStringMixIn):
     hashes = {
         'sha1': hashes.SHA1,
         'sha256': hashes.SHA256,
@@ -42,9 +48,6 @@ class HTTPSignatureVerifier:
         except:
             return None
 
-    def build_signing_string(self, headers: dict, used_headers: list) -> str:
-        return '\n'.join(map(lambda x: ': '.join([x.lower(), headers[x]]), used_headers))
-
     async def validate(self, actor_uri: str, request) -> bool:
         pubkey = await self.load_key(actor_uri)
         if not pubkey:
@@ -68,7 +71,7 @@ class HTTPSignatureVerifier:
             return False
 
 
-class HTTPSignatureSigner:
+class HTTPSignatureSigner(HTTPSignatureSigningStringMixIn):
     def sign(self, headers: dict, key: object, key_id: str) -> str:
         headers = {x.lower(): y for x, y in headers.items()}
         used_headers = headers.keys()
@@ -84,9 +87,6 @@ class HTTPSignatureSigner:
 
         chunks = ['{}="{}"'.format(k, v) for k, v in sig.items()]
         return ','.join(chunks)
-
-    def build_signing_string(self, headers: dict, used_headers: list) -> str:
-        return '\n'.join(map(lambda x: ': '.join([x.lower(), headers[x]]), used_headers))
 
     def sign_signing_string(self, sigstring: str, key: object) -> str:
         sigdata = key.sign(sigstring.encode('utf-8'), padding.PKCS1v15(), hashes.SHA256())
