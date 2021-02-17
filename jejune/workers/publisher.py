@@ -102,13 +102,11 @@ class PublisherRequest:
 
         privkey = user.privkey()
 
-        headers['signature'] = self.publisher.signer.sign(headers, privkey, self.originator.publicKey['id'])
-        headers.pop('(request-target)')
-        headers.pop('Host')
+        signed_headers = self.publisher.signer.sign(headers, privkey, self.originator.publicKey['id'])
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(self.recipient, data=payload, headers=headers) as resp:
+                async with session.post(self.recipient, data=payload, headers=signed_headers) as resp:
                     if resp.status == 202:
                         return self.completed()
                     elif resp.status >= 500:

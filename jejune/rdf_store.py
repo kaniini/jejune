@@ -156,14 +156,12 @@ class RDFStore:
         }
 
         signer = HTTPSignatureSigner()
-        headers['signature'] = signer.sign(headers, privkey, u.actor().publicKey['id'])
-        headers.pop('(request-target)')
-        headers.pop('Host')
+        signed_headers = signer.sign(headers, privkey, u.actor().publicKey['id'])
 
         try:
             async with timeout(5.0):
                 async with aiohttp.ClientSession() as session:
-                    async with session.get(uri, headers=headers) as response:
+                    async with session.get(uri, headers=signed_headers) as response:
                         if response.status != 200:
                             return None
                         return (await response.text())

@@ -9,9 +9,14 @@ from cryptography.hazmat.primitives import hashes, serialization
 
 
 class HTTPSignatureSigningStringMixIn:
-    "A class which provides build_signing_string()."
+    "A class which provides build_signing_string() and sign_signing_string()."
     def build_signing_string(self, headers: dict, used_headers: list) -> str:
         return '\n'.join(map(lambda x: ': '.join([x.lower(), headers[x]]), used_headers))
+
+    def sign_signing_string(self, sigstring: str, key: object) -> str:
+        sigdata = key.sign(sigstring.encode('utf-8'), padding.PKCS1v15(), hashes.SHA256())
+        sigdata = base64.b64encode(sigdata)
+        return sigdata.decode('utf-8')
 
 
 class HTTPSignatureVerifier(HTTPSignatureSigningStringMixIn):
@@ -63,8 +68,8 @@ class HTTPSignatureVerifier(HTTPSignatureSigningStringMixIn):
             return False
 
 
-class HTTPSignatureSigner(HTTPSignatureSigningStringMixIn):
-    def sign(self, headers: dict, key: object, key_id: str) -> str:
+class HTTPLegacySignatureSigner(HTTPSignatureSigningStringMixIn):
+    def sign(self, headers: dict, key: object, key_id: str) -> dict:
         headers = {x.lower(): y for x, y in headers.items()}
         used_headers = headers.keys()
 
@@ -78,10 +83,14 @@ class HTTPSignatureSigner(HTTPSignatureSigningStringMixIn):
         sig['signature'] = self.sign_signing_string(sigstring, key)
 
         chunks = ['{}="{}"'.format(k, v) for k, v in sig.items()]
-        return ','.join(chunks)
+        signed_headers = {'signature': ','.join(chunks)}
 
-    def sign_signing_string(self, sigstring: str, key: object) -> str:
-        sigdata = key.sign(sigstring.encode('utf-8'), padding.PKCS1v15(), hashes.SHA256())
-        sigdata = base64.b64encode(sigdata)
-        return sigdata.decode('utf-8')
+        headers.pop('(request-target)')
+        headers.pop('host')
 
+        signed_headers.update(headers)
+        return signed_headers
+
+
+# TODO: Implement new-style signatures as HTTPSignatureSigner.
+HTTPSignatureSigner = HTTPLegacySignatureSigner
