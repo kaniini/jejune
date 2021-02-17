@@ -64,7 +64,10 @@ async def listener(uri: str, activity: AS2Object):
         return
 
     # get the markdown source
+    add_shortlink = False
     source = getattr(child, 'summary', None)
+    if source:
+        add_shortlink = True
     if not source:
         source = getattr(child, 'source', {}).get('content', None)
     if not source:
@@ -74,7 +77,7 @@ async def listener(uri: str, activity: AS2Object):
 
     # trim the source text down so it will fit in a tweet (240 chars, allowing 40 for the shortlink)
     stem = stemmer(source)
-    if stem != source:
+    if stem != source or add_shortlink:
         final_status = ' '.join([stem, app.frontend_support.shortlink(child)])
     else:
         final_status = source
