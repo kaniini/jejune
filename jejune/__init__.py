@@ -1,7 +1,8 @@
 __version__ = '0.0.1'
 
 
-from . import logging
+from . import logging as logging_settings
+import logging
 
 
 import asyncio
@@ -24,6 +25,9 @@ from . import application_factory
 if 'JEJUNE_CONFIG' not in os.environ:
     print('JEJUNE_CONFIG is not in environment, cannot load application')
     exit()
+
+
+logging.info('Starting Jejune application.')
 
 
 app = JEJUNE_APP = application_factory.Application(os.environ['JEJUNE_CONFIG'])
