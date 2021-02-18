@@ -17,6 +17,22 @@ class Create(AS2Activity):
             await super().apply_side_effects()
             return
 
+        # Merge audience on create activity and child object per ActivityPub section 6.2.
+        self_to = getattr(self, 'to', [])
+        self_cc = getattr(self, 'cc', [])
+        self_audience = getattr(self, 'audience', [])
+
+        child_to = getattr(child, 'to', [])
+        child_cc = getattr(child, 'cc', [])
+        child_audience = getattr(child, 'audience', [])
+
+        self.to = child.to = list(set(self_to + child_to))
+        self.cc = child.cc = list(set(self_cc + child_cc))
+        self.audience = child.audience = list(set(self_audience + child_audience))
+
+        self.commit()
+        child.commit()
+
         in_reply_to = getattr(child, 'inReplyTo', None)
         if not in_reply_to:
             await super().apply_side_effects()
