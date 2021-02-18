@@ -86,8 +86,22 @@ class Announce(AS2Activity):
         return reblog
 
     async def apply_side_effects(self):
-        self.splice_child()
+        actor = AS2Pointer(self.actor).dereference()
+
+        child = self.child()
+        if not child:
+            return
+
+        if not child.visible_for(actor):
+            return
+
+        if not child.visible_for(None):
+            self.to = [actor.followers]
+            self.cc = [child.attributedTo]
+            self.commit()
+
         self.splice_actor()
+        self.splice_child()
 
         await super().apply_side_effects()
 
