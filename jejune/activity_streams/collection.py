@@ -39,7 +39,7 @@ class AS2Collection(AS2Object, TypedCollection):
             if object_types and real.type not in object_types:
                 continue
 
-            if skip and skipped < skip:
+            if skip and skipped <= skip:
                 skipped += 1
                 continue
 
