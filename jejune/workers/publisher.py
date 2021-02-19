@@ -120,6 +120,10 @@ class PublisherRequest:
             return self.error()
 
     async def publish(self):
+        if not self.originator:
+            logging.info('WTF: Publish request without originator. %r', self.activity.serialize())
+            return self.fatality()
+
         logging.info('Publishing %s to %s (type %d).', self.activity.id, self.recipient, self.kind)
 
         if self.kind == AS2_RECIPIENT:
