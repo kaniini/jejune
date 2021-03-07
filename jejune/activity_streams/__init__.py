@@ -351,6 +351,9 @@ class AS2Object(Serializable):
 registry.register_type(AS2Object)
 
 
+DEREF_DEPTH = 0
+
+
 class AS2Pointer:
     def __init__(self, uri):
         if isinstance(uri, str):
@@ -373,9 +376,20 @@ class AS2Pointer:
         return f'<AS2Pointer: {self.id}>'
 
     def dereference(self) -> AS2Object:
+        global DEREF_DEPTH
+
+        DEREF_DEPTH += 1
+
+        if DEREF_DEPTH > 50:
+            logging.info('WTF: Loop (or unusually complex JSON-LD graph) detected, ptr=%r.', self.id)
+            return None
+
         obj = AS2Object.fetch_cached_from_uri(self.id)
         if not obj:
             asyncio.ensure_future(self.load())
+
+        DEREF_DEPTH -= 1
+
         return obj
 
     @classmethod
