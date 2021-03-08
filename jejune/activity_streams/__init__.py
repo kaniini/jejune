@@ -356,6 +356,10 @@ DEREF_DEPTH = 0
 
 class AS2Pointer:
     def __init__(self, uri):
+        self.id = None
+        self.unpack_pointer(uri)
+
+    def unpack_pointer(self, uri):
         if isinstance(uri, str):
             self.id = uri
         elif isinstance(uri, dict):
@@ -369,6 +373,8 @@ class AS2Pointer:
                 self.id = uri['id']
         elif isinstance(uri, AS2Object):
             self.id = uri.id
+        elif isinstance(uri, list) and len(uri) > 0:
+            self.unpack_pointer(uri[0])
         else:
             logging.exception('AS2Pointer: Cannot construct a pointer for %r.', uri)
 
