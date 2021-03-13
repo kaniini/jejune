@@ -388,6 +388,8 @@ class AS2Pointer:
 
         if DEREF_DEPTH > 50:
             logging.info('WTF: Loop (or unusually complex JSON-LD graph) detected, ptr=%r.', self.id)
+
+            DEREF_DEPTH -= 1
             return None
 
         obj = AS2Object.fetch_cached_from_uri(self.id)
